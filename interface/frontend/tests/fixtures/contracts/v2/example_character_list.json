@@ -1,0 +1,27 @@
+{
+  "contract_version": "1.1",
+  "next_cursor": null,
+  "characters": [
+    {
+      "character_id": "chr_3f9a0c1e2b7d",
+      "name": "Ice Lotus Mage",
+      "tags": [
+        "xianxia",
+        "mage"
+      ],
+      "cover_url": null,
+      "current_stage": "s5",
+      "approved_count": 4,
+      "stage_statuses": {
+        "s1": "approved",
+        "s2": "approved",
+        "s3": "approved",
+        "s4": "approved",
+        "s5": "draft",
+        "s6": "blocked",
+        "s7": "blocked"
+      },
+      "updated_at": "2026-11-06T12:40:00Z"
+    }
+  ]
+}

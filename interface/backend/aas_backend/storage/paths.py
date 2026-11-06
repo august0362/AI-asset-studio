@@ -18,6 +18,12 @@ ID_PATTERNS = {
     "upload_id": re.compile(UPLOAD_ID_PATTERN),
     "input_id": re.compile(INPUT_ID_PATTERN),
     "artifact_id": re.compile(ARTIFACT_ID_PATTERN),
+    # Character Production (§13.2)
+    "character_id": re.compile(r"^chr_[0-9a-f]{12}$"),
+    "stage_id": re.compile(r"^s[1-7]$"),
+    "reference_id": re.compile(r"^ref_[0-9a-f]{12}$"),
+    "asset_id": re.compile(r"^ast_[0-9a-f]{12}$"),
+    "manifest_id": re.compile(r"^bat_[0-9a-f]{12}$"),
 }
 _DRIVE = re.compile(r"^[A-Za-z]:")
 

@@ -152,6 +152,8 @@ The design system operates at the intersection of **Corporate / Pro-Workstation 
 
 ## Colors
 
+> Colors are superseded by [docs/UI.md](../../docs/UI.md) §1–§4, the canonical theme specification.
+
 The system uses a dark-mode architecture engineered for contrast stability under high-dynamic-range (HDR) viewports and prolonged visual production work.
 
 ### Palette Architecture

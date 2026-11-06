@@ -1,0 +1,47 @@
+{
+  "contract_version": "1.1",
+  "characters": [
+    {
+      "character_id": "chr_2a6d9db84567",
+      "name": "Ember Knight",
+      "tags": [
+        "knight"
+      ],
+      "cover_url": null,
+      "current_stage": "s3",
+      "approved_count": 2,
+      "stage_statuses": {
+        "s1": "approved",
+        "s2": "approved",
+        "s3": "draft",
+        "s4": "in_review",
+        "s5": "blocked",
+        "s6": "blocked",
+        "s7": "blocked"
+      },
+      "updated_at": "2026-11-06T13:43:00Z"
+    },
+    {
+      "character_id": "chr_9d27a617fd42",
+      "name": "Ice Lotus Mage",
+      "tags": [
+        "xianxia",
+        "mage"
+      ],
+      "cover_url": null,
+      "current_stage": "s6",
+      "approved_count": 5,
+      "stage_statuses": {
+        "s1": "approved",
+        "s2": "approved",
+        "s3": "approved",
+        "s4": "approved",
+        "s5": "approved",
+        "s6": "not_started",
+        "s7": "blocked"
+      },
+      "updated_at": "2026-11-06T13:42:58Z"
+    }
+  ],
+  "next_cursor": null
+}

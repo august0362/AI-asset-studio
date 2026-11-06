@@ -1,0 +1,5 @@
+Warning: Looks like you're using an outdated `kaggle` version (installed: 2.2.4), please consider upgrading to the latest version (2.2.5)
+usage: kaggle [-h] [-v] [-W]
+                  {competitions,c,datasets,d,kernels,k,models,m,files,f,config}
+                  ...
+kaggle: error: argument command: invalid choice: 'quota' (choose from competitions, c, datasets, d, kernels, k, models, m, files, f, config)

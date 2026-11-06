@@ -1,0 +1,467 @@
+{
+  "contract_version": "1.1",
+  "character": {
+    "character_id": "chr_9d27a617fd42",
+    "name": "Ice Lotus Mage",
+    "tags": [
+      "xianxia",
+      "mage"
+    ],
+    "cover_url": null,
+    "current_stage": "s6",
+    "approved_count": 5,
+    "stage_statuses": {
+      "s1": "approved",
+      "s2": "approved",
+      "s3": "approved",
+      "s4": "approved",
+      "s5": "approved",
+      "s6": "not_started",
+      "s7": "blocked"
+    },
+    "updated_at": "2026-11-06T13:42:58Z"
+  },
+  "character_version": 1,
+  "config": {
+    "stage_id": "s3",
+    "order": 3,
+    "title_key": "stage.s3.title",
+    "objective_key": "stage.s3.objective",
+    "availability": "available",
+    "availability_reason": null,
+    "dependencies": [
+      {
+        "stage_id": "s2",
+        "kind": "hard"
+      },
+      {
+        "stage_id": "s1",
+        "kind": "soft"
+      }
+    ],
+    "checklist": [
+      {
+        "item_id": "face_hair_ok",
+        "label_key": "stage.s3.check.face_hair_ok",
+        "required": true
+      },
+      {
+        "item_id": "silhouette_ok",
+        "label_key": "stage.s3.check.silhouette_ok",
+        "required": true
+      },
+      {
+        "item_id": "locked_match",
+        "label_key": "stage.s3.check.locked_match",
+        "required": true
+      },
+      {
+        "item_id": "art_direction_ok",
+        "label_key": "stage.s3.check.art_direction_ok",
+        "required": true
+      },
+      {
+        "item_id": "rejects_noted",
+        "label_key": "stage.s3.check.rejects_noted",
+        "required": false
+      }
+    ],
+    "required_purposes": [],
+    "guided_questions": []
+  },
+  "state": {
+    "stage_id": "s3",
+    "editorial_status": "approved",
+    "availability": "available",
+    "draft_version": 2,
+    "has_unsubmitted_changes": false,
+    "latest_revision": 1,
+    "pending_revision": null,
+    "approved": {
+      "revision": 1,
+      "approved_at": "2026-11-06T13:42:55Z",
+      "source_revisions": {
+        "s2": 1,
+        "s1": 1
+      },
+      "stale": false,
+      "stale_reasons": []
+    },
+    "last_decision": "approved",
+    "blockers": []
+  },
+  "draft": {
+    "contract_version": "1.1",
+    "character_id": "chr_9d27a617fd42",
+    "stage_id": "s3",
+    "draft_version": 2,
+    "based_on_revision": null,
+    "content": {
+      "stage_id": "s3",
+      "preview_profile": {
+        "model_id": "mock-t2d-basic",
+        "compute_target": "kaggle",
+        "variations": 2,
+        "width": 512,
+        "height": 512,
+        "options": {}
+      },
+      "preview_prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+      "candidates": [
+        {
+          "candidate_id": "cand_01",
+          "source": "batch_task",
+          "manifest_id": "bat_764da078f092",
+          "task_id": "preview_01",
+          "job": null,
+          "reference_id": null,
+          "verdict": "selected",
+          "matches": [
+            "hair"
+          ],
+          "mismatches": [],
+          "feedback": null
+        }
+      ],
+      "selected_candidate_id": "cand_01",
+      "review_notes": null
+    },
+    "checklist": {
+      "items": [
+        {
+          "item_id": "face_hair_ok",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "silhouette_ok",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "locked_match",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "art_direction_ok",
+          "checked": true,
+          "note": null
+        }
+      ]
+    },
+    "updated_at": "2026-11-06T13:42:54Z"
+  },
+  "approved_revision": {
+    "contract_version": "1.1",
+    "character_id": "chr_9d27a617fd42",
+    "stage_id": "s3",
+    "revision": 1,
+    "content": {
+      "stage_id": "s3",
+      "preview_profile": {
+        "model_id": "mock-t2d-basic",
+        "compute_target": "kaggle",
+        "variations": 2,
+        "width": 512,
+        "height": 512,
+        "options": {}
+      },
+      "preview_prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+      "candidates": [
+        {
+          "candidate_id": "cand_01",
+          "source": "batch_task",
+          "manifest_id": "bat_764da078f092",
+          "task_id": "preview_01",
+          "job": null,
+          "reference_id": null,
+          "verdict": "selected",
+          "matches": [
+            "hair"
+          ],
+          "mismatches": [],
+          "feedback": null
+        }
+      ],
+      "selected_candidate_id": "cand_01",
+      "review_notes": null
+    },
+    "checklist": {
+      "items": [
+        {
+          "item_id": "face_hair_ok",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "silhouette_ok",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "locked_match",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "art_direction_ok",
+          "checked": true,
+          "note": null
+        }
+      ]
+    },
+    "source_revisions": {
+      "s2": 1,
+      "s1": 1
+    },
+    "submitted_at": "2026-11-06T13:42:54Z",
+    "decision": "approved",
+    "decided_at": "2026-11-06T13:42:55Z",
+    "note": null,
+    "frozen_assets": [
+      {
+        "asset_id": "ast_41e3fb2afcf7",
+        "purpose": "key_visual",
+        "mime_type": "image/png",
+        "width": 512,
+        "height": 512,
+        "size_bytes": 27598,
+        "sha256": "ffbe8a52af03eff7a1ff9cc9cca45f5a373bc442a383527c410fcf48a4db19b8",
+        "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_41e3fb2afcf7/content",
+        "source": {
+          "job_id": "job_20261106T134254Z_7b89a9",
+          "artifact_id": "art_01",
+          "task_id": "preview_01",
+          "model_id": "mock-t2d-basic",
+          "model_revision": null,
+          "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+          "negative_prompt": null,
+          "seed": null,
+          "width": 512,
+          "height": 512,
+          "options": {
+            "seed": null,
+            "width": 512,
+            "height": 512,
+            "negative_prompt": null
+          }
+        },
+        "reference_id": null,
+        "frozen_in": {
+          "stage_id": "s3",
+          "revision": 1
+        },
+        "created_at": "2026-11-06T13:42:54Z"
+      }
+    ],
+    "batch_manifest_id": null
+  },
+  "pending_revision": null,
+  "revisions": [
+    {
+      "revision": 1,
+      "decision": "approved",
+      "submitted_at": "2026-11-06T13:42:54Z",
+      "decided_at": "2026-11-06T13:42:55Z"
+    }
+  ],
+  "inputs": [
+    {
+      "stage_id": "s2",
+      "kind": "hard",
+      "revision": 1,
+      "content": {
+        "stage_id": "s2",
+        "summary": "An adult female ice-lotus mage.",
+        "attributes": [
+          {
+            "attribute_id": "hair",
+            "group": "hair",
+            "label": "Hair",
+            "value": "Long silver-white hair",
+            "lock": "locked",
+            "reference_ids": []
+          },
+          {
+            "attribute_id": "eyes",
+            "group": "eyes",
+            "label": "Eyes",
+            "value": "Pale blue",
+            "lock": "preferred",
+            "reference_ids": []
+          }
+        ],
+        "answers": [
+          {
+            "question_id": "q_name_role",
+            "status": "answered",
+            "answer": "Ice-lotus mage, ally"
+          }
+        ],
+        "open_questions": [],
+        "rejection_criteria": [
+          "Short hair"
+        ]
+      },
+      "frozen_assets": []
+    },
+    {
+      "stage_id": "s1",
+      "kind": "soft",
+      "revision": 1,
+      "content": {
+        "stage_id": "s1",
+        "idea": "An adult ice-lotus mage",
+        "directions": [
+          "Elegant, cold, regal"
+        ],
+        "notes": null,
+        "palette": [
+          "#C8E6F5",
+          "#3A5C8C"
+        ],
+        "references": [
+          {
+            "reference_id": "ref_8b8ce85ac1ae",
+            "aspects": [
+              "color"
+            ],
+            "likes": "The cold blues",
+            "do_not_copy": null
+          }
+        ]
+      },
+      "frozen_assets": []
+    }
+  ],
+  "references": [
+    {
+      "contract_version": "1.1",
+      "reference_id": "ref_1281737f8b78",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "url",
+      "purpose": "moodboard",
+      "title": "Ice mage board",
+      "url": "https://www.pinterest.com/example/ice-mage/",
+      "source_note": null,
+      "mime_type": null,
+      "width": null,
+      "height": null,
+      "size_bytes": null,
+      "sha256": null,
+      "content_url": null,
+      "created_at": "2026-11-06T13:42:53Z"
+    },
+    {
+      "contract_version": "1.1",
+      "reference_id": "ref_8b8ce85ac1ae",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "image",
+      "purpose": "moodboard",
+      "title": "Lotus pond palette",
+      "url": null,
+      "source_note": "Own photo",
+      "mime_type": "image/png",
+      "width": 96,
+      "height": 64,
+      "size_bytes": 209,
+      "sha256": "ac7d080b9bffc30df72ca2f8041b7d9a39ea4c209bef8af3e1df7da6d7e2066a",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/references/ref_8b8ce85ac1ae/content",
+      "created_at": "2026-11-06T13:42:53Z"
+    }
+  ],
+  "resolved_jobs": [],
+  "batches": [
+    {
+      "contract_version": "1.1",
+      "manifest_id": "bat_764da078f092",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "preview",
+      "status": "completed",
+      "approved_spec_revision": 1,
+      "prompt_set_revision": null,
+      "concept_revision": null,
+      "target_model_id": "mock-t2d-basic",
+      "model_revision": null,
+      "references": [],
+      "tasks": [
+        {
+          "task_id": "preview_01",
+          "purpose": "full_body",
+          "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+          "negative_prompt": null,
+          "seed": null,
+          "width": 512,
+          "height": 512,
+          "options": {},
+          "group_id": "g01"
+        },
+        {
+          "task_id": "preview_02",
+          "purpose": "full_body",
+          "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+          "negative_prompt": null,
+          "seed": null,
+          "width": 512,
+          "height": 512,
+          "options": {},
+          "group_id": "g01"
+        }
+      ],
+      "groups": [
+        {
+          "group_id": "g01",
+          "model_id": "mock-t2d-basic",
+          "model_revision": null,
+          "task_ids": [
+            "preview_01",
+            "preview_02"
+          ],
+          "micro_batch_size": 1,
+          "estimated_runtime_seconds": 60
+        }
+      ],
+      "expected_model_loads": 1,
+      "attempts": [
+        {
+          "attempt": 1,
+          "group_id": "g01",
+          "job_id": "job_20261106T134254Z_7b89a9",
+          "task_ids": [
+            "preview_01",
+            "preview_02"
+          ],
+          "submitted_at": "2026-11-06T13:42:54Z"
+        }
+      ],
+      "results": [
+        {
+          "task_id": "preview_01",
+          "status": "succeeded",
+          "attempt": 1,
+          "job_id": "job_20261106T134254Z_7b89a9",
+          "artifact_id": "art_01",
+          "sha256": "ffbe8a52af03eff7a1ff9cc9cca45f5a373bc442a383527c410fcf48a4db19b8",
+          "error": null,
+          "artifact_missing": false
+        },
+        {
+          "task_id": "preview_02",
+          "status": "succeeded",
+          "attempt": 1,
+          "job_id": "job_20261106T134254Z_7b89a9",
+          "artifact_id": "art_02",
+          "sha256": "e92ae362d1e5512d7d91b4fe8986fab50479a4ea642cbece3f96c48723ebea14",
+          "error": null,
+          "artifact_missing": false
+        }
+      ],
+      "retryable_task_ids": [],
+      "created_at": "2026-11-06T13:42:54Z",
+      "updated_at": "2026-11-06T13:42:54Z"
+    }
+  ],
+  "manifest_preview": null,
+  "resource_plans": []
+}

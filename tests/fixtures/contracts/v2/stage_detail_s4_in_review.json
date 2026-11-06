@@ -1,0 +1,359 @@
+{
+  "contract_version": "1.1",
+  "character": {
+    "character_id": "chr_2a6d9db84567",
+    "name": "Ember Knight",
+    "tags": [
+      "knight"
+    ],
+    "cover_url": null,
+    "current_stage": "s3",
+    "approved_count": 2,
+    "stage_statuses": {
+      "s1": "approved",
+      "s2": "approved",
+      "s3": "draft",
+      "s4": "in_review",
+      "s5": "blocked",
+      "s6": "blocked",
+      "s7": "blocked"
+    },
+    "updated_at": "2026-11-06T13:43:00Z"
+  },
+  "character_version": 1,
+  "config": {
+    "stage_id": "s4",
+    "order": 4,
+    "title_key": "stage.s4.title",
+    "objective_key": "stage.s4.objective",
+    "availability": "available",
+    "availability_reason": null,
+    "dependencies": [
+      {
+        "stage_id": "s2",
+        "kind": "hard"
+      },
+      {
+        "stage_id": "s3",
+        "kind": "hard"
+      }
+    ],
+    "checklist": [
+      {
+        "item_id": "locked_covered",
+        "label_key": "stage.s4.check.locked_covered",
+        "required": true
+      },
+      {
+        "item_id": "no_invention",
+        "label_key": "stage.s4.check.no_invention",
+        "required": true
+      },
+      {
+        "item_id": "model_support_checked",
+        "label_key": "stage.s4.check.model_support_checked",
+        "required": true
+      },
+      {
+        "item_id": "turnaround_neutral",
+        "label_key": "stage.s4.check.turnaround_neutral",
+        "required": true
+      },
+      {
+        "item_id": "manifest_reviewed",
+        "label_key": "stage.s4.check.manifest_reviewed",
+        "required": true
+      },
+      {
+        "item_id": "params_separated",
+        "label_key": "stage.s4.check.params_separated",
+        "required": false
+      }
+    ],
+    "required_purposes": [
+      "full_body",
+      "front",
+      "side",
+      "back"
+    ],
+    "guided_questions": []
+  },
+  "state": {
+    "stage_id": "s4",
+    "editorial_status": "in_review",
+    "availability": "available",
+    "draft_version": 1,
+    "has_unsubmitted_changes": false,
+    "latest_revision": 1,
+    "pending_revision": 1,
+    "approved": null,
+    "last_decision": null,
+    "blockers": [
+      {
+        "code": "STAGE_BLOCKED",
+        "severity": "error",
+        "field": "stage_id",
+        "message": "Stage S3 has no approved revision yet.",
+        "details": {
+          "stage_id": "s3"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.entries",
+        "message": "Required purpose 'full_body' has no canonical prompt.",
+        "details": {
+          "rule": "required_purpose_prompt",
+          "purpose": "full_body"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.tasks",
+        "message": "Required purpose 'full_body' has no production task.",
+        "details": {
+          "rule": "required_purpose_task",
+          "purpose": "full_body"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.entries",
+        "message": "Required purpose 'front' has no canonical prompt.",
+        "details": {
+          "rule": "required_purpose_prompt",
+          "purpose": "front"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.tasks",
+        "message": "Required purpose 'front' has no production task.",
+        "details": {
+          "rule": "required_purpose_task",
+          "purpose": "front"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.entries",
+        "message": "Required purpose 'side' has no canonical prompt.",
+        "details": {
+          "rule": "required_purpose_prompt",
+          "purpose": "side"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.tasks",
+        "message": "Required purpose 'side' has no production task.",
+        "details": {
+          "rule": "required_purpose_task",
+          "purpose": "side"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.entries",
+        "message": "Required purpose 'back' has no canonical prompt.",
+        "details": {
+          "rule": "required_purpose_prompt",
+          "purpose": "back"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.tasks",
+        "message": "Required purpose 'back' has no production task.",
+        "details": {
+          "rule": "required_purpose_task",
+          "purpose": "back"
+        },
+        "retryable": false
+      },
+      {
+        "code": "STAGE_CONTENT_INCOMPLETE",
+        "severity": "error",
+        "field": "content.production_profile",
+        "message": "Choose the production model.",
+        "details": {
+          "rule": "production_profile_required"
+        },
+        "retryable": false
+      }
+    ]
+  },
+  "draft": {
+    "contract_version": "1.1",
+    "character_id": "chr_2a6d9db84567",
+    "stage_id": "s4",
+    "draft_version": 1,
+    "based_on_revision": null,
+    "content": {
+      "stage_id": "s4",
+      "entries": [],
+      "production_profile": null,
+      "tasks": [],
+      "reference_asset_ids": []
+    },
+    "checklist": {
+      "items": [
+        {
+          "item_id": "locked_covered",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "no_invention",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "model_support_checked",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "turnaround_neutral",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "manifest_reviewed",
+          "checked": true,
+          "note": null
+        }
+      ]
+    },
+    "updated_at": "2026-11-06T13:43:00Z"
+  },
+  "approved_revision": null,
+  "pending_revision": {
+    "contract_version": "1.1",
+    "character_id": "chr_2a6d9db84567",
+    "stage_id": "s4",
+    "revision": 1,
+    "content": {
+      "stage_id": "s4",
+      "entries": [],
+      "production_profile": null,
+      "tasks": [],
+      "reference_asset_ids": []
+    },
+    "checklist": {
+      "items": [
+        {
+          "item_id": "locked_covered",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "no_invention",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "model_support_checked",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "turnaround_neutral",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "manifest_reviewed",
+          "checked": true,
+          "note": null
+        }
+      ]
+    },
+    "source_revisions": {
+      "s2": 1
+    },
+    "submitted_at": "2026-11-06T13:43:00Z",
+    "decision": "pending",
+    "decided_at": null,
+    "note": null,
+    "frozen_assets": [],
+    "batch_manifest_id": null
+  },
+  "revisions": [
+    {
+      "revision": 1,
+      "decision": "pending",
+      "submitted_at": "2026-11-06T13:43:00Z",
+      "decided_at": null
+    }
+  ],
+  "inputs": [
+    {
+      "stage_id": "s2",
+      "kind": "hard",
+      "revision": 1,
+      "content": {
+        "stage_id": "s2",
+        "summary": "An adult female ice-lotus mage.",
+        "attributes": [
+          {
+            "attribute_id": "hair",
+            "group": "hair",
+            "label": "Hair",
+            "value": "Long silver-white hair",
+            "lock": "locked",
+            "reference_ids": []
+          },
+          {
+            "attribute_id": "eyes",
+            "group": "eyes",
+            "label": "Eyes",
+            "value": "Pale blue",
+            "lock": "preferred",
+            "reference_ids": []
+          }
+        ],
+        "answers": [
+          {
+            "question_id": "q_name_role",
+            "status": "answered",
+            "answer": "Ice-lotus mage, ally"
+          }
+        ],
+        "open_questions": [],
+        "rejection_criteria": [
+          "Short hair"
+        ]
+      },
+      "frozen_assets": []
+    },
+    {
+      "stage_id": "s3",
+      "kind": "hard",
+      "revision": null,
+      "content": null,
+      "frozen_assets": []
+    }
+  ],
+  "references": [],
+  "resolved_jobs": [],
+  "batches": [],
+  "manifest_preview": null,
+  "resource_plans": []
+}

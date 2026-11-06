@@ -23,6 +23,7 @@ function mount(path = "/generate/image-to-3d") {
 }
 let index = 0;
 beforeEach(() => {
+  localStorage.clear();
   index = 0;
   vi.spyOn(api, "artifactContent").mockResolvedValue(new Blob(["fixture"]));
   vi.spyOn(api, "uploadContent").mockResolvedValue(new Blob(["fixture"]));
@@ -43,6 +44,112 @@ beforeEach(() => {
   );
 });
 describe("dynamic studio form", () => {
+  it.each(["en", "vi"])(
+    "shows real model times and tooltips in the %s picker without translating names",
+    async (locale) => {
+      localStorage.setItem("aas.locale", locale);
+      const response = await api.models();
+      const base = response.models.find(
+        (m) => m.model_id === "mock-t2d-basic",
+      )!;
+      vi.spyOn(api, "models").mockResolvedValue({
+        ...response,
+        models: [
+          ...response.models,
+          ...[25, 89, 90, 354, null].map((seconds, index) => ({
+            ...base,
+            model_id: `real-${index}`,
+            display_name: `Original model ${index}`,
+            is_mock: false,
+            supported_asset_categories: base.supported_asset_categories.filter(
+              (category) => category === "character",
+            ),
+            runtime: { ...base.runtime, estimated_runtime_seconds: seconds },
+          })),
+        ],
+      });
+      mount("/generate/text-to-2d");
+      const select = await screen.findByRole("combobox", {
+        name: locale === "vi" ? "Mô hình" : "Model",
+      });
+      expect(select).not.toHaveAttribute("title");
+      const tooltip =
+        locale === "vi"
+          ? "Thời gian trung bình mỗi ảnh đo trên Kaggle T4; không bao gồm thiết lập và tải xuống."
+          : "Mean time per image measured on a Kaggle T4; excludes setup and download.";
+      for (const [index, count, minutes] of [
+        [0, 25, false],
+        [1, 89, false],
+        [2, 2, true],
+        [3, 6, true],
+      ] as const) {
+        const unit =
+          locale === "vi"
+            ? minutes
+              ? "phút/ảnh"
+              : "giây/ảnh"
+            : minutes
+              ? "min/image"
+              : "s/image";
+        expect(
+          screen.getByRole("option", {
+            name: `Original model ${index} (~${count} ${unit})`,
+          }),
+        ).toHaveAttribute("title", tooltip);
+      }
+      expect(
+        screen.getByRole("option", { name: "Original model 4" }),
+      ).not.toHaveAttribute("title");
+      const user = userEvent.setup();
+      await user.selectOptions(select, "real-0");
+      expect(select).toHaveAttribute("title", tooltip);
+      await user.selectOptions(select, "real-4");
+      expect(select).not.toHaveAttribute("title");
+      await user.selectOptions(select, "real-0");
+      // A retained, incompatible selection must keep its estimate as well.
+      await user.selectOptions(
+        screen.getByRole("combobox", {
+          name: locale === "vi" ? "Loại tài sản" : "Asset category",
+        }),
+        "weapon",
+      );
+      expect(select).toHaveValue("real-0");
+      expect(
+        screen.getByRole("option", { name: /Original model 0/ }),
+      ).toHaveTextContent(
+        locale === "vi"
+          ? "Original model 0 (~25 giây/ảnh)"
+          : "Original model 0 (~25 s/image)",
+      );
+    },
+  );
+  it("keeps request fields and option values in English when the UI is Vietnamese", async () => {
+    const user = userEvent.setup();
+    const created = vi.spyOn(api, "createJob");
+    mount("/generate/text-to-2d");
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Language" }),
+      "vi",
+    );
+    await user.type(
+      await screen.findByRole("textbox", { name: /^Prompt · Bắt buộc/ }),
+      "English request content",
+    );
+    await user.selectOptions(screen.getByLabelText("Loại tài sản"), "weapon");
+    await user.selectOptions(screen.getByLabelText("Chiều rộng"), "768");
+    await user.click(screen.getByRole("button", { name: "Tạo ảnh 2D" }));
+    await waitFor(() => expect(created).toHaveBeenCalled());
+    expect(created.mock.calls[0][0]).toMatchObject({
+      pipeline_type: "text_to_2d",
+      asset_category: "weapon",
+      model_id: "mock-t2d-basic",
+      prompt: "English request content",
+      output_format: "png",
+      options: { width: 768 },
+      compute: { profile_id: "default", accelerator_id: null },
+    });
+    localStorage.removeItem("aas.locale");
+  });
   it("renders options from capabilities and keeps planned Text → 3D disabled", async () => {
     mount();
     expect(await screen.findByRole("combobox", { name: "Model" })).toHaveValue(
@@ -108,7 +215,7 @@ describe("dynamic studio form", () => {
     expect(
       screen.queryByRole("combobox", { name: "texture resolution" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByText("texture_resolution: 2048")).toBeVisible();
+    expect(screen.getByText("texture resolution: 2,048")).toBeVisible();
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Model" }),
       "mock-i3d-multiview",

@@ -93,8 +93,9 @@ def test_logs_endpoint_hides_telemetry_and_paginates(harness):
 
 def test_idempotent_creation(harness):
     body = request_body()
-    first, second = create(harness, body), create(harness, body)
-    assert first["job_id"] == second["job_id"]
+    first = create(harness, body)
+    resent = harness.client.post(f"{API}/jobs", json=body)  # the original job, in whatever state it reached
+    assert resent.status_code == 201 and resent.json()["job_id"] == first["job_id"]
     assert len(harness.client.get(f"{API}/jobs").json()["jobs"]) == 1
     harness.wait(first["job_id"])
 

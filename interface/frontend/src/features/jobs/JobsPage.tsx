@@ -1,16 +1,14 @@
+import { useI18n } from "../../i18n";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Clock3, Layers, ListChecks } from "lucide-react";
 import { useJobs } from "../../api/queries";
 import type { JobStatus } from "../../api/types";
 import {
   Badge,
-  categoryLabels,
-  date,
   Empty,
   Failure,
   Loading,
   Panel,
-  pipelineLabels,
   Status,
 } from "../../components/ui";
 import { JobDetail } from "./JobDetail";
@@ -24,6 +22,7 @@ export const statuses: JobStatus[] = [
   "failed",
 ];
 export function JobsPage() {
+  const { t, label, number, date, categoryLabels, pipelineLabels } = useI18n();
   const [params, setParams] = useSearchParams(),
     { jobId } = useParams(),
     filter = params.get("status");
@@ -37,39 +36,43 @@ export function JobsPage() {
     <>
       <div className="page-heading">
         <div>
-          <div className="breadcrumb">Workspace / Execution hub</div>
-          <h1>Jobs & logs</h1>
+          <div className="breadcrumb">{t("copy.workspaceExecutionHub")}</div>
+          <h1>{t("copy.jobsLogs")}</h1>
         </div>
-        <Link className="button primary" to="/generate/image-to-3d">
+        <Link className="button" to="/generate/image-to-3d">
           <Layers size={15} aria-hidden="true" />
-          New generation
+          {t("copy.newGeneration")}
         </Link>
       </div>
       <div className="summary-strip">
         <div>
           <ListChecks size={20} aria-hidden="true" />
           <span>
-            Job history
+            {t("copy.jobHistory")}
             <strong>
-              {rows.length}
-              {jobs.hasNextPage ? "+" : ""} recorded
+              {t("jobs.recorded", {
+                count: number(rows.length, 0),
+                more: jobs.hasNextPage ? "+" : "",
+              })}
             </strong>
           </span>
         </div>
         <div>
           <Clock3 size={20} aria-hidden="true" />
           <span>
-            Updates<strong>Every 2 seconds</strong>
+            {t("copy.updates")}
+            <strong>{t("copy.every2Seconds")}</strong>
           </span>
         </div>
         <div>
           <Layers size={20} aria-hidden="true" />
           <span>
-            Execution<strong>Mock · No remote inference</strong>
+            {t("copy.execution")}
+            <strong>{t("copy.mockNoRemoteInference")}</strong>
           </span>
         </div>
       </div>
-      <div className="filter-tabs" aria-label="Job status filters">
+      <div className="filter-tabs" aria-label={t("copy.jobStatusFilters")}>
         {["all", ...statuses].map((s) => (
           <button
             key={s}
@@ -81,22 +84,26 @@ export function JobsPage() {
               setParams(next);
             }}
           >
-            {s}
+            {s === "all" ? t("common.all") : label("status", s)}
           </button>
         ))}
       </div>
       <div className={`jobs-layout ${jobId ? "has-detail" : ""}`}>
         <Panel
-          title="Execution history"
-          extra={<Badge>{rows.length} visible</Badge>}
+          title={t("copy.executionHistory")}
+          extra={
+            <Badge>
+              {t("jobs.visible", { count: number(rows.length, 0) })}
+            </Badge>
+          }
         >
           {jobs.error ? (
             <Failure error={jobs.error} />
           ) : jobs.isPending ? (
             <Loading />
           ) : !rows.length ? (
-            <Empty title="No jobs in this view">
-              Choose another status, or start a generation in the studio.
+            <Empty title={t("copy.noJobsInThisView")}>
+              {t("copy.chooseAnotherStatusOrStartAGenerationInTheStudio")}
             </Empty>
           ) : (
             <div className="job-list">
@@ -131,7 +138,7 @@ export function JobsPage() {
                 onClick={() => void jobs.fetchNextPage()}
                 disabled={jobs.isFetchingNextPage}
               >
-                Load more jobs
+                {t("copy.loadMoreJobs")}
               </button>
             </div>
           )}
@@ -141,8 +148,8 @@ export function JobsPage() {
         ) : (
           <div className="selection-hint">
             <ListChecks size={40} aria-hidden="true" />
-            <h2>Select a job</h2>
-            <p>Inspect its timeline, logs, errors and artifacts.</p>
+            <h2>{t("copy.selectAJob")}</h2>
+            <p>{t("copy.inspectItsTimelineLogsErrorsAndArtifacts")}</p>
           </div>
         )}
       </div>

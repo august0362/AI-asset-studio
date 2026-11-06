@@ -11,6 +11,7 @@ from models.contracts import (
     AssetCategory,
     ContractModel,
     ErrorItem,
+    GenerationTask,
     ImageRole,
     JobStatus,
     OutputFormat,
@@ -21,6 +22,7 @@ from models.contracts.common import ContractVersion
 
 from ..schemas import (
     ArtifactView,
+    BatchRef,
     ComputeView,
     Execution,
     GenerationResult,
@@ -56,6 +58,8 @@ class RequestRecord(ContractModel):
     output_format: OutputFormat
     options: dict[str, Any]
     inputs: list[InputRecord]
+    tasks: list[GenerationTask] | None = None  # batch jobs only (§13.9); internal, not in the API view
+    batch: BatchRef | None = None
 
 
 class InternalState(ContractModel):
@@ -119,6 +123,7 @@ def to_result(record: JobRecord) -> GenerationResult:
                 )
                 for i in req.inputs
             ],
+            batch=req.batch,
         ),
         compute=record.compute,
         artifacts=[artifact_view(record.job_id, a) for a in record.artifacts],

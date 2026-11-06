@@ -1,0 +1,517 @@
+[
+  {
+    "contract_version": "1.0",
+    "job_id": "job_20261106T134255Z_eeee08",
+    "status": "completed",
+    "status_history": [
+      {
+        "status": "created",
+        "at": "2026-11-06T13:42:55Z"
+      },
+      {
+        "status": "queued",
+        "at": "2026-11-06T13:42:55Z"
+      },
+      {
+        "status": "running",
+        "at": "2026-11-06T13:42:55Z"
+      },
+      {
+        "status": "downloading",
+        "at": "2026-11-06T13:42:56Z"
+      },
+      {
+        "status": "completed",
+        "at": "2026-11-06T13:42:57Z"
+      }
+    ],
+    "request": {
+      "pipeline_type": "text_to_2d",
+      "asset_category": "character",
+      "model_id": "mock-t2d-basic",
+      "prompt": null,
+      "output_format": "png",
+      "options": {},
+      "inputs": [],
+      "batch": {
+        "character_id": "chr_9d27a617fd42",
+        "manifest_id": "bat_5a313676de8d",
+        "group_id": "g01",
+        "attempt": 1,
+        "task_ids": [
+          "fullbody_01",
+          "front_01",
+          "side_01",
+          "back_01"
+        ]
+      }
+    },
+    "compute": {
+      "profile_id": "default",
+      "accelerator_id": "cpu",
+      "resource_plan": {
+        "contract_version": "1.0",
+        "profile_id": "default",
+        "accelerator_id": "cpu",
+        "selection": "recommended",
+        "fit": "ok",
+        "required_seconds": 780,
+        "estimate_basis": {
+          "estimated_runtime_seconds": 120,
+          "safety_factor": 1.5,
+          "overhead_seconds": 600
+        },
+        "session_limit_seconds": 43200,
+        "quota_remaining_seconds": null,
+        "candidates": [
+          {
+            "accelerator_id": "cpu",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_p100",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_t4x2",
+            "fit": "ok",
+            "reasons": []
+          }
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    },
+    "artifacts": [
+      {
+        "artifact_id": "art_01",
+        "kind": "image",
+        "format": "png",
+        "mime_type": "image/png",
+        "size_bytes": 26307,
+        "sha256": "8b152f4ad2746fd24b5b2fd0ac2b2650add9ae60a88cae03cd80fe8160884c90",
+        "width": 512,
+        "height": 512,
+        "is_primary": true,
+        "content_url": "/api/v1/jobs/job_20261106T134255Z_eeee08/artifacts/art_01/content",
+        "task_id": "fullbody_01"
+      },
+      {
+        "artifact_id": "art_02",
+        "kind": "image",
+        "format": "png",
+        "mime_type": "image/png",
+        "size_bytes": 27101,
+        "sha256": "d05825d97c92a94103f463119d4160afa79bcc849e9fcddb3e30537a797933bb",
+        "width": 512,
+        "height": 512,
+        "is_primary": false,
+        "content_url": "/api/v1/jobs/job_20261106T134255Z_eeee08/artifacts/art_02/content",
+        "task_id": "front_01"
+      },
+      {
+        "artifact_id": "art_03",
+        "kind": "image",
+        "format": "png",
+        "mime_type": "image/png",
+        "size_bytes": 27681,
+        "sha256": "ab0486473dbb6214e36fa0fffc5a5f4ecbe738009941f76f80eb1364287709b2",
+        "width": 512,
+        "height": 512,
+        "is_primary": false,
+        "content_url": "/api/v1/jobs/job_20261106T134255Z_eeee08/artifacts/art_03/content",
+        "task_id": "back_01"
+      }
+    ],
+    "preview": {
+      "artifact_id": "art_01"
+    },
+    "warnings": [
+      {
+        "code": "BATCH_PARTIAL",
+        "severity": "warning",
+        "field": null,
+        "message": "3 of 4 task(s) succeeded.",
+        "details": {
+          "failed": [
+            "side_01"
+          ],
+          "not_run": [],
+          "tasks": {
+            "side_01": {
+              "status": "failed",
+              "reason": null,
+              "message": "RuntimeError: Simulated task failure (mock): side_01"
+            }
+          }
+        },
+        "retryable": false
+      }
+    ],
+    "error": null,
+    "execution": {
+      "backend": "mock",
+      "remote_ref": "mock/aas-runner/job_20261106T134255Z_eeee08",
+      "submitted_at": "2026-11-06T13:42:55Z",
+      "started_at": "2026-11-06T13:42:55Z",
+      "finished_at": "2026-11-06T13:42:56Z",
+      "duration_seconds": 1,
+      "transient_retries": 0,
+      "retry_of": null
+    },
+    "created_at": "2026-11-06T13:42:55Z",
+    "updated_at": "2026-11-06T13:42:57Z"
+  },
+  {
+    "contract_version": "1.0",
+    "job_id": "job_20261106T134257Z_82cc53",
+    "status": "completed",
+    "status_history": [
+      {
+        "status": "created",
+        "at": "2026-11-06T13:42:57Z"
+      },
+      {
+        "status": "queued",
+        "at": "2026-11-06T13:42:57Z"
+      },
+      {
+        "status": "running",
+        "at": "2026-11-06T13:42:57Z"
+      },
+      {
+        "status": "downloading",
+        "at": "2026-11-06T13:42:57Z"
+      },
+      {
+        "status": "completed",
+        "at": "2026-11-06T13:42:57Z"
+      }
+    ],
+    "request": {
+      "pipeline_type": "text_to_2d",
+      "asset_category": "character",
+      "model_id": "mock-t2d-basic",
+      "prompt": null,
+      "output_format": "png",
+      "options": {},
+      "inputs": [],
+      "batch": {
+        "character_id": "chr_9d27a617fd42",
+        "manifest_id": "bat_5a313676de8d",
+        "group_id": "g01",
+        "attempt": 2,
+        "task_ids": [
+          "side_01"
+        ]
+      }
+    },
+    "compute": {
+      "profile_id": "default",
+      "accelerator_id": "cpu",
+      "resource_plan": {
+        "contract_version": "1.0",
+        "profile_id": "default",
+        "accelerator_id": "cpu",
+        "selection": "recommended",
+        "fit": "ok",
+        "required_seconds": 645,
+        "estimate_basis": {
+          "estimated_runtime_seconds": 30,
+          "safety_factor": 1.5,
+          "overhead_seconds": 600
+        },
+        "session_limit_seconds": 43200,
+        "quota_remaining_seconds": null,
+        "candidates": [
+          {
+            "accelerator_id": "cpu",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_p100",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_t4x2",
+            "fit": "ok",
+            "reasons": []
+          }
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    },
+    "artifacts": [
+      {
+        "artifact_id": "art_01",
+        "kind": "image",
+        "format": "png",
+        "mime_type": "image/png",
+        "size_bytes": 28492,
+        "sha256": "c8ae669727ece0b59ebcf9c74c7ac97f94f6393ee9364a7c34d94e8e4262c49d",
+        "width": 512,
+        "height": 512,
+        "is_primary": true,
+        "content_url": "/api/v1/jobs/job_20261106T134257Z_82cc53/artifacts/art_01/content",
+        "task_id": "side_01"
+      }
+    ],
+    "preview": {
+      "artifact_id": "art_01"
+    },
+    "warnings": [],
+    "error": null,
+    "execution": {
+      "backend": "mock",
+      "remote_ref": "mock/aas-runner/job_20261106T134257Z_82cc53",
+      "submitted_at": "2026-11-06T13:42:57Z",
+      "started_at": "2026-11-06T13:42:57Z",
+      "finished_at": "2026-11-06T13:42:57Z",
+      "duration_seconds": 0,
+      "transient_retries": 0,
+      "retry_of": null
+    },
+    "created_at": "2026-11-06T13:42:57Z",
+    "updated_at": "2026-11-06T13:42:57Z"
+  },
+  {
+    "contract_version": "1.0",
+    "job_id": "job_20261106T134259Z_559e88",
+    "status": "failed",
+    "status_history": [
+      {
+        "status": "created",
+        "at": "2026-11-06T13:42:59Z"
+      },
+      {
+        "status": "queued",
+        "at": "2026-11-06T13:42:59Z"
+      },
+      {
+        "status": "running",
+        "at": "2026-11-06T13:42:59Z"
+      },
+      {
+        "status": "failed",
+        "at": "2026-11-06T13:43:00Z"
+      }
+    ],
+    "request": {
+      "pipeline_type": "text_to_2d",
+      "asset_category": "character",
+      "model_id": "mock-t2d-basic",
+      "prompt": null,
+      "output_format": "png",
+      "options": {},
+      "inputs": [],
+      "batch": {
+        "character_id": "chr_2a6d9db84567",
+        "manifest_id": "bat_c9781c898515",
+        "group_id": "g01",
+        "attempt": 1,
+        "task_ids": [
+          "preview_01",
+          "preview_02"
+        ]
+      }
+    },
+    "compute": {
+      "profile_id": "default",
+      "accelerator_id": "cpu",
+      "resource_plan": {
+        "contract_version": "1.0",
+        "profile_id": "default",
+        "accelerator_id": "cpu",
+        "selection": "recommended",
+        "fit": "ok",
+        "required_seconds": 690,
+        "estimate_basis": {
+          "estimated_runtime_seconds": 60,
+          "safety_factor": 1.5,
+          "overhead_seconds": 600
+        },
+        "session_limit_seconds": 43200,
+        "quota_remaining_seconds": null,
+        "candidates": [
+          {
+            "accelerator_id": "cpu",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_p100",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_t4x2",
+            "fit": "ok",
+            "reasons": []
+          }
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    },
+    "artifacts": [],
+    "preview": null,
+    "warnings": [],
+    "error": {
+      "code": "KAGGLE_KERNEL_ERROR",
+      "severity": "error",
+      "field": null,
+      "message": "The remote notebook exited with an error. See the job logs.",
+      "details": {
+        "failed_in_status": "running",
+        "remote_status": "error"
+      },
+      "retryable": false
+    },
+    "execution": {
+      "backend": "mock",
+      "remote_ref": "mock/aas-runner/job_20261106T134259Z_559e88",
+      "submitted_at": "2026-11-06T13:42:59Z",
+      "started_at": "2026-11-06T13:42:59Z",
+      "finished_at": "2026-11-06T13:43:00Z",
+      "duration_seconds": 1,
+      "transient_retries": 0,
+      "retry_of": null
+    },
+    "created_at": "2026-11-06T13:42:59Z",
+    "updated_at": "2026-11-06T13:43:00Z"
+  },
+  {
+    "contract_version": "1.0",
+    "job_id": "job_20261106T134254Z_7b89a9",
+    "status": "completed",
+    "status_history": [
+      {
+        "status": "created",
+        "at": "2026-11-06T13:42:54Z"
+      },
+      {
+        "status": "queued",
+        "at": "2026-11-06T13:42:54Z"
+      },
+      {
+        "status": "running",
+        "at": "2026-11-06T13:42:54Z"
+      },
+      {
+        "status": "downloading",
+        "at": "2026-11-06T13:42:54Z"
+      },
+      {
+        "status": "completed",
+        "at": "2026-11-06T13:42:54Z"
+      }
+    ],
+    "request": {
+      "pipeline_type": "text_to_2d",
+      "asset_category": "character",
+      "model_id": "mock-t2d-basic",
+      "prompt": null,
+      "output_format": "png",
+      "options": {},
+      "inputs": [],
+      "batch": {
+        "character_id": "chr_9d27a617fd42",
+        "manifest_id": "bat_764da078f092",
+        "group_id": "g01",
+        "attempt": 1,
+        "task_ids": [
+          "preview_01",
+          "preview_02"
+        ]
+      }
+    },
+    "compute": {
+      "profile_id": "default",
+      "accelerator_id": "cpu",
+      "resource_plan": {
+        "contract_version": "1.0",
+        "profile_id": "default",
+        "accelerator_id": "cpu",
+        "selection": "recommended",
+        "fit": "ok",
+        "required_seconds": 690,
+        "estimate_basis": {
+          "estimated_runtime_seconds": 60,
+          "safety_factor": 1.5,
+          "overhead_seconds": 600
+        },
+        "session_limit_seconds": 43200,
+        "quota_remaining_seconds": null,
+        "candidates": [
+          {
+            "accelerator_id": "cpu",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_p100",
+            "fit": "ok",
+            "reasons": []
+          },
+          {
+            "accelerator_id": "gpu_t4x2",
+            "fit": "ok",
+            "reasons": []
+          }
+        ],
+        "warnings": [],
+        "errors": []
+      }
+    },
+    "artifacts": [
+      {
+        "artifact_id": "art_01",
+        "kind": "image",
+        "format": "png",
+        "mime_type": "image/png",
+        "size_bytes": 27598,
+        "sha256": "ffbe8a52af03eff7a1ff9cc9cca45f5a373bc442a383527c410fcf48a4db19b8",
+        "width": 512,
+        "height": 512,
+        "is_primary": true,
+        "content_url": "/api/v1/jobs/job_20261106T134254Z_7b89a9/artifacts/art_01/content",
+        "task_id": "preview_01"
+      },
+      {
+        "artifact_id": "art_02",
+        "kind": "image",
+        "format": "png",
+        "mime_type": "image/png",
+        "size_bytes": 29658,
+        "sha256": "e92ae362d1e5512d7d91b4fe8986fab50479a4ea642cbece3f96c48723ebea14",
+        "width": 512,
+        "height": 512,
+        "is_primary": false,
+        "content_url": "/api/v1/jobs/job_20261106T134254Z_7b89a9/artifacts/art_02/content",
+        "task_id": "preview_02"
+      }
+    ],
+    "preview": {
+      "artifact_id": "art_01"
+    },
+    "warnings": [],
+    "error": null,
+    "execution": {
+      "backend": "mock",
+      "remote_ref": "mock/aas-runner/job_20261106T134254Z_7b89a9",
+      "submitted_at": "2026-11-06T13:42:54Z",
+      "started_at": "2026-11-06T13:42:54Z",
+      "finished_at": "2026-11-06T13:42:54Z",
+      "duration_seconds": 0,
+      "transient_retries": 0,
+      "retry_of": null
+    },
+    "created_at": "2026-11-06T13:42:54Z",
+    "updated_at": "2026-11-06T13:42:54Z"
+  }
+]

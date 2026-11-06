@@ -23,6 +23,48 @@ function textRequest(): CreateJobRequest {
   };
 }
 describe("mock API lifecycle", () => {
+  it("D-020: artifact responses wrap full artifacts and job details keep a full resource plan", async () => {
+    const client = new MockApiClient();
+    const summary = (await client.jobs({ status: "completed" })).jobs[0];
+    const job = await client.job(summary.job_id);
+    const response = await client.artifacts(job.job_id);
+    expect(response).toEqual({
+      contract_version: "1.0",
+      artifacts: job.artifacts,
+    });
+    expect(summary.primary_artifact).toEqual(
+      job.artifacts.find((a) => a.is_primary),
+    );
+    expect(job.compute.resource_plan).toMatchObject({
+      contract_version: "1.0",
+      profile_id: "default",
+      selection: "recommended",
+      estimate_basis: { safety_factor: 1.5, overhead_seconds: 600 },
+      candidates: expect.any(Array),
+      warnings: expect.any(Array),
+      errors: expect.any(Array),
+    });
+    const created = await client.createJob(textRequest());
+    expect(created.compute.resource_plan).toEqual(
+      (await client.validate(textRequest())).resource_plan,
+    );
+    expect((await client.profiles()).profiles[0].mode).toBe("mock");
+  });
+  it("D-020: GET upload metadata returns the UploadRecord independently of its bytes", async () => {
+    const client = new MockApiClient();
+    const record = await client.uploadRecord(`upl_${"a".repeat(32)}`);
+    expect(record).toMatchObject({
+      contract_version: "1.0",
+      filename: "mock.png",
+      mime_type: "image/png",
+      width: 768,
+      height: 768,
+    });
+    record.filename = "changed locally";
+    expect((await client.uploadRecord(record.upload_id)).filename).toBe(
+      "mock.png",
+    );
+  });
   it("defaults to the mock client", () => {
     expect(api).toBeInstanceOf(MockApiClient);
   });

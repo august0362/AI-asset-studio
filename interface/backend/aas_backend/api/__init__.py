@@ -2,12 +2,12 @@
 
 from fastapi import APIRouter
 
-from . import compute, jobs, system, uploads
+from . import characters, compute, jobs, system, uploads
 
 API_PREFIX = "/api/v1"
 
 router = APIRouter(prefix=API_PREFIX)
-for module in (system, uploads, jobs, compute):
+for module in (system, uploads, jobs, compute, characters):
     router.include_router(module.router)
 
 __all__ = ["API_PREFIX", "router"]

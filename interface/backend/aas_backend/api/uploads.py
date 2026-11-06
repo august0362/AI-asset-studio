@@ -15,23 +15,54 @@ router = APIRouter()
 _MULTIPART_OVERHEAD = 1 << 20
 
 
+class _BodyTooLarge(Exception):
+    pass
+
+
+def _too_large():
+    return api_error(
+        413,
+        "UPLOAD_TOO_LARGE",
+        "file",
+        f"The file is larger than the {MAX_UPLOAD_BYTES}-byte limit.",
+        {"max_upload_bytes": MAX_UPLOAD_BYTES},
+    )
+
+
+def _limited(request: Request, limit: int) -> Request:
+    """The same request, but reading stops as soon as the body passes ``limit`` bytes.
+
+    This also covers bodies without a Content-Length header (chunked transfer), so an oversized file is never
+    read to the end or spooled to disk in full.
+    """
+    received = 0
+
+    async def receive():
+        nonlocal received
+        message = await request.receive()
+        if message["type"] == "http.request":
+            received += len(message.get("body", b""))
+            if received > limit:
+                raise _BodyTooLarge
+        return message
+
+    return Request(request.scope, receive)
+
+
 @router.post("/uploads")
 async def create_upload(request: Request):
     if not request.headers.get("content-type", "").startswith("multipart/form-data"):
         raise api_error(
             400, "REQUEST_FIELD_INVALID", "file", "Send the image as multipart/form-data field 'file'."
         )
+    limit = MAX_UPLOAD_BYTES + _MULTIPART_OVERHEAD
     length = request.headers.get("content-length")
-    if length and length.isdigit() and int(length) > MAX_UPLOAD_BYTES + _MULTIPART_OVERHEAD:
-        raise api_error(
-            413,
-            "UPLOAD_TOO_LARGE",
-            "file",
-            f"The file is larger than the {MAX_UPLOAD_BYTES}-byte limit.",
-            {"max_upload_bytes": MAX_UPLOAD_BYTES},
-        )
+    if length and length.isdigit() and int(length) > limit:
+        raise _too_large()
     try:
-        form = await request.form(max_files=1, max_fields=4)
+        form = await _limited(request, limit).form(max_files=1, max_fields=4)
+    except _BodyTooLarge:
+        raise _too_large() from None
     except Exception as exc:
         raise api_error(
             400, "REQUEST_FIELD_INVALID", "file", "Malformed multipart body (send exactly one file)."

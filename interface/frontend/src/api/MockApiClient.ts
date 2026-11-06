@@ -1,6 +1,7 @@
 import type {
   ApiClient,
   Artifact,
+  ArtifactsResponse,
   CreateJobRequest,
   GenerationResult,
   ImageRole,
@@ -13,6 +14,17 @@ import { catalog, makeSnapshot, models, profiles } from "./fixtures";
 import metadata from "../../tests/fixtures/contracts/artifact-metadata.json";
 import { ApiError, issue, reject } from "./errors";
 import { validateRequest } from "../validation/validate";
+import { planResources } from "../validation/planner";
+import { MockCharacterApi } from "./MockCharacterApi";
+import {
+  sharedCharacterFixture,
+  sharedCharacterContent,
+} from "./characterFixtures";
+import type {
+  BatchManifest,
+  ProductionTask,
+  SubmitBatchRequest,
+} from "./characterTypes";
 
 const copy = <T>(value: T): T => structuredClone(value);
 const terminal = (s: JobStatus) => s === "completed" || s === "failed";
@@ -28,7 +40,12 @@ export async function inspectImage(file: File): Promise<{
   bytes: ArrayBuffer;
 }> {
   if (file.size > catalog.limits.max_upload_bytes)
-    reject("UPLOAD_TOO_LARGE", "Upload an image smaller than 50 MiB.", 413, "file");
+    reject(
+      "UPLOAD_TOO_LARGE",
+      "Upload an image smaller than 50 MiB.",
+      413,
+      "file",
+    );
   const bytes = await file.arrayBuffer();
   const h = new Uint8Array(bytes);
   const mime =
@@ -78,7 +95,114 @@ export async function inspectImage(file: File): Promise<{
   }
 }
 
-export class MockApiClient implements ApiClient {
+export class MockApiClient extends MockCharacterApi implements ApiClient {
+  private deletedSharedJobs = new Set<string>();
+  private characterTasks = new Map<string, ProductionTask[]>();
+  protected characterJobs() {
+    return this;
+  }
+  protected async enqueueCharacterTasks(
+    character: string,
+    manifest: BatchManifest,
+    tasks: ProductionTask[],
+    request: SubmitBatchRequest,
+  ) {
+    const first = tasks[0];
+    const profile = profiles.find(
+      (p) => p.profile_id === request.compute.profile_id,
+    );
+    const model = models.find((m) => m.model_id === manifest.target_model_id);
+    const selected =
+      request.compute.accelerator_id === "auto"
+        ? null
+        : request.compute.accelerator_id;
+    const optionsFor = (task: ProductionTask) => ({
+      ...task.options,
+      width: task.width,
+      height: task.height,
+      seed: task.seed,
+      ...(task.negative_prompt
+        ? { negative_prompt: task.negative_prompt }
+        : {}),
+    });
+    for (const task of tasks) {
+      const report = await this.validate({
+        contract_version: "1.0",
+        client_request_id: request.client_request_id,
+        pipeline_type: "text_to_2d",
+        asset_category: "character",
+        model_id: manifest.target_model_id,
+        prompt: task.prompt,
+        inputs: [],
+        options: optionsFor(task),
+        output_format: "png",
+        compute: {
+          profile_id: request.compute.profile_id,
+          accelerator_id: selected,
+        },
+      });
+      if (!report.valid)
+        throw new ApiError({
+          contract_version: "1.1",
+          errors: report.errors,
+          warnings: report.warnings,
+        });
+    }
+    const plan =
+      model && profile
+        ? planResources(
+            {
+              ...model,
+              runtime: {
+                ...model.runtime,
+                estimated_runtime_seconds:
+                  model.runtime.estimated_runtime_seconds === null
+                    ? null
+                    : model.runtime.estimated_runtime_seconds * tasks.length,
+              },
+            },
+            profile,
+            makeSnapshot(this.scenario, this.now()),
+            selected,
+          )
+        : null;
+    if (plan?.errors.length)
+      throw new ApiError({
+        contract_version: "1.1",
+        errors: plan.errors,
+        warnings: plan.warnings,
+      });
+    const job = await this.createJob({
+      contract_version: "1.0",
+      client_request_id: request.client_request_id,
+      pipeline_type: "text_to_2d",
+      asset_category: "character",
+      model_id: manifest.target_model_id,
+      prompt: first.prompt,
+      inputs: [],
+      options: optionsFor(first),
+      output_format: "png",
+      compute: {
+        profile_id: request.compute.profile_id,
+        accelerator_id:
+          request.compute.accelerator_id === "auto"
+            ? null
+            : request.compute.accelerator_id,
+      },
+    });
+    this.characterTasks.set(job.job_id, copy(tasks));
+    const record = this.get(job.job_id);
+    record.request.prompt = null;
+    if (plan) record.compute.resource_plan = plan;
+    record.request.batch = {
+      character_id: character,
+      manifest_id: manifest.manifest_id,
+      group_id: "g01",
+      attempt: manifest.attempts.length + 1,
+      task_ids: tasks.map((t) => t.task_id),
+    };
+    return copy(record);
+  }
   private uploads = new Map<
     string,
     { record: UploadRecord; file: Blob | null }
@@ -93,6 +217,7 @@ export class MockApiClient implements ApiClient {
     seed = true,
     private now = () => Date.now(),
   ) {
+    super();
     if (seed) this.seed();
   }
   setScenario(scenario: Scenario) {
@@ -165,6 +290,12 @@ export class MockApiClient implements ApiClient {
     const u =
       this.uploads.get(id) ?? reject("UPLOAD_NOT_FOUND", "Upload not found.");
     return u.file ?? this.fixture("png");
+  }
+  async uploadRecord(id: string) {
+    return copy(
+      this.uploads.get(id)?.record ??
+        reject("UPLOAD_NOT_FOUND", "Upload not found."),
+    );
   }
   async deleteUpload(id: string) {
     if (!this.uploads.has(id)) reject("UPLOAD_NOT_FOUND", "Upload not found.");
@@ -327,6 +458,13 @@ export class MockApiClient implements ApiClient {
         job.artifacts.push(artifact("png", "art_02", false));
         job.preview = { artifact_id: "art_02" };
       } else job.preview = { artifact_id: "art_01" };
+      const tasks = this.characterTasks.get(job.job_id);
+      if (tasks)
+        job.artifacts = tasks.map((task, i) => ({
+          ...artifact("png", `art_${String(i + 1).padStart(2, "0")}`, i === 0),
+          kind: "image",
+          task_id: task.task_id,
+        }));
     }
   }
   async jobs(filters: JobFilters = {}) {
@@ -366,6 +504,11 @@ export class MockApiClient implements ApiClient {
   }
   async job(id: string) {
     this.pump();
+    const fixture = sharedCharacterFixture("batch_jobs").find(
+      (j) => j.job_id === id,
+    );
+    if (fixture && !this.records.has(id) && !this.deletedSharedJobs.has(id))
+      return fixture;
     return copy(this.get(id));
   }
   async jobStatus(id: string) {
@@ -393,6 +536,8 @@ export class MockApiClient implements ApiClient {
   }
   async retryJob(id: string, client_request_id: string) {
     const old = await this.job(id);
+    if (old.request.batch)
+      reject("JOB_NOT_RETRYABLE", "Use the character batch retry.", 409);
     if (old.status !== "failed" || !old.error?.retryable)
       reject(
         "JOB_NOT_RETRYABLE",
@@ -416,15 +561,27 @@ export class MockApiClient implements ApiClient {
         409,
       );
     this.records.delete(id);
+    if (sharedCharacterFixture("batch_jobs").some((j) => j.job_id === id))
+      this.deletedSharedJobs.add(id);
     this.requests.delete(id);
     this.active.delete(id);
     for (const [key, value] of this.idempotency)
       if (value === id) this.idempotency.delete(key);
   }
-  async artifacts(id: string) {
-    return (await this.job(id)).artifacts;
+  async artifacts(id: string): Promise<ArtifactsResponse> {
+    return {
+      contract_version: "1.0",
+      artifacts: (await this.job(id)).artifacts,
+    };
   }
   async artifactContent(id: string, artifactId: string) {
+    if (!this.records.has(id)) {
+      if (this.deletedSharedJobs.has(id))
+        reject("ARTIFACT_NOT_FOUND", "Artifact not found.");
+      return sharedCharacterContent(
+        `/api/v1/jobs/${id}/artifacts/${artifactId}/content`,
+      );
+    }
     const a =
       (await this.job(id)).artifacts.find(
         (a) => a.artifact_id === artifactId,

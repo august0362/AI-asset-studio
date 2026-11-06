@@ -1,13 +1,17 @@
 """Remote entrypoint for mock Text→2D. Self-contained: standard library + Pillow only.
 
-The runner calls ``main(arguments, input_dir, output_dir, progress)``. Output: ``image.png``.
+The runner calls ``main(arguments, input_dir, output_dir, progress)``. Output: ``image.png``, or for a batch job
+(``arguments["tasks"]``, §13.9) one ``task_<task_id>.png`` per task plus ``task_results.json``.
 Deterministic for a given seed; a null seed draws a random one.
 """
 
 from __future__ import annotations
 
+import json
+import os
 import random
 import textwrap
+import time
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -79,7 +83,100 @@ def render(arguments: dict, input_dir: Path) -> Image.Image:
     return image
 
 
+def _write_results(output_dir: Path, results: list) -> None:
+    path = output_dir / "task_results.json"
+    temp = output_dir / "task_results.json.tmp"
+    temp.write_text(json.dumps({"v": 1, "tasks": results}, indent=2), encoding="utf-8")
+    os.replace(temp, path)
+
+
+def run_batch(arguments: dict, input_dir: Path, output_dir: Path, progress) -> None:
+    """Batch job (§13.9): one load, then the tasks in order. Test hooks (mock only): ``AAS_MOCK_FAIL_TASKS``
+    (comma-separated task_ids that raise), ``AAS_MOCK_TASK_SECONDS`` (time per task) and
+    ``AAS_MOCK_DEADLINE_SECONDS`` (overrides the deadline)."""
+    tasks = arguments["tasks"]
+    failing = {t for t in os.environ.get("AAS_MOCK_FAIL_TASKS", "").split(",") if t}
+    task_seconds = float(os.environ.get("AAS_MOCK_TASK_SECONDS", "0") or 0)
+    deadline = os.environ.get("AAS_MOCK_DEADLINE_SECONDS") or arguments.get("deadline_seconds")
+    deadline = float(deadline) if deadline is not None else None
+    started = time.monotonic()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    print(f"MODEL_LOAD {arguments['model_id']} mock", flush=True)
+    results: list = []
+    last = 0.0
+    for index, task in enumerate(tasks):
+        elapsed = time.monotonic() - started
+        if deadline is not None and elapsed + last > deadline:
+            for rest in tasks[index:]:
+                results.append(
+                    {
+                        "task_id": rest["task_id"],
+                        "status": "not_run",
+                        "seed": rest.get("seed"),
+                        "seconds": None,
+                        "error": {
+                            "message": "The job's time budget ran out before this task started.",
+                            "reason": "deadline",
+                        },
+                    }
+                )
+            print(
+                f"Deadline reached after {elapsed:.1f} s; {len(tasks) - index} task(s) not run.", flush=True
+            )
+            break
+        progress(
+            "inference",
+            round(100 * index / len(tasks), 1),
+            f"Task {index + 1}/{len(tasks)}: {task['task_id']}",
+        )
+        print(f"TASK_START {task['task_id']}", flush=True)
+        task_started = time.monotonic()
+        seed = task.get("seed")
+        if seed is None:
+            seed = random.SystemRandom().randrange(2**32)
+        try:
+            if task_seconds:
+                time.sleep(task_seconds)
+            if task["task_id"] in failing:
+                raise RuntimeError(f"Simulated task failure (mock): {task['task_id']}")
+            image = render(
+                {
+                    "prompt": task["prompt"],
+                    "asset_category": arguments["asset_category"],
+                    "model_id": arguments["model_id"],
+                    "width": task["width"],
+                    "height": task["height"],
+                    "seed": seed,
+                },
+                input_dir,
+            )
+            image.save(output_dir / task["output"], format="PNG", optimize=False)
+            entry = {"task_id": task["task_id"], "status": "succeeded", "seed": seed, "error": None}
+        except Exception as exc:
+            message = f"{exc.__class__.__name__}: {exc}"[:500]
+            print(f"Task {task['task_id']} failed: {message}", flush=True)
+            entry = {
+                "task_id": task["task_id"],
+                "status": "failed",
+                "seed": seed,
+                "error": {"message": message, "reason": None},
+            }
+        last = time.monotonic() - task_started
+        entry["seconds"] = round(last, 3)
+        results.append(entry)
+        _write_results(output_dir, results)
+    _write_results(output_dir, results)
+    succeeded = sum(1 for r in results if r["status"] == "succeeded")
+    print(f"Batch finished: {succeeded} of {len(tasks)} task(s) succeeded.", flush=True)
+    if not succeeded:
+        raise RuntimeError("No task of this batch succeeded.")
+    progress("inference", 100, f"{succeeded} of {len(tasks)} image(s) written")
+
+
 def main(arguments: dict, input_dir: Path, output_dir: Path, progress) -> None:
+    if "tasks" in arguments:
+        run_batch(arguments, Path(input_dir), Path(output_dir), progress)
+        return
     progress("inference", 10, "Rendering mock image")
     image = render(arguments, Path(input_dir))
     progress("inference", 80, "Encoding PNG")

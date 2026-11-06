@@ -18,7 +18,7 @@ from kaggle_connector.jobs.packaging import OUTPUT_DIR_NAME
 from kaggle_connector.resources import parse_line
 from models.adapters import ArtifactInvalidError
 from models.adapters.base import PACKAGE_ROOT
-from models.contracts import CONTRACT_VERSION, GenerationInput, GenerationRequest
+from models.contracts import CONTRACT_VERSION, GenerationInput, GenerationRequest, warning
 
 from ..schemas import PreviewRef, Progress
 from ..storage.files import remove_tree
@@ -89,6 +89,49 @@ def generation_request(record: JobRecord) -> GenerationRequest:
         options=req.options,
         output_format=req.output_format,
         created_at=record.created_at,
+        tasks=req.tasks,
+        time_budget_seconds=record.internal.timeout_seconds or None if req.tasks is not None else None,
+    )
+
+
+def batch_partial(request: GenerationRequest, artifacts, report: dict[str, dict]):
+    """The ``BATCH_PARTIAL`` warning (§13.7) when a batch job completed without every task, else ``None``.
+
+    A task with no image is ``not_run`` if the runner said so, otherwise ``failed`` (with the runner's message, or a
+    generic one when the runner reported nothing or its PNG was invalid).
+    """
+    succeeded = {a.task_id for a in artifacts}
+    failed, not_run, tasks = [], [], {}
+    for task in request.tasks or []:
+        if task.task_id in succeeded:
+            continue
+        entry = report.get(task.task_id) or {}
+        if entry.get("status") == "not_run":
+            not_run.append(task.task_id)
+            tasks[task.task_id] = {
+                "status": "not_run",
+                "reason": entry.get("reason") or "job_failed",
+                "message": entry.get("message") or "The task did not start.",
+            }
+        else:
+            failed.append(task.task_id)
+            tasks[task.task_id] = {
+                "status": "failed",
+                "reason": None,
+                "message": entry.get("message")
+                or (
+                    "The task produced no valid PNG."
+                    if entry.get("status") == "succeeded"
+                    else "The runner reported no result for this task."
+                ),
+            }
+    if not tasks:
+        return None
+    return warning(
+        "BATCH_PARTIAL",
+        None,
+        f"{len(succeeded)} of {len(request.tasks or [])} task(s) succeeded.",
+        {"failed": failed, "not_run": not_run, "tasks": tasks},
     )
 
 
@@ -168,6 +211,7 @@ class JobRunner:
             expected_outputs=[
                 OutputSpec(o.name, o.kind, o.format, o.required) for o in invocation.expected_outputs
             ],
+            internet=adapter.requires_internet,
         )
 
     # --- stages ----------------------------------------------------------------------------------------------
@@ -258,8 +302,13 @@ class JobRunner:
                     },
                 )
             verify_outputs(manifest, output_dir, rec.job_id)
-            artifacts = self.s.registry.adapter(rec.request.model_id).collect_outputs(
-                generation_request(rec), output_dir
+            adapter = self.s.registry.adapter(rec.request.model_id)
+            request = generation_request(rec)
+            artifacts = adapter.collect_outputs(request, output_dir)
+            partial = (
+                batch_partial(request, artifacts, adapter.task_report(request, output_dir))
+                if request.tasks is not None
+                else None
             )
         except ManifestInvalid as exc:
             raise JobFailure("ARTIFACT_INVALID", exc.message) from exc
@@ -278,11 +327,18 @@ class JobRunner:
         def complete(r: JobRecord) -> None:
             r.artifacts = artifacts
             r.preview = PreviewRef(artifact_id=preview.artifact_id) if preview else None
+            if partial is not None:
+                r.warnings = [*r.warnings, partial]
             if r.execution.finished_at is None:
                 self._finished(r)
 
         rec = self.s.transition(rec, "completed", complete)
         self.s.log(rec.job_id, f"Completed with {len(artifacts)} artifact(s).")
+        if partial is not None:
+            self.s.log(
+                rec.job_id,
+                f"Batch partial: failed {partial.details['failed']}, not run {partial.details['not_run']}.",
+            )
         return rec
 
     # --- entry point -----------------------------------------------------------------------------------------
@@ -312,6 +368,17 @@ class JobRunner:
             current = self.s.get_record(job_id)
             if current is not None and current.status not in ("completed", "failed"):
                 self.s.fail(current, "INTERNAL_ERROR", FAILURE_MESSAGES["INTERNAL_ERROR"], {}, False)
+        self._release(job_id)
+
+    def _release(self, job_id: str) -> None:
+        """Terminal jobs free their remote inputs (the Kaggle input dataset). Best-effort."""
+        rec = self.s.get_record(job_id)
+        if rec is None or rec.status not in ("completed", "failed") or not rec.execution.remote_ref:
+            return
+        try:
+            self.s.client.release(rec.execution.remote_ref, succeeded=rec.status == "completed")
+        except Exception:
+            log.exception("releasing the remote inputs of %s failed", job_id)
 
 
 class ProfileWorker(threading.Thread):

@@ -46,22 +46,23 @@ AI Asset Studio/
 │   ├── registry/                # M2: capability registry + validation stages 2–6
 │   └── adapters/                # M2: mock_text_to_2d, mock_image_to_3d; M4+: real adapters
 ├── kaggle_connector/
-│   ├── client/                  # ComputeClient protocol, MockKaggleClient (M2), KaggleCliClient (M3), auth env
+│   ├── client/                  # ComputeClient protocol, MockKaggleClient (M2), KaggleCliClient + CLI parsers (M3)
 │   ├── jobs/                    # packaging, submit, poll, logs, download
 │   ├── resources/               # profiles, accelerator catalog, quota, telemetry parsing, planner
 │   └── runtime/                 # runs INSIDE the notebook: runner, telemetry reporter, manifest (no backend imports)
 ├── data/                        # gitignored (CONTRACTS §9)
+├── design/stitch/               # Stitch design reference (layout, typography) and screen exports
 ├── docs/
-├── tests/{unit,integration,contract,fixtures/contracts}/
+├── tests/{unit,integration,contract,live,fixtures}/   # live = opt-in `pytest -m kaggle`
 ├── pyproject.toml               # M2: one Python project (models, kaggle_connector, aas_backend)
-└── .env.example  .gitignore  CLAUDE.md  AGENTS.md  README.md
+└── .env.example  .gitignore  open.bat  stop.bat  CLAUDE.md  AGENTS.md  README.md
 ```
 
 ## 3. Technology
 
 | Layer | Choice |
 |---|---|
-| Frontend | Node 20+, React 18, TypeScript strict, Vite, `three` (GLTFLoader, OrbitControls), TanStack Query, react-router, Vitest + Testing Library |
+| Frontend | Node 22.12+, React 18, TypeScript strict, Vite, `three` (GLTFLoader, OrbitControls), TanStack Query, react-router, Vitest + Testing Library |
 | Backend | Python 3.11+, FastAPI, uvicorn, pydantic v2, pydantic-settings, python-multipart, Pillow, pytest + httpx, ruff |
 | Kaggle | Official `kaggle` CLI ≥ 2.2.1 (2.2.4 installed), run as a subprocess |
 | Storage | Local files + JSON. No database |
@@ -115,20 +116,24 @@ flowchart LR
     R --> C[(memory cache + telemetry.jsonl)] --> API[GET /compute/profiles/:id/snapshot] --> V[Resources view]
 ```
 
-Each snapshot group (quota, session, host, gpu) carries its own source, timestamp and freshness. Live metrics exist only while a cooperating notebook is running (DF-07).
+Each snapshot group (quota, session, host, gpu) carries its own source, timestamp and freshness. Live metrics exist only while a cooperating notebook is running (D-028).
 
-## 6. Kaggle connector (M3)
+## 6. Kaggle connector
+
+Built in M3 (`KaggleCliClient`); the reasons are in DECISIONS D-026…D-031.
 
 | Concern | Design |
 |---|---|
-| Auth | One profile = one account. Credentials from `.env` go only into the subprocess env. Each profile gets an isolated, empty `KAGGLE_CONFIG_DIR`. Auth is checked with `kaggle quota` |
-| Inputs | Image jobs: a private dataset version per profile (`<owner>/aas-inputs/<job_id>/`). Text-only jobs skip this step. Strategy to be confirmed (DF-08) |
-| Submit | A generated private kernel (`kernel-metadata.json` + `runner.py`, which embeds the manifest, entrypoint and runtime, with no secrets) → `kaggle kernels push --accelerator --timeout` to `<owner>/aas-runner` |
-| Poll | `kaggle kernels status` every 30 s, mapped to CONTRACTS §4 |
-| Logs | `kaggle kernels logs -f` while running. `kaggle kernels logs` afterwards is authoritative. Lines are redacted before storage |
-| Artifacts | `kaggle kernels output -p outputs/<job_id>/remote_raw` → manifest check → `collect_outputs` |
+| Auth | One profile = one account. Only the profile named by `AAS_ACTIVE_PROFILE` is enabled; the others are listed as disabled and their credentials are never read. The token goes only into the CLI subprocess env (`KAGGLE_API_TOKEN`), with an isolated, empty `KAGGLE_CONFIG_DIR`. `kaggle config view` must report the configured username. Auth and quota refresh in the background every 5 min (D-030) |
+| Inputs | Image jobs: one private dataset per job, `aas-in-<job id>`, deleted when the job ends (D-029). Text-only jobs skip this step |
+| Submit | One private kernel per job, `aas-<job id>`: a generated `aas_kernel.py` embeds the runner, the adapter entrypoint and `job.json`, with no secrets → `kaggle kernels push` with an explicit `--timeout`. Accelerators: `cpu` and `gpu_t4x2` (D-031). Internet is off, except for jobs whose adapter sets `requires_internet` (the real models, which download pinned weights; D-032, D-034) |
+| Poll | `kaggle kernels status` every 30 s, mapped to CONTRACTS §4 (D-030) |
+| Logs | `kaggle kernels logs -f` while running (live telemetry, D-028). `kaggle kernels logs` after the run fills gaps. Lines are redacted before storage |
+| Artifacts | `kaggle kernels output` → `outputs/<job_id>/remote_raw` → manifest check → `collect_outputs` |
+| Cleanup | The dataset is deleted when the job ends. The kernel is deleted when the job completes and kept when it fails, so the run can be inspected (D-031) |
 | Retries | CONTRACTS §4. Never auto-resubmit, never switch profile |
-| Quota | `kaggle quota --format json`, cached for 5 min. Field mapping per DF-05. Old CLI or a failed call gives `null` + `unavailable` |
+| Quota | `kaggle quota --format json` (D-026). A failed call gives `null` + `unavailable` |
+| Test switch | `AAS_KAGGLE_TEST_FAILURE=kernel_error` makes every Kaggle job fail on purpose, to check error handling (D-031) |
 | Stance | Kaggle is a limited batch platform. No persistent sessions or real-time inference |
 
 ## 7. Frontend routes

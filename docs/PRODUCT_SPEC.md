@@ -71,6 +71,20 @@ Each model declares the categories it supports. No model is selected before M4.
 | FR-R7 | Predicted job fit (`ok`/`unknown`/`insufficient`) with reasons |
 | FR-R8 | Explicit profile selection among authorized profiles only. Auto picks only the accelerator within that profile |
 
+**Appearance** (added 2026-11-06; see [UI.md](UI.md))
+
+| ID | Requirement |
+|---|---|
+| FR-U1 | Light and dark mode, plus a "system" setting that follows the OS |
+| FR-U2 | Two color themes per mode: light `latte` and `mint`, dark `caffe` and `matcha` |
+| FR-U3 | The theme choice persists across reloads and applies before the first paint |
+| FR-U4 | Every theme meets WCAG AA contrast, and status is never shown by color alone |
+| FR-U5 | Previews (PNG, GLB viewer) follow the theme's viewer colors without reloading the asset |
+| FR-U6 | The UI is available in Vietnamese and English, switchable at any time ([UI.md](UI.md) §5) |
+| FR-U7 | The first visit picks Vietnamese when the browser prefers it; the choice persists across reloads |
+| FR-U8 | Error and warning text is localized by error code, falling back to the backend's English message |
+| FR-U9 | Dates and numbers are formatted for the selected language |
+
 ## 6. Non-functional requirements
 
 | ID | Requirement |

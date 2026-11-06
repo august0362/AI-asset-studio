@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary":"#755750","primary":"#72564c","inverse-on-surface":"#ffede7","on-primary":"#ffffff","surface-container-low":"#fff1ec","primary-fixed":"#ffdbce","error-container":"#ffdad6","surface-container":"#ffe9e3","surface":"#fff8f6","background":"#fff8f6","surface-bright":"#fff8f6","surface-container-lowest":"#ffffff","outline-variant":"#d4c3be","on-error-container":"#93000a","on-primary-fixed-variant":"#5b4137","tertiary-fixed":"#e9ddff","outline":"#827470","primary-container":"#8d6e63","surface-container-highest":"#ffdbcf","on-background":"#2e150b","on-surface-variant":"#504441","secondary-fixed":"#ffdad2","on-surface":"#2e150b","on-secondary-fixed":"#2b1611","on-secondary-fixed-variant":"#5c403a","secondary-container":"#ffd7ce","tertiary-container":"#8555ef","on-tertiary-container":"#fffcff","surface-container-high":"#ffe2d9","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#5516be","inverse-primary":"#e4beb2","on-primary-fixed":"#2b160f","on-primary-container":"#fffcff","inverse-surface":"#46291e","tertiary":"#6b38d5","primary-fixed-dim":"#e4beb2","secondary-fixed-dim":"#e5beb5","surface-dim":"#ffd0bf","on-error":"#ffffff","error":"#ba1a1a","surface-variant":"#ffdbcf","tertiary-fixed-dim":"#d0bcff","on-tertiary-fixed":"#23005c","surface-tint":"#75584d","on-tertiary":"#ffffff","on-secondary-container":"#7a5b54"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2rem","margin":"1.5rem","margin-desktop":"2.5rem","space-2xl":"3rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"1.5rem","space-md":"1rem","space-sm":"0.5rem","gutter":"1.25rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"title-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"body-lg":["Be Vietnam Pro"],"headline-lg":["Plus Jakarta Sans"],"body-sm":["Be Vietnam Pro"],"body-md":["Be Vietnam Pro"],"code-sm":["Be Vietnam Pro"]},fontSize:{"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"700"}],"headline-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"title-sm":["16px",{"lineHeight":"24px","fontWeight":"600"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.015em","fontWeight":"700"}],"display-lg":["40px",{"lineHeight":"52px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"18px","fontWeight":"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(78,52,46,0.05)]"><div class="flex flex-col h-full"><div class="p-space-lg flex flex-col gap-space-xs"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_2px_8px_-2px_rgba(78,52,46,0.15)]"><span class="material-symbols-outlined text-[22px]">auto_awesome</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md text-on-surface tracking-tight leading-none">AI Asset Studio</span><span class="font-code-sm text-code-sm text-on-surface-variant leading-tight">V2 Creative Suite</span></div></div><div class="mt-space-xs flex items-center gap-space-xs"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider">v2.4 Pro (DEMO)</span><span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Tokyo Engine</span></div></div><div class="flex-1 overflow-y-auto px-space-md py-space-xs space-y-space-md"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Core Studio</span><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-md"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="generate-studio" href="#"><span class="material-symbols-outlined text-[20px]">auto_fix_high</span><span class="font-body-md text-body-md font-medium">Generate Studio</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="jobs-and-logs" href="#"><span class="material-symbols-outlined text-[20px]">terminal</span><span class="font-body-md text-body-md font-medium">Jobs &amp; Logs</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="kaggle-resources" href="#"><span class="material-symbols-outlined text-[20px]">memory</span><span class="font-body-md text-body-md font-medium">Kaggle Resources</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="asset-library" href="#"><span class="material-symbols-outlined text-[20px]">folder_special</span><span class="font-body-md text-body-md font-medium">Asset Library</span></a></nav></div><div class="flex flex-col gap-space-xs"><div class="flex items-center justify-between px-space-sm"><span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">New Extension</span><span class="px-2 py-0.5 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-[0_0_12px_rgba(107,56,213,0.35)]">NEW</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-md"><div class="flex items-center justify-between px-space-sm py-2 rounded-xl bg-surface-container-high/60"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-tertiary text-[20px]">person_add</span><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface">Character Production</span><span class="font-body-sm text-body-sm text-on-surface-variant leading-none">Sản xuất nhân vật</span></div></div></div><div class="pl-space-md flex flex-col gap-1 border-l-2 border-outline-variant/30 ml-space-sm"><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="character-library" href="#"><span class="font-body-sm text-body-sm font-medium">Character Library</span><span class="font-body-sm text-[10px] text-outline leading-tight">Thư viện nhân vật</span></a><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="character-workspace" href="#"><span class="font-body-sm text-body-sm font-medium">Character Workspace</span><span class="font-body-sm text-[10px] text-outline leading-tight">Không gian làm việc</span></a><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="stage-detail" href="#"><span class="font-body-sm text-body-sm font-medium">Stage Detail</span><span class="font-body-sm text-[10px] text-outline leading-tight">Chi tiết giai đoạn</span></a></div></nav></div></div><div class="p-space-md mx-space-md mb-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant">Environment</span><span class="font-code-sm text-code-sm text-primary font-bold">Sandbox V2</span></div><div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span>Mana Engine: 4.8 GFLOPS</span></div></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(78,52,46,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md flex-1 max-w-lg"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="w-full h-10 pl-10 pr-12 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/30 transition-all" placeholder="Search assets &amp; characters... (Ctrl+K)" readonly="" type="text"/><span class="absolute right-2 px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-[10px]">⌘K</span></div></div><div class="flex items-center gap-space-md"><div class="hidden xl:flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-tertiary-container"></span><span class="font-code-sm text-code-sm text-on-surface font-medium">Kaggle T4x2 / P100</span><span class="px-1.5 py-0.2 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[10px]">Online - Idle</span></div><div class="flex items-center gap-1 p-1 rounded-xl bg-surface-container-low"><button class="flex items-center gap-1 px-2 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm" title="Coffee (Latte/Caffe) Scheme"><span class="material-symbols-outlined text-[15px] text-primary">coffee</span><span>Latte</span></button><button class="flex items-center gap-1 px-2 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm" title="Green (Mint/Matcha) Scheme"><span class="material-symbols-outlined text-[15px]">eco</span><span>Mint</span></button></div><div class="flex items-center p-0.5 rounded-xl bg-surface-container-low"><button class="p-1.5 rounded-lg bg-surface text-on-surface" title="Light Mode"><span class="material-symbols-outlined text-[16px]">light_mode</span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface" title="Dark Mode"><span class="material-symbols-outlined text-[16px]">dark_mode</span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface" title="System Sync"><span class="material-symbols-outlined text-[16px]">desktop_windows</span></button></div><div class="flex items-center rounded-xl bg-surface-container-low p-1 text-on-surface-variant font-label-sm text-label-sm"><span class="px-2 py-0.5 rounded bg-surface text-on-surface font-bold">VN</span><span class="px-2 py-0.5 text-outline">EN</span></div><div class="flex items-center gap-space-xs pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full pt-16 pb-12 bg-background"><div class="flex flex-col w-full">
+<!-- Top Breadcrumb & Workflow Action Header -->
+<section class="bg-surface-container-low px-space-lg py-space-md shadow-sm">
+<div class="flex flex-col gap-space-sm">
+<!-- Breadcrumb Bar & Status Badges -->
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">folder_shared</span>
+<span>Character Production</span>
+</a>
+<span class="text-outline">/</span>
+<span class="font-code-sm text-code-sm text-primary font-semibold">#CHR-0042 Yao Guang (Dao Quang)</span>
+<span class="text-outline">/</span>
+<span class="font-label-md text-label-md text-on-surface font-bold bg-surface-container px-2 py-0.5 rounded-lg">
+            Stage S2: Character Specification (Thiết lập đặc tả nhân vật)
+          </span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm tracking-wide">
+            DEMO PROTOTYPE
+          </span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>Trạng thái: S2 Đã Phê Duyệt (Approved v2.1)</span>
+</span>
+</div>
+</div>
+<!-- Action & Navigation Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-space-xs">
+<div class="flex flex-wrap items-center gap-space-xs">
+<a class="px-3 py-1.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Quay lại Workspace</span>
+</a>
+<a class="px-3 py-1.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-1 shadow-sm" href="#">
+<span class="material-symbols-outlined text-[16px] text-tertiary">check_circle</span>
+<span>S1: Concept Exploration (Approved)</span>
+</a>
+<a class="px-3 py-1.5 rounded-xl bg-surface text-primary font-label-md text-label-md hover:bg-surface-container transition-all flex items-center gap-1 shadow-sm" href="#">
+<span>S3: Concept Preview</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-4 py-2 rounded-xl bg-surface text-on-surface-variant font-label-md text-label-md hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">drafts</span>
+<span>Lưu Bản Nháp</span>
+</button>
+<div class="px-4 py-2 rounded-xl bg-primary-container text-on-primary-container font-label-md text-label-md flex items-center gap-2 shadow-md">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span>Đã Khóa &amp; Phê Duyệt S2 (Locked v2.1)</span>
+</div>
+</div>
+</div>
+<!-- Data Flow Indicator Pipeline Strip -->
+<div class="mt-space-xs p-space-sm rounded-xl bg-surface-container-high flex flex-wrap items-center justify-between gap-space-sm text-on-surface">
+<div class="flex items-center gap-2 font-code-sm text-code-sm">
+<span class="flex items-center gap-1 text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[15px]">input</span> Nguồn:
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface text-on-surface font-medium">S1 Approved Concept Notes v1.4</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[16px]">trending_flat</span>
+<div class="flex items-center gap-2 font-code-sm text-code-sm">
+<span class="flex items-center gap-1 text-tertiary font-bold">
+<span class="material-symbols-outlined text-[15px]">tune</span> Hiện tại:
+          </span>
+<span class="px-2.5 py-0.5 rounded bg-surface-container-lowest text-on-surface font-bold shadow-sm">S2 Specification Locked v2.1</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[16px]">trending_flat</span>
+<div class="flex items-center gap-2 font-code-sm text-code-sm">
+<span class="flex items-center gap-1 text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-[15px]">output</span> Đích:
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface text-on-surface font-medium">S3 Concept Preview &amp; S4 Prompts</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Three-Panel Workstation Layout -->
+<div class="px-space-lg py-space-md grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
+<!-- LEFT PANEL: Inputs & References (Đầu vào từ S1 & Tham chiếu cảm hứng) -->
+<aside class="lg:col-span-3 flex flex-col gap-space-md">
+<!-- Section Header Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-outline tracking-wider">Đầu Vào S1</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-code-sm text-[11px] font-bold">v1.4 - Đã duyệt</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Concept Exploration</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tài liệu tham chiếu được trích xuất từ giai đoạn khai phóng ý tưởng.</p>
+</div>
+<!-- Idea Notes Card -->
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">auto_stories</span>
+<span>Trích lược ý tưởng S1</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest text-on-surface font-body-sm text-body-sm leading-relaxed shadow-sm">
+          Đại sư bói toán Xianzhou Yuque, vẻ đẹp thanh tao, phục trang lụa xanh băng celestine viền tơ lông công và bạc tinh xảo, phong thái mưu lược thiên cơ điềm tĩnh.
+        </div>
+</div>
+<!-- Visual References Showcase -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-label-md text-label-md text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-tertiary">palette</span>
+<span>Moodboard &amp; Tham Chiếu</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">4 Mục</span>
+</div>
+<!-- Reference Image -->
+<div class="flex flex-col gap-space-xs">
+<div class="relative overflow-hidden rounded-xl bg-surface-container shadow-md group">
+<img class="w-full h-44 object-cover object-top transition-transform duration-300 group-hover:scale-105" data-alt="Chân dung nhân vật nữ anime Yao Guang phong cách Xianzhou Honkai Star Rail, tóc bạch kim ánh tím oải hương với trâm vũ khổng tước dát bạc, ngọc phỉ thúy và lụa lam băng celestine thanh nhã, ánh sáng huyền ảo tinh tú, nghệ thuật kỹ thuật số đỉnh cao ấm áp tông cà phê latte và lam ngọc" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtkQQ4vGhTVbM_sJM3rpe4bAm6405AK774eD6B1vOh1mfRZseOTuhmnO-_cBGVViEpPo7dWCINxDrXevUehN1-vrTHPkAjSJWsLebLCdn8naUyCdYTjDwO9UOkVnZZnsYgyOefNOGvKwbC3yJ6a15GAEBKcR4b0lOog_2h9WCeG2NQPjSHUnd5Xl8TMB-JzXehKSamk1IMl9Sx2dwYbbRV3yGQOXFF416yMpRw2y0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex items-end p-2.5">
+<span class="font-code-sm text-[11px] text-inverse-on-surface font-medium">Ref #11: Trâm Lông Công &amp; Kiểu Tóc S1</span>
+</div>
+</div>
+</div>
+<!-- Color Palette Extracted -->
+<div class="flex flex-col gap-1.5 pt-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Bảng Màu Chủ Đạo (S1 Tokens)</span>
+<div class="grid grid-cols-4 gap-1.5">
+<div class="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container text-center">
+<div class="w-full h-6 rounded bg-[#E0F2FE] shadow-sm"></div>
+<span class="font-code-sm text-[10px] text-on-surface">#E0F2FE</span>
+<span class="font-body-sm text-[9px] text-outline truncate">Băng Lam</span>
+</div>
+<div class="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container text-center">
+<div class="w-full h-6 rounded bg-[#38BDF8] shadow-sm"></div>
+<span class="font-code-sm text-[10px] text-on-surface">#38BDF8</span>
+<span class="font-body-sm text-[9px] text-outline truncate">Celestine</span>
+</div>
+<div class="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container text-center">
+<div class="w-full h-6 rounded bg-[#1E3A8A] shadow-sm"></div>
+<span class="font-code-sm text-[10px] text-on-surface">#1E3A8A</span>
+<span class="font-body-sm text-[9px] text-outline truncate">Khổng Tước</span>
+</div>
+<div class="flex flex-col items-center gap-1 p-1.5 rounded-lg bg-surface-container text-center">
+<div class="w-full h-6 rounded bg-[#F59E0B] shadow-sm"></div>
+<span class="font-code-sm text-[10px] text-on-surface">#F59E0B</span>
+<span class="font-body-sm text-[9px] text-outline truncate">Hoàng Kim</span>
+</div>
+</div>
+</div>
+<!-- Reference Documents -->
+<div class="flex flex-col gap-1.5 pt-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Tài Liệu Đính Kèm</span>
+<div class="flex flex-col gap-1">
+<div class="p-2 rounded-lg bg-surface-container-lowest flex items-center justify-between text-on-surface font-body-sm text-body-sm hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-[16px] text-primary">image</span>
+<span class="font-code-sm text-code-sm truncate">ref_s1_sketch_04.png</span>
+</div>
+<span class="font-label-sm text-[10px] text-outline">1.8 MB</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest flex items-center justify-between text-on-surface font-body-sm text-body-sm hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-[16px] text-error">picture_as_pdf</span>
+<span class="font-code-sm text-code-sm truncate">moodboard_yuque_v2.pdf</span>
+</div>
+<span class="font-label-sm text-[10px] text-outline">14 MB</span>
+</div>
+</div>
+</div>
+<!-- Compare Link -->
+<a class="mt-space-xs p-2 rounded-lg bg-surface-container text-center font-label-md text-label-md text-primary hover:bg-surface-container-high transition-colors flex items-center justify-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">compare_arrows</span>
+<span>So sánh thay đổi với S1 Draft ban đầu</span>
+</a>
+</div>
+</aside>
+<!-- CENTER PANEL: Working Canvas / Guided Questions & Editable Specification -->
+<main class="lg:col-span-6 flex flex-col gap-space-md">
+<!-- Tabs Bar -->
+<div class="p-1 rounded-xl bg-surface-container-low shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="px-4 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">assignment</span>
+<span>Hồ sơ đặc tả tổng hợp (Spec Sheet)</span>
+</button>
+<button class="px-4 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">quiz</span>
+<span>Câu hỏi định hướng (Guided Q&amp;A)</span>
+<span class="px-1.5 py-0.2 rounded-full bg-secondary-container text-on-secondary-container text-[10px]">6/6</span>
+</button>
+<button class="px-4 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span>Bản nháp lịch sử</span>
+</button>
+</div>
+<div class="px-3 py-1 font-code-sm text-code-sm text-on-surface-variant">
+          Auto-saved 14:20
+        </div>
+</div>
+<!-- Live Character Snapshot Card -->
+<div class="p-space-lg rounded-xl bg-surface-container shadow-md flex flex-col md:flex-row gap-space-md items-center">
+<div class="relative w-28 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-surface-container-high shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Chân dung cận cảnh gương mặt Yao Guang với đôi mắt xanh ngọc băng sắc sảo điềm tĩnh, tóc bạc ánh tím thắt trâm vũ phượng hoàng xanh ngọc dát bạc phong cách game Xianzhou" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyi0bIXxjjqAUCJrvBRWqSozjekq8GoKk6dAN4qncbO1_EgOExd4mCOQ1QKst46lKAtV4Sg_vXH1hMz0zxQ8oyRhVu0drU1NyUAcna3c2ml_Kirwo3TAm279bikuYvcIlhhO6NXvhfWDx0e8HF4DqFj2jpXqx-PIWj3rwEbDBwzr2vB00D6iWS3aVl8ojUknqDXEQJOEDVt-zUtn8kcNm07j5tSNLz3LIAT07MRVs"/>
+<div class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-surface-container-lowest/90 font-code-sm text-[10px] text-on-surface font-bold">
+            5★ Yuque
+          </div>
+</div>
+<div class="flex flex-col gap-1 flex-1 text-center md:text-left">
+<div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Yao Guang (Đao Quang)</h1>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-lowest text-primary font-code-sm text-code-sm font-semibold">
+              #CHR-0042
+            </span>
+</div>
+<p class="font-title-sm text-title-sm text-tertiary">The Celestial Grandmaster (Đại Sư Thiên Cơ)</p>
+<div class="flex flex-wrap items-center justify-center md:justify-start gap-space-md pt-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline">location_on</span>
+<span>Xianzhou Yuque</span>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline">calendar_today</span>
+<span>Tuổi hình thức: 24</span>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline">straighten</span>
+<span>Chiều cao: 168 cm</span>
+</span>
+</div>
+</div>
+</div>
+<!-- Structured Specification Zones -->
+<div class="flex flex-col gap-space-md">
+<!-- ZONE 1: Core Identity [LOCKED] -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<h3 class="font-headline-md text-headline-md text-on-surface">1. Nhận diện cốt lõi (Core Identity)</h3>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm uppercase flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span>LOCKED (Bất Biến)</span>
+</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm pt-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<span class="font-label-sm text-label-sm text-outline uppercase">Giới tính &amp; Vóc dáng</span>
+<p class="font-body-md text-body-md text-on-surface font-medium">Nữ / Bipedal Female Standard</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Chiều cao mẫu 168cm, cấu trúc thon thả, dáng đứng ung dung thanh nhã chuẩn hoàng tộc.</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<span class="font-label-sm text-label-sm text-outline uppercase">Khuôn mặt &amp; Ánh mắt</span>
+<p class="font-body-md text-body-md text-on-surface font-medium">Mắt xanh ngọc băng sắc sảo</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Đôi mắt tĩnh tại quan sát thiên hà, môi phớt hồng tự nhiên, nét mày thanh tú chuẩn mỹ nhân viễn đông.</span>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase">Mái tóc (Hair Topology &amp; Styling)</span>
+<span class="font-code-sm text-[11px] text-tertiary">Mesh ID: #HAIR-YG-01</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Bạch kim phớt tím oải hương (Lavender-White Gradient)</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mái tóc dài buông lượn sóng tựa ngọn mây, nửa đầu búi cao trang trọng cố định bởi trâm vũ khổng tước dát bạc filigree rủ hạt châu.</span>
+</div>
+</div>
+<!-- ZONE 2: Outfit & Details [LOCKED / PREFERRED] -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<h3 class="font-headline-md text-headline-md text-on-surface">2. Trang phục &amp; Phụ kiện (Outfit &amp; Details)</h3>
+</div>
+<div class="flex items-center gap-1">
+<span class="px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm">LOCKED</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm">PREFERRED</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase">Y phục chính (Core Garment)</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface">LOCKED</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Xường xám cách tân hở vai (Celestine High-Slit Cheongsam)</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Lớp lụa xanh celestine xuyên thấu phối ren bạc đan lồng; tà áo thêu họa tiết chòm sao đồ bản Xianzhou Yuque lung linh ánh xạ khi chuyển động.
+              </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase">Phụ kiện &amp; Trang sức</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container font-label-sm text-[10px] text-on-secondary-container">PREFERRED</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Trâm khổng tước &amp; Cổ tự bạc</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Vòng kim loại khắc văn tự thiên cơ bên cổ tay phải, hoa tai lông công buông rũ bên tai trái.</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase">Chất liệu mô phỏng (Shaders)</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface">PBR SPEC</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Silk Sheen 0.85 / Metallic Filigree 0.90</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Subsurface scattering cho da 0.24; tán sắc lụa ngọc trai và viền tơ xanh biển đậm.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- ZONE 3: Personality & Expression [FLEXIBLE] -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<h3 class="font-headline-md text-headline-md text-on-surface">3. Tính cách &amp; Biểu cảm (Personality &amp; Expression)</h3>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-highest text-on-surface font-label-sm text-label-sm uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span>FLEXIBLE (Linh Hoạt Cho S3)</span>
+</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1.5 shadow-sm">
+<p class="font-body-md text-body-md text-on-surface font-medium">Thần thái đại sư mưu lược thiên cơ</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+              Thông tuệ, trầm tĩnh, khó đoán định, mang nụ cười mỉm ẩn ý của bậc đại sư thấu suốt vạn vận mệnh thiên hạ. Trong các góc quay cận cảnh, giữ biểu cảm điềm nhiên, không hoảng loạn hay quá cường điệu hóa.
+            </p>
+</div>
+</div>
+<!-- Guided Spec Questions Completion Banner -->
+<div class="p-space-md rounded-xl bg-surface-container flex items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-tertiary-container text-on-tertiary-container flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[22px]">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface leading-tight">Guided Questions Hoàn Tất (6/6)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tỷ lệ cơ thể, bảng màu tương phản và độ phức tạp topology đã chuẩn hóa cho pipeline 3D.</span>
+</div>
+</div>
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors shadow-sm">
+            Xem Lại 6 Câu Trả Lời
+          </button>
+</div>
+</div>
+</main>
+<!-- RIGHT PANEL: Stage Guidance, Approval & Next-Stage Gate -->
+<aside class="lg:col-span-3 flex flex-col gap-space-md">
+<!-- Stage S2 Objective Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-outline tracking-wider">Mục Tiêu Giai Đoạn S2</span>
+<span class="material-symbols-outlined text-[18px] text-primary">flag</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Khóa Hồ Sơ Đặc Tả</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Chuyển hóa toàn bộ ý tưởng thô từ S1 thành bộ đặc tả nhân vật chuẩn mực có cấu trúc (structured spec), khóa các thuộc tính bất biến để làm căn cứ duyệt ở S3 và viết prompt ở S4.
+        </p>
+</div>
+<!-- Gate S2 Checklist Card -->
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 font-label-md text-label-md text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-tertiary">checklist</span>
+<span>Gate S2 Checklist</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-code-sm text-[11px] font-bold">
+            4/4 Đạt Chuẩn
+          </span>
+</div>
+<div class="flex flex-col gap-2 pt-1">
+<label class="flex items-start gap-2.5 p-2 rounded-lg bg-surface-container-lowest shadow-sm">
+<input checked="" class="mt-0.5 rounded text-primary" disabled="" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface">Thuộc tính cốt lõi (Core Traits) đã phân loại Locked/Flexible.</span>
+</label>
+<label class="flex items-start gap-2.5 p-2 rounded-lg bg-surface-container-lowest shadow-sm">
+<input checked="" class="mt-0.5 rounded text-primary" disabled="" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface">Bảng màu chuẩn Hex &amp; Phân bổ chất liệu vải (Silk / Filigree Metal).</span>
+</label>
+<label class="flex items-start gap-2.5 p-2 rounded-lg bg-surface-container-lowest shadow-sm">
+<input checked="" class="mt-0.5 rounded text-primary" disabled="" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface">Đánh giá khả thi 3D ban đầu (Độ phức tạp chi tiết đạt chuẩn dựng mesh).</span>
+</label>
+<label class="flex items-start gap-2.5 p-2 rounded-lg bg-surface-container-lowest shadow-sm">
+<input checked="" class="mt-0.5 rounded text-primary" disabled="" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface">Giám đốc mỹ thuật (Art Lead) ký duyệt spec v2.1.</span>
+</label>
+</div>
+</div>
+<!-- Data Flow Output Forwarding Card -->
+<div class="p-space-md rounded-xl bg-surface-container-low shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase text-outline tracking-wider">Dữ Liệu Xuất Chuẩn Hóa</span>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<div class="flex items-center gap-1.5 text-primary font-code-sm text-code-sm font-semibold">
+<span class="material-symbols-outlined text-[16px]">data_object</span>
+<span>spec_chr0042_v2.1.json</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-code-sm text-[11px]">
+<span class="material-symbols-outlined text-[14px]">token</span>
+<span>palette_tokens.json</span>
+</div>
+<span class="font-body-sm text-[11px] text-outline pt-1">
+            Giai đoạn tiếp nhận: S3 (Concept Preview) &amp; S4 (Prompt Design).
+          </span>
+</div>
+</div>
+<!-- Review History & Art Lead Sign-off Note -->
+<div class="p-space-md rounded-xl bg-surface-container shadow-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface uppercase font-bold">Biên Bản Phê Duyệt S2</span>
+<span class="font-code-sm text-[11px] text-outline">Hôm nay, 11:30</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex flex-col gap-1 shadow-sm">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-[10px]">
+              LM
+            </div>
+<div class="flex flex-col leading-tight">
+<span class="font-label-md text-label-md text-on-surface">Art Lead Lê Minh</span>
+<span class="font-body-sm text-[10px] text-outline">Production Supervisor</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface italic pt-1 leading-relaxed">
+            "Đã chốt thiết kế trâm cài lông công và phối màu Celestine Blue. Thuộc tính đã khóa, sẵn sàng cho S3/S4."
+          </p>
+</div>
+</div>
+<!-- Stage Advance Call-to-Actions -->
+<div class="flex flex-col gap-2 pt-space-xs">
+<a class="w-full py-3 px-space-md rounded-xl bg-primary-container text-on-primary-container font-headline-md text-headline-md hover:bg-primary transition-all flex items-center justify-center gap-2 shadow-md" href="#">
+<span>Chuyển Tiếp S3: Concept Preview</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</a>
+<button class="w-full py-2 px-space-md rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">file_open</span>
+<span>Mở File JSON Spec</span>
+</button>
+</div>
+</aside>
+</div>
+<!-- Bottom Workspace Diagnostic & Telemetry Bar -->
+<section class="mt-space-md px-space-lg py-space-sm bg-surface-container-low flex flex-wrap items-center justify-between gap-space-md font-code-sm text-code-sm text-on-surface-variant">
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>Telemetry S2: <strong class="text-on-surface font-semibold">Specification Gate Locked</strong></span>
+</div>
+<span>Schema Version: <strong class="text-on-surface font-medium">v2.1-proto</strong></span>
+<span>Engine Binding: <strong class="text-primary font-medium">Yuque-Celestine-4.0</strong></span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="px-2 py-0.5 rounded bg-surface text-on-surface font-label-sm text-[11px] uppercase">
+        Character Spec Ready
+      </span>
+<span>AI Asset Studio V2 Production Build</span>
+</div>
+</section>
+</div></main><footer class="fixed bottom-0 left-72 right-0 h-10 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_-1px_6px_rgba(78,52,46,0.04)] z-30 flex items-center justify-between px-space-lg text-on-surface-variant font-code-sm text-code-sm"><div class="flex items-center gap-space-md"><span>Latency: <strong class="text-on-surface font-medium">24ms</strong></span><span>Memory Cache: <strong class="text-on-surface font-medium">1.4 GB / 8 GB</strong></span><span>GPU Quota: <strong class="text-tertiary font-medium">18.4h / 30h</strong> (T4)</span></div><div class="flex items-center gap-space-sm"><span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">Prototype Mode</span><span>AI Asset Studio V2 Production Build</span></div></footer></div></body></html>

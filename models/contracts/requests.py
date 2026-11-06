@@ -1,10 +1,10 @@
-"""Request-side contracts: UploadRecord (§3.1), CreateJobRequest (§3.2), GenerationRequest (§2.3)."""
+"""Request-side contracts: UploadRecord (§3.1), CreateJobRequest (§3.2), GenerationRequest (§2.3, §13.9)."""
 
 from __future__ import annotations
 
 from typing import Any
 
-from pydantic import UUID4, Field, StrictStr
+from pydantic import UUID4, Field, SerializerFunctionWrapHandler, StrictStr, model_serializer
 
 from .common import (
     INPUT_ID_PATTERN,
@@ -79,8 +79,23 @@ class GenerationInput(ContractModel):
     sha256: str
 
 
+TASK_ID_PATTERN = r"^[a-z0-9][a-z0-9_-]{1,39}$"
+
+
+class GenerationTask(ContractModel):
+    """One task of a batch job (§13.9): its own prompt and fully normalized options (seed, size, ...)."""
+
+    task_id: str = Field(pattern=TASK_ID_PATTERN)
+    prompt: str
+    options: dict[str, Any]
+
+
 class GenerationRequest(ContractModel):
-    """Normalized, model- and compute-independent request. The adapter's only input."""
+    """Normalized, model- and compute-independent request. The adapter's only input.
+
+    A batch job (§13.9) has ``prompt = None`` and ``tasks`` in render order; the model is loaded once for all of them.
+    ``time_budget_seconds`` is the run's timeout, so the remote entry can stop starting tasks before it is killed.
+    """
 
     contract_version: ContractVersion
     job_id: str = Field(pattern=JOB_ID_PATTERN)
@@ -92,3 +107,14 @@ class GenerationRequest(ContractModel):
     options: dict[str, Any]
     output_format: OutputFormat
     created_at: UtcDatetime
+    tasks: list[GenerationTask] | None = None
+    time_budget_seconds: int | None = Field(default=None, ge=1)
+
+    @model_serializer(mode="wrap")
+    def _omit_batch_fields(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        """A normal job serializes exactly as in v1.0 (§2.3): the batch fields appear only when set."""
+        data = handler(self)
+        for key in ("tasks", "time_budget_seconds"):
+            if data.get(key) is None:
+                data.pop(key, None)
+        return data

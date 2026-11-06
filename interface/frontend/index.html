@@ -3,7 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b0f17" />
+    <script>
+      (() => {
+        let mode = "system",
+          family = "coffee",
+          locale;
+        try {
+          const saved = JSON.parse(localStorage.getItem("aas.theme") || "null");
+          if (
+            saved &&
+            ["light", "dark", "system"].includes(saved.mode) &&
+            ["coffee", "green"].includes(saved.family)
+          ) {
+            mode = saved.mode;
+            family = saved.family;
+          }
+        } catch {}
+        const dark =
+          mode === "dark" ||
+          (mode === "system" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.dataset.theme =
+          family === "coffee"
+            ? dark
+              ? "caffe"
+              : "latte"
+            : dark
+              ? "matcha"
+              : "mint";
+        try {
+          locale = localStorage.getItem("aas.locale");
+        } catch {}
+        if (locale !== "vi" && locale !== "en")
+          locale = navigator.languages.some((language) => /^vi/i.test(language))
+            ? "vi"
+            : "en";
+        document.documentElement.lang = locale;
+      })();
+    </script>
     <link
       rel="preload"
       href="/node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2"
@@ -13,7 +50,7 @@
     />
     <meta
       name="description"
-      content="AI Asset Studio — a local creative workstation. M1 mock preview."
+      content="AI Asset Studio"
     />
     <title>AI Asset Studio</title>
   </head>

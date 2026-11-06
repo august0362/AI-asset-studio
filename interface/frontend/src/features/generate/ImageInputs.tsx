@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ImagePlus, Trash2 } from "lucide-react";
@@ -11,7 +12,7 @@ import type {
 import { api as client } from "../../api/client";
 import { ApiError, errorMessage, issue } from "../../api/errors";
 import { useBlobUrl } from "../../components/ArtifactPreview";
-import { Badge, Issues, number } from "../../components/ui";
+import { Badge, Issues } from "../../components/ui";
 
 function Thumbnail({ record }: { record: UploadRecord }) {
   const data = useQuery({
@@ -23,7 +24,9 @@ function Thumbnail({ record }: { record: UploadRecord }) {
   return url ? (
     <img src={url} alt={record.filename} width={64} height={64} />
   ) : (
-    <span className="thumbnail-placeholder">PNG</span>
+    <span className="thumbnail-placeholder">
+      {record.mime_type.replace("image/", "").toUpperCase()}
+    </span>
   );
 }
 export function ImageInputs({
@@ -43,6 +46,7 @@ export function ImageInputs({
   onRole: (index: number, role: ImageRole) => void;
   onRemove: (index: number) => void;
 }) {
+  const { t, label, number } = useI18n();
   const input = useRef<HTMLInputElement>(null),
     [busy, setBusy] = useState(false),
     [uploadErrors, setUploadErrors] = useState<ErrorItem[]>([]);
@@ -70,6 +74,7 @@ export function ImageInputs({
           ...result.reason.response.errors.map((e) => ({
             ...e,
             message: `${files[i].name}: ${e.message}`,
+            details: { ...e.details, filename: files[i].name },
           })),
         );
       else
@@ -89,25 +94,31 @@ export function ImageInputs({
   return (
     <>
       <div className="reference-summary">
-        <span>Reference images</span>
+        <span>{t("copy.referenceImages")}</span>
         <Badge>
-          {uploads.length} / {model.inputs.max_images} supported
+          {t("images.supported", {
+            count: number(uploads.length, 0),
+            max: number(model.inputs.max_images, 0),
+          })}
         </Badge>
       </div>
       {model.inputs.max_images > 0 && (
         <p className="muted small">
           {model.inputs.required_image_roles.length
-            ? `Required: ${model.inputs.required_image_roles.join(", ")}. `
-            : "Optional reference. "}
-          Accepted by model:{" "}
-          {model.inputs.supported_mime_types
-            ?.map((m) => m.replace("image/", "").toUpperCase())
-            .join(", ")}
-          .{" "}
-          {number(
-            (model.inputs.maximum_file_size_bytes ?? 52428800) / 1024 ** 2,
-          )}{" "}
-          MiB max per file.
+            ? t("images.required", {
+                roles: model.inputs.required_image_roles
+                  .map((role) => label("role", role))
+                  .join(", "),
+              })
+            : t("copy.optionalReference")}
+          {t("images.accepted", {
+            formats: model.inputs.supported_mime_types
+              ?.map((m) => m.replace("image/", "").toUpperCase())
+              .join(", "),
+            max: number(
+              (model.inputs.maximum_file_size_bytes ?? 52428800) / 1024 ** 2,
+            ),
+          })}
         </p>
       )}
       <div className="upload-list">
@@ -126,11 +137,17 @@ export function ImageInputs({
                   {u.record.filename}
                 </span>
                 <small>
-                  {u.record.width} × {u.record.height} ·{" "}
-                  {number(u.record.size_bytes / 1024 ** 2)} MiB
+                  {t("format.dimensions", {
+                    width: number(u.record.width, 0),
+                    height: number(u.record.height, 0),
+                    size: number(u.record.size_bytes / 1024 ** 2),
+                    unit: t("unit.mib"),
+                  })}
                 </small>
                 <label>
-                  <span className="sr-only">Role for {u.record.filename}</span>
+                  <span className="sr-only">
+                    {t("images.roleFor", { filename: u.record.filename })}
+                  </span>
                   <select
                     name={`role-${i}`}
                     value={u.role}
@@ -141,10 +158,10 @@ export function ImageInputs({
                   >
                     {roles.map((r) => (
                       <option key={r} value={r}>
-                        {r.replaceAll("_", " ")}
+                        {label("role", r)}
                         {model.inputs.supported_image_roles.includes(r)
                           ? ""
-                          : " (unsupported)"}
+                          : t("images.unsupported")}
                       </option>
                     ))}
                   </select>
@@ -153,7 +170,7 @@ export function ImageInputs({
               <button
                 type="button"
                 className="icon-button"
-                aria-label={`Remove ${u.record.filename}`}
+                aria-label={t("images.remove", { filename: u.record.filename })}
                 onClick={() => onRemove(i)}
               >
                 <Trash2 size={15} aria-hidden="true" />
@@ -172,7 +189,7 @@ export function ImageInputs({
             type="file"
             accept="image/png,image/jpeg,image/webp"
             multiple
-            aria-label="Upload reference images"
+            aria-label={t("copy.uploadReferenceImages")}
             onChange={(e) => void upload(Array.from(e.target.files ?? []))}
           />
           <button
@@ -188,9 +205,11 @@ export function ImageInputs({
           >
             <ImagePlus size={24} aria-hidden="true" />
             <strong>
-              {busy ? "Uploading images…" : "Add reference images"}
+              {busy ? t("copy.uploadingImages") : t("copy.addReferenceImages")}
             </strong>
-            <span>Drop files here or browse · Multiple images supported</span>
+            <span>
+              {t("copy.dropFilesHereOrBrowseMultipleImagesSupported")}
+            </span>
           </button>
         </>
       )}

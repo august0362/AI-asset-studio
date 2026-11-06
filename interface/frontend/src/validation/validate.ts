@@ -10,7 +10,7 @@ import type {
   UploadRecord,
   ValidationReport,
 } from "../api/types";
-import { issue } from "../api/errors";
+import { validationIssue as issue } from "../i18n/validation";
 import { planResources } from "./planner";
 
 export interface ValidationContext {
@@ -63,9 +63,8 @@ export function validateRequest(
   const add = (
     code: ErrorItem["code"],
     field: string,
-    message: string,
     details: Record<string, unknown> = {},
-  ) => errors.push(issue(code, field, message, "error", details));
+  ) => errors.push(issue(code, field, "error", details));
   const known = [
     "contract_version",
     "client_request_id",
@@ -79,21 +78,16 @@ export function validateRequest(
     "compute",
   ];
   if (!req || typeof req !== "object") {
-    add("REQUEST_FIELD_INVALID", "", "Provide a job request object.");
+    add("REQUEST_FIELD_INVALID", "");
     return report();
   }
   if (
     typeof req.contract_version !== "string" ||
     !/^1\.\d+$/.test(req.contract_version)
   )
-    add(
-      "CONTRACT_VERSION_UNSUPPORTED",
-      "contract_version",
-      "Use contract version 1.x.",
-    );
+    add("CONTRACT_VERSION_UNSUPPORTED", "contract_version");
   for (const key of Object.keys(req))
-    if (!known.includes(key))
-      add("REQUEST_FIELD_INVALID", key, `Unknown field: ${key}. Remove it.`);
+    if (!known.includes(key)) add("REQUEST_FIELD_INVALID", key);
   for (const key of [
     "client_request_id",
     "pipeline_type",
@@ -101,25 +95,16 @@ export function validateRequest(
     "model_id",
     "output_format",
   ] as const)
-    if (typeof req[key] !== "string")
-      add(
-        "REQUEST_FIELD_INVALID",
-        key,
-        `${key} is required and must be a string.`,
-      );
+    if (typeof req[key] !== "string") add("REQUEST_FIELD_INVALID", key);
   if (
     typeof req.client_request_id === "string" &&
     !/^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(
       req.client_request_id,
     )
   )
-    add(
-      "REQUEST_FIELD_INVALID",
-      "client_request_id",
-      "Provide a UUID v4 request ID.",
-    );
+    add("REQUEST_FIELD_INVALID", "client_request_id");
   if (req.prompt != null && typeof req.prompt !== "string")
-    add("REQUEST_FIELD_INVALID", "prompt", "Prompt must be text or null.");
+    add("REQUEST_FIELD_INVALID", "prompt");
   if (
     !Array.isArray(req.inputs) ||
     req.inputs.some(
@@ -130,17 +115,13 @@ export function validateRequest(
         Object.keys(i).some((k) => !["upload_id", "role"].includes(k)),
     )
   )
-    add(
-      "REQUEST_FIELD_INVALID",
-      "inputs",
-      "Provide upload IDs with a known reference role.",
-    );
+    add("REQUEST_FIELD_INVALID", "inputs");
   if (
     !req.options ||
     typeof req.options !== "object" ||
     Array.isArray(req.options)
   )
-    add("REQUEST_FIELD_INVALID", "options", "Options must be an object.");
+    add("REQUEST_FIELD_INVALID", "options");
   if (
     !req.compute ||
     typeof req.compute.profile_id !== "string" ||
@@ -152,77 +133,36 @@ export function validateRequest(
       (k) => !["profile_id", "accelerator_id"].includes(k),
     )
   )
-    add(
-      "REQUEST_FIELD_INVALID",
-      "compute",
-      "Choose a compute profile and an accelerator or Auto.",
-    );
+    add("REQUEST_FIELD_INVALID", "compute");
   if (errors.length) return report();
   const pipeline = context.catalog.pipelines.find(
     (p) => p.pipeline_type === req.pipeline_type,
   );
-  if (!pipeline)
-    add("PIPELINE_UNKNOWN", "pipeline_type", "Choose a known pipeline.");
+  if (!pipeline) add("PIPELINE_UNKNOWN", "pipeline_type");
   else if (!["available", "experimental"].includes(pipeline.availability))
-    add(
-      "PIPELINE_NOT_AVAILABLE",
-      "pipeline_type",
-      "Text → 3D is planned for M6 and cannot accept jobs yet.",
-    );
+    add("PIPELINE_NOT_AVAILABLE", "pipeline_type");
   if (!context.catalog.asset_categories.includes(req.asset_category))
-    add(
-      "ASSET_CATEGORY_UNKNOWN",
-      "asset_category",
-      "Choose a known asset category.",
-    );
+    add("ASSET_CATEGORY_UNKNOWN", "asset_category");
   if (errors.length) return report();
   const model = context.models.find((m) => m.model_id === req.model_id);
   if (!model) {
-    add("MODEL_NOT_FOUND", "model_id", "Select a model from the catalog.");
+    add("MODEL_NOT_FOUND", "model_id");
     return report();
   }
   if (!["available", "experimental"].includes(model.availability))
-    add(
-      "MODEL_UNAVAILABLE",
-      "model_id",
-      "This model is not available. Choose an available model.",
-    );
+    add("MODEL_UNAVAILABLE", "model_id");
   if (!model.supported_pipeline_types.includes(req.pipeline_type))
-    add(
-      "MODEL_PIPELINE_INCOMPATIBLE",
-      "model_id",
-      "Choose a model compatible with this pipeline.",
-    );
+    add("MODEL_PIPELINE_INCOMPATIBLE", "model_id");
   if (!model.supported_asset_categories.includes(req.asset_category))
-    add(
-      "MODEL_CATEGORY_INCOMPATIBLE",
-      "asset_category",
-      "This model does not support this category. Choose another model.",
-    );
+    add("MODEL_CATEGORY_INCOMPATIBLE", "asset_category");
   if (errors.length) return report();
   if (model.availability === "experimental")
-    warnings.push(
-      issue(
-        "MODEL_EXPERIMENTAL",
-        "model_id",
-        "This mock model is experimental.",
-        "warning",
-      ),
-    );
+    warnings.push(issue("MODEL_EXPERIMENTAL", "model_id", "warning"));
   const caps = model.inputs,
     prompt = req.prompt?.trim() || null;
-  if (caps.prompt_required && !prompt)
-    add(
-      "MODEL_PROMPT_REQUIRED",
-      "prompt",
-      "Enter a prompt to describe your asset.",
-    );
+  if (caps.prompt_required && !prompt) add("MODEL_PROMPT_REQUIRED", "prompt");
   if (!caps.prompt_supported && prompt)
-    add(
-      "MODEL_PROMPT_NOT_SUPPORTED",
-      "prompt",
-      "This model does not accept prompts. Clear the retained prompt or choose another model.",
-    );
+    add("MODEL_PROMPT_NOT_SUPPORTED", "prompt");
   if (
     prompt &&
     prompt.length >
@@ -231,60 +171,35 @@ export function validateRequest(
         context.catalog.limits.prompt_max_length,
       )
   )
-    add(
-      "MODEL_PROMPT_TOO_LONG",
-      "prompt",
-      "Shorten the prompt to the model limit.",
-    );
+    add("MODEL_PROMPT_TOO_LONG", "prompt");
   if (!caps.max_images && req.inputs.length)
-    add(
-      "MODEL_IMAGE_INPUT_NOT_SUPPORTED",
-      "inputs",
-      "This model accepts text only. Remove the retained images or switch models.",
-    );
+    add("MODEL_IMAGE_INPUT_NOT_SUPPORTED", "inputs");
   else if (
     req.inputs.length >
     Math.min(caps.max_images, context.catalog.limits.max_images_per_request)
   )
-    add(
-      "MODEL_INPUT_COUNT_EXCEEDED",
-      "inputs",
-      `This model accepts at most ${caps.max_images} image(s); ${req.inputs.length} were provided.`,
-      { max_images: caps.max_images, provided: req.inputs.length },
-    );
+    add("MODEL_INPUT_COUNT_EXCEEDED", "inputs", {
+      max_images: caps.max_images,
+      provided: req.inputs.length,
+    });
   if (req.inputs.length < caps.min_images)
-    add(
-      "MODEL_INPUT_COUNT_INSUFFICIENT",
-      "inputs",
-      `Add at least ${caps.min_images} reference image(s).`,
-    );
+    add("MODEL_INPUT_COUNT_INSUFFICIENT", "inputs");
   const missing = caps.required_image_roles.filter(
     (r) => !req.inputs.some((i) => i.role === r),
   );
   if (missing.length)
-    add(
-      "MODEL_REQUIRED_VIEW_MISSING",
-      "inputs",
-      `Add the required ${missing.join(" and ")} view.`,
-      { missing_roles: missing },
-    );
+    add("MODEL_REQUIRED_VIEW_MISSING", "inputs", { missing_roles: missing });
   const seen = new Set<string>();
   req.inputs.forEach((input, i) => {
     if (caps.max_images && !caps.supported_image_roles.includes(input.role))
-      add(
-        "MODEL_IMAGE_ROLE_UNSUPPORTED",
-        `inputs[${i}].role`,
-        `The ${input.role} role is not supported by this model.`,
-      );
+      add("MODEL_IMAGE_ROLE_UNSUPPORTED", `inputs[${i}].role`, {
+        role: input.role,
+      });
     if (
       ["front", "side", "back", "three_quarter"].includes(input.role) &&
       seen.has(input.role)
     )
-      add(
-        "MODEL_IMAGE_ROLE_DUPLICATE",
-        `inputs[${i}].role`,
-        "Each view role can be used only once. Choose a different role.",
-      );
+      add("MODEL_IMAGE_ROLE_DUPLICATE", `inputs[${i}].role`);
     seen.add(input.role);
     const upload = context.uploads.find((u) => u.upload_id === input.upload_id);
     const field = `inputs[${i}].upload_id`;
@@ -292,31 +207,19 @@ export function validateRequest(
       !upload ||
       Date.parse(upload.expires_at) <= (context.now ?? Date.now())
     ) {
-      add(
-        "UPLOAD_NOT_FOUND",
-        field,
-        "This upload is missing or expired. Upload the image again.",
-      );
+      add("UPLOAD_NOT_FOUND", field);
       return;
     }
     if (
       caps.supported_mime_types &&
       !caps.supported_mime_types.includes(upload.mime_type)
     )
-      add(
-        "MODEL_UNSUPPORTED_FILE_FORMAT",
-        field,
-        "Use an image format supported by this model.",
-      );
+      add("MODEL_UNSUPPORTED_FILE_FORMAT", field);
     if (
       upload.size_bytes >
       (caps.maximum_file_size_bytes ?? context.catalog.limits.max_upload_bytes)
     )
-      add(
-        "MODEL_FILE_TOO_LARGE",
-        field,
-        "The image exceeds the model file size limit. Upload a smaller file.",
-      );
+      add("MODEL_FILE_TOO_LARGE", field);
     if (
       (caps.min_image_width !== null && upload.width < caps.min_image_width) ||
       (caps.min_image_height !== null &&
@@ -324,44 +227,26 @@ export function validateRequest(
       (caps.max_image_width !== null && upload.width > caps.max_image_width) ||
       (caps.max_image_height !== null && upload.height > caps.max_image_height)
     )
-      add(
-        "MODEL_IMAGE_DIMENSIONS_INVALID",
-        field,
-        "Resize the reference image to the model dimensions.",
-        {
-          actual: { width: upload.width, height: upload.height },
-          allowed: {
-            min_width: caps.min_image_width,
-            min_height: caps.min_image_height,
-            max_width: caps.max_image_width,
-            max_height: caps.max_image_height,
-          },
+      add("MODEL_IMAGE_DIMENSIONS_INVALID", field, {
+        actual: { width: upload.width, height: upload.height },
+        allowed: {
+          min_width: caps.min_image_width,
+          min_height: caps.min_image_height,
+          max_width: caps.max_image_width,
+          max_height: caps.max_image_height,
         },
-      );
+      });
   });
   if (
     !model.supported_output_formats.includes(req.output_format) ||
     !pipeline?.output_formats.includes(req.output_format)
   )
-    add(
-      "MODEL_OUTPUT_FORMAT_UNSUPPORTED",
-      "output_format",
-      "Choose the output format supported by this pipeline and model.",
-    );
+    add("MODEL_OUTPUT_FORMAT_UNSUPPORTED", "output_format");
   for (const [name, value] of Object.entries(req.options)) {
     const rule = model.options_schema[name];
-    if (!rule)
-      add(
-        "MODEL_OPTION_UNSUPPORTED",
-        `options.${name}`,
-        "This option is not supported by this model.",
-      );
+    if (!rule) add("MODEL_OPTION_UNSUPPORTED", `options.${name}`);
     else if (!optionValid(value, rule))
-      add(
-        "MODEL_OPTION_INVALID",
-        `options.${name}`,
-        `Enter a valid ${name.replaceAll("_", " ")} value.`,
-      );
+      add("MODEL_OPTION_INVALID", `options.${name}`);
   }
   const inputErrors = errors.length;
   const profile = context.profiles.find(
@@ -371,11 +256,7 @@ export function validateRequest(
       p.authorization_confirmed,
   );
   if (!profile) {
-    add(
-      "COMPUTE_PROFILE_NOT_FOUND",
-      "compute.profile_id",
-      "Select an enabled, authorized compute profile.",
-    );
+    add("COMPUTE_PROFILE_NOT_FOUND", "compute.profile_id");
     return report();
   }
   if (
@@ -386,7 +267,6 @@ export function validateRequest(
       issue(
         "COMPUTE_PROFILE_UNAUTHENTICATED",
         "compute.profile_id",
-        "This profile is not authenticated. Check its status in Resources.",
         "error",
         {},
         true,

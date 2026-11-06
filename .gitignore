@@ -26,3 +26,9 @@ coverage/
 # OS
 .DS_Store
 Thumbs.db
+
+# M4 benchmark gallery (73 MB, images embedded)
+M4_Text2D_Gallery.html
+
+# Original Stitch V2 handoff archive (8 MB); its files are extracted to design/stitch/v2/ (MANIFEST.json)
+interface/frontend/AI_Asset_Studio_V2_Stitch_11_Exports_Handoff.zip

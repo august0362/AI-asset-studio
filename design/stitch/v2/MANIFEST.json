@@ -1,0 +1,233 @@
+[
+  {
+    "folder": "01-character-library",
+    "original_zip": "stitch_character_studio_production_pipeline (1)(1).zip",
+    "label": "Library",
+    "purpose": "Main template",
+    "sha256_zip": "244977e3d7c5dd750675934cd2dc9089c4b551c73625ad9a1795cc494d0f9b13",
+    "files": {
+      "code.html": {
+        "size": 56721,
+        "sha256": "c869f8a2f9fc911aaa01ab8131daabc163dbe0d5054d4b49dcf919c435a9743f"
+      },
+      "screen.png": {
+        "size": 968311,
+        "sha256": "b964427526b338cae6670659bc9c8d8c88f6a25e518fccd3212eb3fed80b0d45"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "02-stage-s5-2d-production",
+    "original_zip": "stitch_character_studio_production_pipeline (2)(1).zip",
+    "label": "Stage Detail S5",
+    "purpose": "Content variant",
+    "sha256_zip": "a0677d20e27a788536b49c5245cdaf66796dadb1e49c05f2064f0d7e90c271ba",
+    "files": {
+      "code.html": {
+        "size": 47883,
+        "sha256": "6a8719cffa22ba44e89fe986d3c5554baee0076890ee6cc5febd7f43eabab6f5"
+      },
+      "screen.png": {
+        "size": 631666,
+        "sha256": "7a377187dec3e11b6a130a62e1681c1f3cce26838d8d5c977c65c38bdcb2fd2f"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "03-stage-s2-character-specification",
+    "original_zip": "stitch_character_studio_production_pipeline (3)(1).zip",
+    "label": "Stage Detail S2",
+    "purpose": "Content variant",
+    "sha256_zip": "8bf22be26cdae82e7124cff09bf4323a51c551a3e105fff63569c88801576de2",
+    "files": {
+      "code.html": {
+        "size": 43301,
+        "sha256": "0bdc63fd54df9df24e2e11d4d0766832441ea4ab89fd5e49ec1c0bc0c8134431"
+      },
+      "screen.png": {
+        "size": 599311,
+        "sha256": "cfbb32fd1bb0b5fdc1d0095457044543cb89c8d5239e1e84a583b2d995897360"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "04-stage-s6-3d-planned",
+    "original_zip": "stitch_character_studio_production_pipeline (4)(1).zip",
+    "label": "Stage Detail S6",
+    "purpose": "Content variant (PLANNED)",
+    "sha256_zip": "c99f92d1804c9a62c272c43631496280bbb26359167e819ae5af5291e3acdb47",
+    "files": {
+      "code.html": {
+        "size": 40273,
+        "sha256": "fded9a7f30586da742f2574ad1291c6ad1cc27752b7f8fb3362114202e7556db"
+      },
+      "screen.png": {
+        "size": 660938,
+        "sha256": "80060ab0c1885fa15ed064c420b553796ad163c6d22505940fe2df104120864a"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "05-workspace-canvas-a",
+    "original_zip": "stitch_character_studio_production_pipeline (5)(1).zip",
+    "label": "Workspace candidate A",
+    "purpose": "Compare, not extra page",
+    "sha256_zip": "05847a88f04c666bc290eeba4a58315e355eba2701dcb758e3b947adde966a24",
+    "files": {
+      "code.html": {
+        "size": 55978,
+        "sha256": "c436acb8bbeff969f883b538e858dc2023f6df8d5f4d3d20d1feec9edaaa0ea8"
+      },
+      "screen.png": {
+        "size": 558352,
+        "sha256": "1a369f37e5a0debeb7b3797e59a078ff646591f1dd089d4013d6f0b92a9df6f9"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "06-stage-s1-concept-exploration",
+    "original_zip": "stitch_character_studio_production_pipeline (6)(1).zip",
+    "label": "Stage Detail S1",
+    "purpose": "Content variant",
+    "sha256_zip": "340144580948ae2a342dee42f4e3fe7224ff879b6071e5358671b954e3fc9532",
+    "files": {
+      "code.html": {
+        "size": 50241,
+        "sha256": "c7142b248b40974dde837d157eb5f304893bebad1d7a2cd75a13c90c0d46afdc"
+      },
+      "screen.png": {
+        "size": 758088,
+        "sha256": "10f719e5b155af7ca446ece5b0dfce3f7479c7dcc2382a579751a3a9f5da5ffd"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "07-stage-s4-prompt-engineering",
+    "original_zip": "stitch_character_studio_production_pipeline (7)(1).zip",
+    "label": "Stage Detail S4",
+    "purpose": "Content variant",
+    "sha256_zip": "13c14c2cfd46ddcdedec672e1e7aa168e53c962358521679465491ea6adbda78",
+    "files": {
+      "code.html": {
+        "size": 42016,
+        "sha256": "4204d60e611868017e58c740a2dda8f49e3c6b4784032f5c7f1cb304ec6e4cad"
+      },
+      "screen.png": {
+        "size": 777905,
+        "sha256": "1ac6d45e4ad3813f4dd9b61c1507eacdfca4b40297a503e1273b06c2f29aec64"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "08-workspace-inspector-b",
+    "original_zip": "stitch_character_studio_production_pipeline (8)(1).zip",
+    "label": "Workspace candidate B",
+    "purpose": "Compare inspector behavior",
+    "sha256_zip": "89bbb99a789fb2e6e41a9a180cec30c8291e717276d6e4e43fa99150c2ca4048",
+    "files": {
+      "code.html": {
+        "size": 65218,
+        "sha256": "9cafa273d272848c212f75cd655ef9c725468f25643f43c17065c18f3d440009"
+      },
+      "screen.png": {
+        "size": 569292,
+        "sha256": "07a513b91cb5685cc823e4da21116100170cddae040d6356ddd23f839e571643"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "09-stage-s3-concept-validation",
+    "original_zip": "stitch_character_studio_production_pipeline (9).zip",
+    "label": "Stage Detail S3",
+    "purpose": "Content variant",
+    "sha256_zip": "2f001efcb907876b7b467722b3db1ba5b602fe0a1248c923d98f2ed68565b026",
+    "files": {
+      "code.html": {
+        "size": 40891,
+        "sha256": "6df05acc1515fe317a98310dc63ca1422f51354cbdf2f2875b9b7c9c077419b4"
+      },
+      "screen.png": {
+        "size": 1001197,
+        "sha256": "f258dec6b5b24dd6ed59264036b127486be2c261201991a2e9191e7966ab9af6"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "10-stage-s7-rigging-planned",
+    "original_zip": "stitch_character_studio_production_pipeline (10).zip",
+    "label": "Stage Detail S7",
+    "purpose": "Content variant (PLANNED)",
+    "sha256_zip": "1774b0842b40f68b81339ae57751e5c9004f8bebcbde57c9e739e7109861be7e",
+    "files": {
+      "code.html": {
+        "size": 37782,
+        "sha256": "8971bccbb84a34e33457ca34d3a7192c8c5157496c764a8b20154d5199b96ed5"
+      },
+      "screen.png": {
+        "size": 717466,
+        "sha256": "e6c4a84116d173eeebfbe144be0b40ee7a613952b47d3d98cff0f53b5ad286bc"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  },
+  {
+    "folder": "11-workspace-overview-c",
+    "original_zip": "stitch_character_studio_production_pipeline(1).zip",
+    "label": "Workspace candidate C",
+    "purpose": "Compare, not extra page",
+    "sha256_zip": "9e115fb1e367c6c77f9547395750f927b5307e68ec95ec2214873a436c18f9b3",
+    "files": {
+      "code.html": {
+        "size": 54449,
+        "sha256": "8b31a2fc08672d8150ca4e47906d809478ef041e857f75870196ce17a3151e30"
+      },
+      "screen.png": {
+        "size": 620379,
+        "sha256": "e2cbb44b65ae8fc0cb51dcb02122052b54b705cdd958084811a9fb080a5d0a12"
+      },
+      "DESIGN.md": {
+        "size": 11386,
+        "sha256": "7209f455378eba8134dbd7a5519ab069622380943f2b2cef8da3e3892e557e41"
+      }
+    }
+  }
+]

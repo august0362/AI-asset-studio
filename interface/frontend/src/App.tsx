@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   NavLink,
   Navigate,
@@ -22,24 +22,46 @@ import { GeneratePage } from "./features/generate/GeneratePage";
 import { JobsPage } from "./features/jobs/JobsPage";
 import { LibraryPage } from "./features/library/LibraryPage";
 import { ResourcesPage } from "./features/resources/ResourcesPage";
-const links = [
-  { to: "/generate", label: "Generate studio", icon: Sparkles },
-  { to: "/library", label: "Asset library", icon: FolderOpen },
-  { to: "/jobs", label: "Jobs & logs", icon: ListChecks },
-  { to: "/resources", label: "Kaggle resources", icon: Cpu },
+import { CharacterLibraryPage } from "./features/characters/CharacterLibraryPage";
+import { CharacterWorkspacePage } from "./features/characters/CharacterWorkspacePage";
+import { StageDetailPage } from "./features/characters/StageDetailPage";
+const navigation = [
+  { to: "/characters", label: "char.characters" as const, icon: Boxes },
+  { to: "/generate", label: "copy.generateStudio" as const, icon: Sparkles },
+  { to: "/library", label: "copy.assetLibrary" as const, icon: FolderOpen },
+  { to: "/jobs", label: "copy.jobsLogs" as const, icon: ListChecks },
+  { to: "/resources", label: "copy.kaggleResources" as const, icon: Cpu },
 ];
+import { I18nProvider, useI18n } from "./i18n";
+import { ThemeProvider } from "./theme/ThemeProvider";
+import { PreferenceSwitchers } from "./theme/PreferenceSwitchers";
 export default function App() {
+  return (
+    <ThemeProvider>
+      <I18nProvider>
+        <Workspace />
+      </I18nProvider>
+    </ThemeProvider>
+  );
+}
+function Workspace() {
+  const { t } = useI18n();
+  const links = useMemo(
+    () => navigation.map((link) => ({ ...link, label: t(link.label) })),
+    [t],
+  );
   const location = useLocation();
   useEffect(() => {
+    if (location.pathname.startsWith("/characters")) window.scrollTo(0, 0);
     const title =
       links.find((l) => location.pathname.startsWith(l.to))?.label ??
-      "Workspace";
+      t("copy.workspace");
     document.title = `${title} · AI Asset Studio`;
-  }, [location.pathname]);
+  }, [location.pathname, links, t]);
   return (
     <DraftProvider>
       <a className="skip-link" href="#main-content">
-        Skip to workspace
+        {t("copy.skipToWorkspace")}
       </a>
       <header className="app-header">
         <NavLink className="brand" to="/generate/image-to-3d">
@@ -51,8 +73,8 @@ export default function App() {
             AI Asset <strong>Studio</strong>
           </span>
         </NavLink>
-        <Badge tone="cyan">Obsidian</Badge>
-        <nav aria-label="Main navigation">
+
+        <nav aria-label={t("copy.mainNavigation")}>
           {links.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to}>
               <Icon size={16} aria-hidden="true" />
@@ -60,19 +82,22 @@ export default function App() {
             </NavLink>
           ))}
         </nav>
+        <PreferenceSwitchers />
         <div className="header-profile">
           <span className="status-dot" />
-          <span>{isMock ? "Local mock session" : "Local API session"}</span>
-          <Badge>{isMock ? "MOCK" : "HTTP"}</Badge>
+          <span>
+            {isMock ? t("copy.localMockSession") : t("copy.localApiSession")}
+          </span>
+          <Badge>{isMock ? t("common.mock") : t("common.http")}</Badge>
         </div>
       </header>
-      <aside className="tool-shelf" aria-label="Workspace tools">
+      <aside className="tool-shelf" aria-label={t("copy.workspaceTools")}>
         {links.map(({ to, label, icon: Icon }) => (
           <NavLink title={label} aria-label={label} key={to} to={to}>
             <Icon size={20} aria-hidden="true" />
           </NavLink>
         ))}
-        <span className="shelf-end" title="M1 Mock Frontend">
+        <span className="shelf-end" title={t("copy.m1MockFrontend")}>
           <Boxes size={20} aria-hidden="true" />
         </span>
       </aside>
@@ -91,12 +116,23 @@ export default function App() {
           <Route path="/jobs" element={<JobsPage />} />
           <Route path="/jobs/:jobId" element={<JobsPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/characters" element={<CharacterLibraryPage />} />
+          <Route
+            path="/characters/:characterId"
+            element={<CharacterWorkspacePage />}
+          />
+          <Route
+            path="/characters/:characterId/stages/:stageId"
+            element={<StageDetailPage />}
+          />
           <Route
             path="*"
             element={
               <div className="empty">
-                <h1>Page not found</h1>
-                <NavLink to="/generate/image-to-3d">Return to studio</NavLink>
+                <h1>{t("copy.pageNotFound")}</h1>
+                <NavLink to="/generate/image-to-3d">
+                  {t("copy.returnToStudio")}
+                </NavLink>
               </div>
             }
           />
@@ -105,13 +141,25 @@ export default function App() {
       <footer className="statusbar">
         <span>
           <span className="status-dot" />
-          Local workspace
+          {t("copy.localWorkspace")}
         </span>
         <span>
-          {isMock ? "Mock API · No Kaggle connection" : "HTTP API · /api/v1"}
+          {isMock
+            ? t("copy.mockApiNoKaggleConnection")
+            : t("copy.httpApiApiV1")}
         </span>
         <span>
-          Contract v1.0 <span className="statusbar-divider">/</span> M1 preview
+          {t(
+            location.pathname.startsWith("/characters")
+              ? "char.contractVersion"
+              : "copy.contractV10",
+          )}
+          <span className="statusbar-divider">/</span>
+          {t(
+            location.pathname.startsWith("/characters")
+              ? "char.productionTitle"
+              : "copy.m1Preview",
+          )}
         </span>
       </footer>
     </DraftProvider>

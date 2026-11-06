@@ -1,49 +1,14 @@
 import type { ReactNode } from "react";
 import { AlertCircle, CheckCircle2, Inbox, LoaderCircle } from "lucide-react";
 import type { ErrorItem, JobStatus, ResourcePlan } from "../api/types";
-import { errorMessage } from "../api/errors";
-export const categoryLabels = {
-  character: "Character",
-  skill_effect: "Skill / VFX",
-  weapon: "Weapon",
-  companion: "Companion",
-};
-export const pipelineLabels = {
-  text_to_2d: "Text → 2D",
-  image_to_3d: "Image → 3D",
-  text_to_3d: "Text → 3D",
-};
+import { ApiError } from "../api/errors";
+import { useI18n } from "../i18n";
 export const acceleratorLabels: Record<string, string> = {
   cpu: "CPU",
   gpu_p100: "NVIDIA P100",
   gpu_t4x2: "2 × NVIDIA T4",
   tpu_vm: "TPU VM",
 };
-export function date(value: string | null) {
-  return value
-    ? new Intl.DateTimeFormat(undefined, {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(new Date(value))
-    : "Unknown";
-}
-export function number(value: number | null, digits = 1) {
-  return value === null
-    ? "Unknown"
-    : new Intl.NumberFormat(undefined, {
-        maximumFractionDigits: digits,
-      }).format(value);
-}
-export function bytes(value: number | null) {
-  return value === null ? "Unknown" : `${number(value / 1024 ** 3)} GiB`;
-}
-export function duration(value: number | null) {
-  return value === null
-    ? "Unknown"
-    : value >= 3600
-      ? `${number(value / 3600)} h`
-      : `${number(value / 60)} min`;
-}
 export function Panel({
   title,
   extra,
@@ -75,6 +40,7 @@ export function Badge({
   return <span className={`badge ${tone}`}>{children}</span>;
 }
 export function Status({ status }: { status: JobStatus }) {
+  const { label } = useI18n();
   return (
     <Badge
       tone={
@@ -82,31 +48,37 @@ export function Status({ status }: { status: JobStatus }) {
           ? "success"
           : status === "failed"
             ? "danger"
-            : "cyan"
+            : "info"
       }
     >
       <span className="status-dot" aria-hidden="true" />
-      {status}
+      {label("status", status)}
     </Badge>
   );
 }
-export function Loading({
-  children = "Loading workspace…",
-}: {
-  children?: ReactNode;
-}) {
+export function Loading({ children }: { children?: ReactNode }) {
+  const { t } = useI18n();
   return (
     <div className="empty" role="status">
       <LoaderCircle size={24} aria-hidden="true" />
-      <p>{children}</p>
+      <p>{children ?? t("copy.loadingWorkspace")}</p>
     </div>
   );
 }
 export function Failure({ error }: { error: unknown }) {
+  const { t } = useI18n();
+  if (error instanceof ApiError)
+    return (
+      <div role="alert">
+        <Issues items={error.response.errors} />
+      </div>
+    );
   return (
     <div className="notice danger" role="alert">
       <AlertCircle size={16} aria-hidden="true" />
-      <span>{errorMessage(error)}</span>
+      <span>
+        {error instanceof Error ? error.message : t("common.requestFailed")}
+      </span>
     </div>
   );
 }
@@ -126,6 +98,7 @@ export function Empty({
   );
 }
 export function Issues({ items }: { items: ErrorItem[] }) {
+  const { errorText } = useI18n();
   return (
     <div className="issues" aria-live="polite">
       {items.map((e, i) => (
@@ -135,7 +108,7 @@ export function Issues({ items }: { items: ErrorItem[] }) {
         >
           <AlertCircle size={14} aria-hidden="true" />
           <div>
-            <span>{e.message}</span>
+            <span>{errorText(e)}</span>
             <code>
               {e.code}
               {e.field ? ` · ${e.field}` : ""}
@@ -147,9 +120,10 @@ export function Issues({ items }: { items: ErrorItem[] }) {
   );
 }
 export function PlanPanel({ plan }: { plan: ResourcePlan | null }) {
+  const { t, label, number, duration } = useI18n();
   return (
     <Panel
-      title="Resource plan"
+      title={t("copy.resourcePlan")}
       extra={
         <Badge
           tone={
@@ -160,39 +134,44 @@ export function PlanPanel({ plan }: { plan: ResourcePlan | null }) {
                 : "warning"
           }
         >
-          {plan?.fit ?? "Awaiting inputs"}
+          {plan ? label("fit", plan.fit) : t("copy.awaitingInputs")}
         </Badge>
       }
     >
       <div className="panel-body">
         {plan ? (
           <>
-            <div className="plan-title">
-              <CheckCircle2 size={18} aria-hidden="true" />
+            <div className="plan-title" data-fit={plan.fit}>
+              {plan.fit === "ok" ? (
+                <CheckCircle2 size={18} aria-hidden="true" />
+              ) : (
+                <AlertCircle size={18} aria-hidden="true" />
+              )}
               {plan.accelerator_id
                 ? (acceleratorLabels[plan.accelerator_id] ??
                   plan.accelerator_id)
-                : "No compatible accelerator"}
+                : t("copy.noCompatibleAccelerator")}
             </div>
             <dl className="properties">
-              <dt>Selection</dt>
-              <dd>{plan.selection.replace("_", " ")}</dd>
-              <dt>Estimated job time</dt>
+              <dt>{t("copy.selection")}</dt>
+              <dd>{label("selection", plan.selection)}</dd>
+              <dt>{t("copy.estimatedJobTime")}</dt>
               <dd>{duration(plan.required_seconds)}</dd>
-              <dt>Session limit</dt>
+              <dt>{t("copy.sessionLimit")}</dt>
               <dd>{duration(plan.session_limit_seconds)}</dd>
-              <dt>Quota remaining</dt>
+              <dt>{t("copy.quotaRemaining")}</dt>
               <dd>{duration(plan.quota_remaining_seconds)}</dd>
             </dl>
             <p className="muted small">
-              Estimate: runtime × {plan.estimate_basis.safety_factor} +{" "}
-              {duration(plan.estimate_basis.overhead_seconds)} overhead. Mock
-              catalog; hardware limits are provisional.
+              {t("plan.estimate", {
+                factor: number(plan.estimate_basis.safety_factor),
+                overhead: duration(plan.estimate_basis.overhead_seconds),
+              })}
             </p>
           </>
         ) : (
           <p className="muted">
-            Complete the required inputs to estimate compute compatibility.
+            {t("copy.completeTheRequiredInputsToEstimateComputeCompatibility")}
           </p>
         )}
       </div>

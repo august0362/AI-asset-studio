@@ -1,0 +1,767 @@
+{
+  "contract_version": "1.1",
+  "character": {
+    "contract_version": "1.1",
+    "character_id": "chr_9d27a617fd42",
+    "name": "Ice Lotus Mage",
+    "summary": null,
+    "tags": [
+      "xianxia",
+      "mage"
+    ],
+    "cover_asset_id": null,
+    "version": 1,
+    "created_at": "2026-11-06T13:42:53Z",
+    "updated_at": "2026-11-06T13:42:58Z"
+  },
+  "stages": [
+    {
+      "config": {
+        "stage_id": "s1",
+        "order": 1,
+        "title_key": "stage.s1.title",
+        "objective_key": "stage.s1.objective",
+        "availability": "available",
+        "availability_reason": null,
+        "dependencies": [],
+        "checklist": [
+          {
+            "item_id": "references_tagged",
+            "label_key": "stage.s1.check.references_tagged",
+            "required": true
+          },
+          {
+            "item_id": "direction_chosen",
+            "label_key": "stage.s1.check.direction_chosen",
+            "required": true
+          },
+          {
+            "item_id": "enough_for_spec",
+            "label_key": "stage.s1.check.enough_for_spec",
+            "required": true
+          },
+          {
+            "item_id": "unchangeable_noted",
+            "label_key": "stage.s1.check.unchangeable_noted",
+            "required": false
+          },
+          {
+            "item_id": "sketch_attached",
+            "label_key": "stage.s1.check.sketch_attached",
+            "required": false
+          }
+        ],
+        "required_purposes": [],
+        "guided_questions": []
+      },
+      "state": {
+        "stage_id": "s1",
+        "editorial_status": "approved",
+        "availability": "available",
+        "draft_version": 1,
+        "has_unsubmitted_changes": false,
+        "latest_revision": 1,
+        "pending_revision": null,
+        "approved": {
+          "revision": 1,
+          "approved_at": "2026-11-06T13:42:54Z",
+          "source_revisions": {},
+          "stale": false,
+          "stale_reasons": []
+        },
+        "last_decision": "approved",
+        "blockers": []
+      }
+    },
+    {
+      "config": {
+        "stage_id": "s2",
+        "order": 2,
+        "title_key": "stage.s2.title",
+        "objective_key": "stage.s2.objective",
+        "availability": "available",
+        "availability_reason": null,
+        "dependencies": [
+          {
+            "stage_id": "s1",
+            "kind": "hard"
+          }
+        ],
+        "checklist": [
+          {
+            "item_id": "locked_clear",
+            "label_key": "stage.s2.check.locked_clear",
+            "required": true
+          },
+          {
+            "item_id": "unknowns_marked",
+            "label_key": "stage.s2.check.unknowns_marked",
+            "required": true
+          },
+          {
+            "item_id": "reference_map_done",
+            "label_key": "stage.s2.check.reference_map_done",
+            "required": true
+          },
+          {
+            "item_id": "no_conflicts",
+            "label_key": "stage.s2.check.no_conflicts",
+            "required": true
+          },
+          {
+            "item_id": "rejection_criteria",
+            "label_key": "stage.s2.check.rejection_criteria",
+            "required": false
+          },
+          {
+            "item_id": "3d_constraints",
+            "label_key": "stage.s2.check.3d_constraints",
+            "required": false
+          }
+        ],
+        "required_purposes": [],
+        "guided_questions": [
+          {
+            "question_id": "q_name_role",
+            "label_key": "stage.s2.question.q_name_role",
+            "core": true
+          },
+          {
+            "question_id": "q_identity_marks",
+            "label_key": "stage.s2.question.q_identity_marks",
+            "core": true
+          },
+          {
+            "question_id": "q_appearance",
+            "label_key": "stage.s2.question.q_appearance",
+            "core": true
+          },
+          {
+            "question_id": "q_outfit_layers",
+            "label_key": "stage.s2.question.q_outfit_layers",
+            "core": true
+          },
+          {
+            "question_id": "q_props",
+            "label_key": "stage.s2.question.q_props",
+            "core": true
+          },
+          {
+            "question_id": "q_style",
+            "label_key": "stage.s2.question.q_style",
+            "core": true
+          },
+          {
+            "question_id": "q_reference_map",
+            "label_key": "stage.s2.question.q_reference_map",
+            "core": true
+          },
+          {
+            "question_id": "q_view_details",
+            "label_key": "stage.s2.question.q_view_details",
+            "core": true
+          },
+          {
+            "question_id": "q_variable_vs_fixed",
+            "label_key": "stage.s2.question.q_variable_vs_fixed",
+            "core": true
+          },
+          {
+            "question_id": "q_variants",
+            "label_key": "stage.s2.question.q_variants",
+            "core": false
+          },
+          {
+            "question_id": "q_motion_parts",
+            "label_key": "stage.s2.question.q_motion_parts",
+            "core": false
+          },
+          {
+            "question_id": "q_3d_limits",
+            "label_key": "stage.s2.question.q_3d_limits",
+            "core": false
+          },
+          {
+            "question_id": "q_scale",
+            "label_key": "stage.s2.question.q_scale",
+            "core": false
+          },
+          {
+            "question_id": "q_not_this_character",
+            "label_key": "stage.s2.question.q_not_this_character",
+            "core": false
+          }
+        ]
+      },
+      "state": {
+        "stage_id": "s2",
+        "editorial_status": "approved",
+        "availability": "available",
+        "draft_version": 1,
+        "has_unsubmitted_changes": false,
+        "latest_revision": 1,
+        "pending_revision": null,
+        "approved": {
+          "revision": 1,
+          "approved_at": "2026-11-06T13:42:54Z",
+          "source_revisions": {
+            "s1": 1
+          },
+          "stale": false,
+          "stale_reasons": []
+        },
+        "last_decision": "approved",
+        "blockers": []
+      }
+    },
+    {
+      "config": {
+        "stage_id": "s3",
+        "order": 3,
+        "title_key": "stage.s3.title",
+        "objective_key": "stage.s3.objective",
+        "availability": "available",
+        "availability_reason": null,
+        "dependencies": [
+          {
+            "stage_id": "s2",
+            "kind": "hard"
+          },
+          {
+            "stage_id": "s1",
+            "kind": "soft"
+          }
+        ],
+        "checklist": [
+          {
+            "item_id": "face_hair_ok",
+            "label_key": "stage.s3.check.face_hair_ok",
+            "required": true
+          },
+          {
+            "item_id": "silhouette_ok",
+            "label_key": "stage.s3.check.silhouette_ok",
+            "required": true
+          },
+          {
+            "item_id": "locked_match",
+            "label_key": "stage.s3.check.locked_match",
+            "required": true
+          },
+          {
+            "item_id": "art_direction_ok",
+            "label_key": "stage.s3.check.art_direction_ok",
+            "required": true
+          },
+          {
+            "item_id": "rejects_noted",
+            "label_key": "stage.s3.check.rejects_noted",
+            "required": false
+          }
+        ],
+        "required_purposes": [],
+        "guided_questions": []
+      },
+      "state": {
+        "stage_id": "s3",
+        "editorial_status": "approved",
+        "availability": "available",
+        "draft_version": 2,
+        "has_unsubmitted_changes": false,
+        "latest_revision": 1,
+        "pending_revision": null,
+        "approved": {
+          "revision": 1,
+          "approved_at": "2026-11-06T13:42:55Z",
+          "source_revisions": {
+            "s2": 1,
+            "s1": 1
+          },
+          "stale": false,
+          "stale_reasons": []
+        },
+        "last_decision": "approved",
+        "blockers": []
+      }
+    },
+    {
+      "config": {
+        "stage_id": "s4",
+        "order": 4,
+        "title_key": "stage.s4.title",
+        "objective_key": "stage.s4.objective",
+        "availability": "available",
+        "availability_reason": null,
+        "dependencies": [
+          {
+            "stage_id": "s2",
+            "kind": "hard"
+          },
+          {
+            "stage_id": "s3",
+            "kind": "hard"
+          }
+        ],
+        "checklist": [
+          {
+            "item_id": "locked_covered",
+            "label_key": "stage.s4.check.locked_covered",
+            "required": true
+          },
+          {
+            "item_id": "no_invention",
+            "label_key": "stage.s4.check.no_invention",
+            "required": true
+          },
+          {
+            "item_id": "model_support_checked",
+            "label_key": "stage.s4.check.model_support_checked",
+            "required": true
+          },
+          {
+            "item_id": "turnaround_neutral",
+            "label_key": "stage.s4.check.turnaround_neutral",
+            "required": true
+          },
+          {
+            "item_id": "manifest_reviewed",
+            "label_key": "stage.s4.check.manifest_reviewed",
+            "required": true
+          },
+          {
+            "item_id": "params_separated",
+            "label_key": "stage.s4.check.params_separated",
+            "required": false
+          }
+        ],
+        "required_purposes": [
+          "full_body",
+          "front",
+          "side",
+          "back"
+        ],
+        "guided_questions": []
+      },
+      "state": {
+        "stage_id": "s4",
+        "editorial_status": "approved",
+        "availability": "available",
+        "draft_version": 1,
+        "has_unsubmitted_changes": false,
+        "latest_revision": 1,
+        "pending_revision": null,
+        "approved": {
+          "revision": 1,
+          "approved_at": "2026-11-06T13:42:55Z",
+          "source_revisions": {
+            "s2": 1,
+            "s3": 1
+          },
+          "stale": false,
+          "stale_reasons": []
+        },
+        "last_decision": "approved",
+        "blockers": []
+      }
+    },
+    {
+      "config": {
+        "stage_id": "s5",
+        "order": 5,
+        "title_key": "stage.s5.title",
+        "objective_key": "stage.s5.objective",
+        "availability": "available",
+        "availability_reason": null,
+        "dependencies": [
+          {
+            "stage_id": "s4",
+            "kind": "hard"
+          },
+          {
+            "stage_id": "s2",
+            "kind": "soft"
+          }
+        ],
+        "checklist": [
+          {
+            "item_id": "identity_each",
+            "label_key": "stage.s5.check.identity_each",
+            "required": true
+          },
+          {
+            "item_id": "anatomy_ok",
+            "label_key": "stage.s5.check.anatomy_ok",
+            "required": true
+          },
+          {
+            "item_id": "no_crop_or_occlusion",
+            "label_key": "stage.s5.check.no_crop_or_occlusion",
+            "required": true
+          },
+          {
+            "item_id": "multiview_same_character",
+            "label_key": "stage.s5.check.multiview_same_character",
+            "required": true
+          },
+          {
+            "item_id": "proportions_stable",
+            "label_key": "stage.s5.check.proportions_stable",
+            "required": true
+          },
+          {
+            "item_id": "front_back_readable",
+            "label_key": "stage.s5.check.front_back_readable",
+            "required": true
+          },
+          {
+            "item_id": "set_reviewed_as_whole",
+            "label_key": "stage.s5.check.set_reviewed_as_whole",
+            "required": true
+          }
+        ],
+        "required_purposes": [
+          "full_body",
+          "front",
+          "side",
+          "back"
+        ],
+        "guided_questions": []
+      },
+      "state": {
+        "stage_id": "s5",
+        "editorial_status": "approved",
+        "availability": "available",
+        "draft_version": 1,
+        "has_unsubmitted_changes": false,
+        "latest_revision": 1,
+        "pending_revision": null,
+        "approved": {
+          "revision": 1,
+          "approved_at": "2026-11-06T13:42:58Z",
+          "source_revisions": {
+            "s4": 1,
+            "s2": 1
+          },
+          "stale": false,
+          "stale_reasons": []
+        },
+        "last_decision": "approved",
+        "blockers": []
+      }
+    },
+    {
+      "config": {
+        "stage_id": "s6",
+        "order": 6,
+        "title_key": "stage.s6.title",
+        "objective_key": "stage.s6.objective",
+        "availability": "planned",
+        "availability_reason": "planned_m5",
+        "dependencies": [
+          {
+            "stage_id": "s5",
+            "kind": "hard"
+          },
+          {
+            "stage_id": "s2",
+            "kind": "soft"
+          }
+        ],
+        "checklist": [
+          {
+            "item_id": "silhouette_360",
+            "label_key": "stage.s6.check.silhouette_360",
+            "required": true
+          },
+          {
+            "item_id": "texture_ok",
+            "label_key": "stage.s6.check.texture_ok",
+            "required": true
+          },
+          {
+            "item_id": "mesh_clean",
+            "label_key": "stage.s6.check.mesh_clean",
+            "required": true
+          },
+          {
+            "item_id": "rig_ready",
+            "label_key": "stage.s6.check.rig_ready",
+            "required": true
+          },
+          {
+            "item_id": "export_valid",
+            "label_key": "stage.s6.check.export_valid",
+            "required": true
+          }
+        ],
+        "required_purposes": [],
+        "guided_questions": []
+      },
+      "state": {
+        "stage_id": "s6",
+        "editorial_status": "not_started",
+        "availability": "planned",
+        "draft_version": 0,
+        "has_unsubmitted_changes": false,
+        "latest_revision": null,
+        "pending_revision": null,
+        "approved": null,
+        "last_decision": null,
+        "blockers": [
+          {
+            "code": "STAGE_NOT_AVAILABLE",
+            "severity": "error",
+            "field": "stage_id",
+            "message": "Stage S6 is planned.",
+            "details": {
+              "availability": "planned",
+              "reason": "planned_m5"
+            },
+            "retryable": false
+          }
+        ]
+      }
+    },
+    {
+      "config": {
+        "stage_id": "s7",
+        "order": 7,
+        "title_key": "stage.s7.title",
+        "objective_key": "stage.s7.objective",
+        "availability": "planned",
+        "availability_reason": "out_of_scope",
+        "dependencies": [
+          {
+            "stage_id": "s6",
+            "kind": "hard"
+          }
+        ],
+        "checklist": [
+          {
+            "item_id": "skeleton_ok",
+            "label_key": "stage.s7.check.skeleton_ok",
+            "required": true
+          },
+          {
+            "item_id": "skinning_ok",
+            "label_key": "stage.s7.check.skinning_ok",
+            "required": true
+          },
+          {
+            "item_id": "extreme_poses_ok",
+            "label_key": "stage.s7.check.extreme_poses_ok",
+            "required": true
+          },
+          {
+            "item_id": "animation_test",
+            "label_key": "stage.s7.check.animation_test",
+            "required": true
+          },
+          {
+            "item_id": "engine_import_ok",
+            "label_key": "stage.s7.check.engine_import_ok",
+            "required": true
+          }
+        ],
+        "required_purposes": [],
+        "guided_questions": []
+      },
+      "state": {
+        "stage_id": "s7",
+        "editorial_status": "blocked",
+        "availability": "planned",
+        "draft_version": 0,
+        "has_unsubmitted_changes": false,
+        "latest_revision": null,
+        "pending_revision": null,
+        "approved": null,
+        "last_decision": null,
+        "blockers": [
+          {
+            "code": "STAGE_NOT_AVAILABLE",
+            "severity": "error",
+            "field": "stage_id",
+            "message": "Stage S7 is planned.",
+            "details": {
+              "availability": "planned",
+              "reason": "out_of_scope"
+            },
+            "retryable": false
+          }
+        ]
+      }
+    }
+  ],
+  "approved_outputs": [
+    {
+      "asset_id": "ast_41e3fb2afcf7",
+      "purpose": "key_visual",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27598,
+      "sha256": "ffbe8a52af03eff7a1ff9cc9cca45f5a373bc442a383527c410fcf48a4db19b8",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_41e3fb2afcf7/content",
+      "source": {
+        "job_id": "job_20261106T134254Z_7b89a9",
+        "artifact_id": "art_01",
+        "task_id": "preview_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+        "negative_prompt": null,
+        "seed": null,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": null,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s3",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:54Z"
+    },
+    {
+      "asset_id": "ast_2a680accc04f",
+      "purpose": "full_body",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 26307,
+      "sha256": "8b152f4ad2746fd24b5b2fd0ac2b2650add9ae60a88cae03cd80fe8160884c90",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_2a680accc04f/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_01",
+        "task_id": "fullbody_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+        "negative_prompt": null,
+        "seed": 41000,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41000,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_859436b40620",
+      "purpose": "front",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27101,
+      "sha256": "d05825d97c92a94103f463119d4160afa79bcc849e9fcddb3e30537a797933bb",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_859436b40620/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_02",
+        "task_id": "front_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+        "negative_prompt": null,
+        "seed": 41001,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41001,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_fe134e9b9d59",
+      "purpose": "side",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 28492,
+      "sha256": "c8ae669727ece0b59ebcf9c74c7ac97f94f6393ee9364a7c34d94e8e4262c49d",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_fe134e9b9d59/content",
+      "source": {
+        "job_id": "job_20261106T134257Z_82cc53",
+        "artifact_id": "art_01",
+        "task_id": "side_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+        "negative_prompt": null,
+        "seed": 41002,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41002,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_efcbe722f9c8",
+      "purpose": "back",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27681,
+      "sha256": "ab0486473dbb6214e36fa0fffc5a5f4ecbe738009941f76f80eb1364287709b2",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_efcbe722f9c8/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_03",
+        "task_id": "back_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+        "negative_prompt": null,
+        "seed": 41003,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41003,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    }
+  ]
+}

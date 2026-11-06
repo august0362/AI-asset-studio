@@ -18,7 +18,7 @@ from .common import (
 
 
 class ExpectedOutput(ContractModel):
-    name: str = Field(pattern=r"^[a-z0-9_]+\.(png|glb)$")
+    name: str = Field(pattern=r"^[a-z0-9_-]+\.(png|glb)$")
     kind: ArtifactKind
     format: OutputFormat
     required: bool
@@ -55,3 +55,4 @@ class Artifact(ContractModel):
     height: int | None
     is_primary: bool
     path: str
+    task_id: str | None = None  # v1.1: set for each image of a batch job (§13.9)

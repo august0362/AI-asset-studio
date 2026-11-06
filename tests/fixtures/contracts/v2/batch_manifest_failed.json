@@ -1,0 +1,111 @@
+{
+  "contract_version": "1.1",
+  "manifest_id": "bat_c9781c898515",
+  "character_id": "chr_2a6d9db84567",
+  "kind": "preview",
+  "status": "failed",
+  "approved_spec_revision": 1,
+  "prompt_set_revision": null,
+  "concept_revision": null,
+  "target_model_id": "mock-t2d-basic",
+  "model_revision": null,
+  "references": [],
+  "tasks": [
+    {
+      "task_id": "preview_01",
+      "purpose": "full_body",
+      "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+      "negative_prompt": null,
+      "seed": null,
+      "width": 512,
+      "height": 512,
+      "options": {},
+      "group_id": "g01"
+    },
+    {
+      "task_id": "preview_02",
+      "purpose": "full_body",
+      "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+      "negative_prompt": null,
+      "seed": null,
+      "width": 512,
+      "height": 512,
+      "options": {},
+      "group_id": "g01"
+    }
+  ],
+  "groups": [
+    {
+      "group_id": "g01",
+      "model_id": "mock-t2d-basic",
+      "model_revision": null,
+      "task_ids": [
+        "preview_01",
+        "preview_02"
+      ],
+      "micro_batch_size": 1,
+      "estimated_runtime_seconds": 60
+    }
+  ],
+  "expected_model_loads": 1,
+  "attempts": [
+    {
+      "attempt": 1,
+      "group_id": "g01",
+      "job_id": "job_20261106T134259Z_559e88",
+      "task_ids": [
+        "preview_01",
+        "preview_02"
+      ],
+      "submitted_at": "2026-11-06T13:42:59Z"
+    }
+  ],
+  "results": [
+    {
+      "task_id": "preview_01",
+      "status": "failed",
+      "attempt": 1,
+      "job_id": "job_20261106T134259Z_559e88",
+      "artifact_id": null,
+      "sha256": null,
+      "error": {
+        "code": "KAGGLE_KERNEL_ERROR",
+        "severity": "error",
+        "field": null,
+        "message": "The remote notebook exited with an error. See the job logs.",
+        "details": {
+          "failed_in_status": "running",
+          "remote_status": "error"
+        },
+        "retryable": false
+      },
+      "artifact_missing": false
+    },
+    {
+      "task_id": "preview_02",
+      "status": "failed",
+      "attempt": 1,
+      "job_id": "job_20261106T134259Z_559e88",
+      "artifact_id": null,
+      "sha256": null,
+      "error": {
+        "code": "KAGGLE_KERNEL_ERROR",
+        "severity": "error",
+        "field": null,
+        "message": "The remote notebook exited with an error. See the job logs.",
+        "details": {
+          "failed_in_status": "running",
+          "remote_status": "error"
+        },
+        "retryable": false
+      },
+      "artifact_missing": false
+    }
+  ],
+  "retryable_task_ids": [
+    "preview_01",
+    "preview_02"
+  ],
+  "created_at": "2026-11-06T13:42:59Z",
+  "updated_at": "2026-11-06T13:43:00Z"
+}

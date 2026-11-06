@@ -113,3 +113,34 @@ def test_restart_fails_jobs_that_cannot_resume(harness_factory, tmp_path):
     assert lost["error"]["code"] == "BACKEND_RESTARTED"
     ids = [j["job_id"] for j in second.client.get(f"{API}/jobs").json()["jobs"]]
     assert "job_20261106T000000Z_000000" not in ids  # malformed metadata is skipped, not fatal
+
+
+def test_oversized_upload_without_content_length_is_cut_off_early(harness, monkeypatch):
+    """A chunked body (no Content-Length) stops being read as soon as it passes the limit."""
+    from aas_backend.api import uploads
+
+    monkeypatch.setattr(uploads, "MAX_UPLOAD_BYTES", 10_000)
+    monkeypatch.setattr(uploads, "_MULTIPART_OVERHEAD", 1_000)
+    sent = 0
+    boundary = "aasboundary"
+    head = (
+        f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="big.png"\r\n'
+        "Content-Type: image/png\r\n\r\n"
+    ).encode()
+
+    def body():
+        nonlocal sent
+        yield head + b"\x89PNG\r\n\x1a\n"
+        for _ in range(100):  # up to 400 KB, far over the 11 KB limit
+            sent += 1
+            yield b"\x00" * 4096
+        yield f"\r\n--{boundary}--\r\n".encode()
+
+    response = harness.client.post(
+        f"{API}/uploads",
+        content=body(),
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+    )
+    assert response.status_code == 413
+    assert response.json()["errors"][0]["code"] == "UPLOAD_TOO_LARGE"
+    assert list((harness.data_dir / "inputs" / "staging").iterdir()) == []

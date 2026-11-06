@@ -1,0 +1,7 @@
+Warning: Looks like you're using an outdated `kaggle` version (installed: 2.2.4), please consider upgrading to the latest version (2.2.5)
+Configuration values from C:/Users/someone/AppData/Local/Temp/aas-kcfg-w2myl_0o
+- username: aas-test-user
+- auth_method: ACCESS_TOKEN
+- path: None
+- proxy: None
+- competition: None

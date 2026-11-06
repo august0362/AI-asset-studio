@@ -31,6 +31,7 @@ class KaggleJobSpec:
     arguments: dict[str, Any]
     input_files: list[Path] = field(default_factory=list)
     expected_outputs: list[OutputSpec] = field(default_factory=list)
+    internet: bool = False  # the remote run downloads model weights or packages (D-032)
 
     @property
     def requires_input_upload(self) -> bool:
@@ -71,5 +72,13 @@ class ComputeClient(Protocol):
     def logs(self, remote_ref: str, offset: int) -> tuple[list[str], int]: ...
 
     def download(self, remote_ref: str, dest_dir: Path) -> None: ...
+
+    def release(self, remote_ref: str, *, succeeded: bool = False) -> None:
+        """Best-effort cleanup once the job is terminal: remote inputs, and the remote run if it succeeded."""
+        ...
+
+    def redaction_terms(self) -> list[str]:
+        """Values the backend must redact from logs and responses (tokens, account names)."""
+        ...
 
     def close(self) -> None: ...

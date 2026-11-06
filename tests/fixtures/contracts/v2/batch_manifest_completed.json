@@ -1,0 +1,143 @@
+{
+  "contract_version": "1.1",
+  "manifest_id": "bat_5a313676de8d",
+  "character_id": "chr_9d27a617fd42",
+  "kind": "production",
+  "status": "completed",
+  "approved_spec_revision": 1,
+  "prompt_set_revision": 1,
+  "concept_revision": 1,
+  "target_model_id": "mock-t2d-basic",
+  "model_revision": null,
+  "references": [],
+  "tasks": [
+    {
+      "task_id": "fullbody_01",
+      "purpose": "full_body",
+      "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+      "negative_prompt": null,
+      "seed": 41000,
+      "width": 512,
+      "height": 512,
+      "options": {},
+      "group_id": "g01"
+    },
+    {
+      "task_id": "front_01",
+      "purpose": "front",
+      "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+      "negative_prompt": null,
+      "seed": 41001,
+      "width": 512,
+      "height": 512,
+      "options": {},
+      "group_id": "g01"
+    },
+    {
+      "task_id": "side_01",
+      "purpose": "side",
+      "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+      "negative_prompt": null,
+      "seed": 41002,
+      "width": 512,
+      "height": 512,
+      "options": {},
+      "group_id": "g01"
+    },
+    {
+      "task_id": "back_01",
+      "purpose": "back",
+      "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+      "negative_prompt": null,
+      "seed": 41003,
+      "width": 512,
+      "height": 512,
+      "options": {},
+      "group_id": "g01"
+    }
+  ],
+  "groups": [
+    {
+      "group_id": "g01",
+      "model_id": "mock-t2d-basic",
+      "model_revision": null,
+      "task_ids": [
+        "fullbody_01",
+        "front_01",
+        "side_01",
+        "back_01"
+      ],
+      "micro_batch_size": 1,
+      "estimated_runtime_seconds": 120
+    }
+  ],
+  "expected_model_loads": 1,
+  "attempts": [
+    {
+      "attempt": 1,
+      "group_id": "g01",
+      "job_id": "job_20261106T134255Z_eeee08",
+      "task_ids": [
+        "fullbody_01",
+        "front_01",
+        "side_01",
+        "back_01"
+      ],
+      "submitted_at": "2026-11-06T13:42:55Z"
+    },
+    {
+      "attempt": 2,
+      "group_id": "g01",
+      "job_id": "job_20261106T134257Z_82cc53",
+      "task_ids": [
+        "side_01"
+      ],
+      "submitted_at": "2026-11-06T13:42:57Z"
+    }
+  ],
+  "results": [
+    {
+      "task_id": "fullbody_01",
+      "status": "succeeded",
+      "attempt": 1,
+      "job_id": "job_20261106T134255Z_eeee08",
+      "artifact_id": "art_01",
+      "sha256": "8b152f4ad2746fd24b5b2fd0ac2b2650add9ae60a88cae03cd80fe8160884c90",
+      "error": null,
+      "artifact_missing": false
+    },
+    {
+      "task_id": "front_01",
+      "status": "succeeded",
+      "attempt": 1,
+      "job_id": "job_20261106T134255Z_eeee08",
+      "artifact_id": "art_02",
+      "sha256": "d05825d97c92a94103f463119d4160afa79bcc849e9fcddb3e30537a797933bb",
+      "error": null,
+      "artifact_missing": false
+    },
+    {
+      "task_id": "side_01",
+      "status": "succeeded",
+      "attempt": 2,
+      "job_id": "job_20261106T134257Z_82cc53",
+      "artifact_id": "art_01",
+      "sha256": "c8ae669727ece0b59ebcf9c74c7ac97f94f6393ee9364a7c34d94e8e4262c49d",
+      "error": null,
+      "artifact_missing": false
+    },
+    {
+      "task_id": "back_01",
+      "status": "succeeded",
+      "attempt": 1,
+      "job_id": "job_20261106T134255Z_eeee08",
+      "artifact_id": "art_03",
+      "sha256": "ab0486473dbb6214e36fa0fffc5a5f4ecbe738009941f76f80eb1364287709b2",
+      "error": null,
+      "artifact_missing": false
+    }
+  ],
+  "retryable_task_ids": [],
+  "created_at": "2026-11-06T13:42:55Z",
+  "updated_at": "2026-11-06T13:42:57Z"
+}

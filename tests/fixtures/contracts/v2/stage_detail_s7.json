@@ -1,0 +1,159 @@
+{
+  "contract_version": "1.1",
+  "character": {
+    "character_id": "chr_9d27a617fd42",
+    "name": "Ice Lotus Mage",
+    "tags": [
+      "xianxia",
+      "mage"
+    ],
+    "cover_url": null,
+    "current_stage": "s6",
+    "approved_count": 5,
+    "stage_statuses": {
+      "s1": "approved",
+      "s2": "approved",
+      "s3": "approved",
+      "s4": "approved",
+      "s5": "approved",
+      "s6": "not_started",
+      "s7": "blocked"
+    },
+    "updated_at": "2026-11-06T13:42:58Z"
+  },
+  "character_version": 1,
+  "config": {
+    "stage_id": "s7",
+    "order": 7,
+    "title_key": "stage.s7.title",
+    "objective_key": "stage.s7.objective",
+    "availability": "planned",
+    "availability_reason": "out_of_scope",
+    "dependencies": [
+      {
+        "stage_id": "s6",
+        "kind": "hard"
+      }
+    ],
+    "checklist": [
+      {
+        "item_id": "skeleton_ok",
+        "label_key": "stage.s7.check.skeleton_ok",
+        "required": true
+      },
+      {
+        "item_id": "skinning_ok",
+        "label_key": "stage.s7.check.skinning_ok",
+        "required": true
+      },
+      {
+        "item_id": "extreme_poses_ok",
+        "label_key": "stage.s7.check.extreme_poses_ok",
+        "required": true
+      },
+      {
+        "item_id": "animation_test",
+        "label_key": "stage.s7.check.animation_test",
+        "required": true
+      },
+      {
+        "item_id": "engine_import_ok",
+        "label_key": "stage.s7.check.engine_import_ok",
+        "required": true
+      }
+    ],
+    "required_purposes": [],
+    "guided_questions": []
+  },
+  "state": {
+    "stage_id": "s7",
+    "editorial_status": "blocked",
+    "availability": "planned",
+    "draft_version": 0,
+    "has_unsubmitted_changes": false,
+    "latest_revision": null,
+    "pending_revision": null,
+    "approved": null,
+    "last_decision": null,
+    "blockers": [
+      {
+        "code": "STAGE_NOT_AVAILABLE",
+        "severity": "error",
+        "field": "stage_id",
+        "message": "Stage S7 is planned.",
+        "details": {
+          "availability": "planned",
+          "reason": "out_of_scope"
+        },
+        "retryable": false
+      }
+    ]
+  },
+  "draft": {
+    "contract_version": "1.1",
+    "character_id": "chr_9d27a617fd42",
+    "stage_id": "s7",
+    "draft_version": 0,
+    "based_on_revision": null,
+    "content": {
+      "stage_id": "s7",
+      "notes": null
+    },
+    "checklist": {
+      "items": []
+    },
+    "updated_at": null
+  },
+  "approved_revision": null,
+  "pending_revision": null,
+  "revisions": [],
+  "inputs": [
+    {
+      "stage_id": "s6",
+      "kind": "hard",
+      "revision": null,
+      "content": null,
+      "frozen_assets": []
+    }
+  ],
+  "references": [
+    {
+      "contract_version": "1.1",
+      "reference_id": "ref_1281737f8b78",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "url",
+      "purpose": "moodboard",
+      "title": "Ice mage board",
+      "url": "https://www.pinterest.com/example/ice-mage/",
+      "source_note": null,
+      "mime_type": null,
+      "width": null,
+      "height": null,
+      "size_bytes": null,
+      "sha256": null,
+      "content_url": null,
+      "created_at": "2026-11-06T13:42:53Z"
+    },
+    {
+      "contract_version": "1.1",
+      "reference_id": "ref_8b8ce85ac1ae",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "image",
+      "purpose": "moodboard",
+      "title": "Lotus pond palette",
+      "url": null,
+      "source_note": "Own photo",
+      "mime_type": "image/png",
+      "width": 96,
+      "height": 64,
+      "size_bytes": 209,
+      "sha256": "ac7d080b9bffc30df72ca2f8041b7d9a39ea4c209bef8af3e1df7da6d7e2066a",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/references/ref_8b8ce85ac1ae/content",
+      "created_at": "2026-11-06T13:42:53Z"
+    }
+  ],
+  "resolved_jobs": [],
+  "batches": [],
+  "manifest_preview": null,
+  "resource_plans": []
+}

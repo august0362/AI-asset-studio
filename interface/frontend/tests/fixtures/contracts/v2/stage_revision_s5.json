@@ -1,0 +1,234 @@
+{
+  "contract_version": "1.1",
+  "character_id": "chr_9d27a617fd42",
+  "stage_id": "s5",
+  "revision": 1,
+  "content": {
+    "stage_id": "s5",
+    "items": [
+      {
+        "item_id": "item_001",
+        "purpose": "full_body",
+        "manifest_id": "bat_5a313676de8d",
+        "task_id": "fullbody_01",
+        "job": null,
+        "selected": true,
+        "note": null
+      },
+      {
+        "item_id": "item_002",
+        "purpose": "front",
+        "manifest_id": "bat_5a313676de8d",
+        "task_id": "front_01",
+        "job": null,
+        "selected": true,
+        "note": null
+      },
+      {
+        "item_id": "item_003",
+        "purpose": "side",
+        "manifest_id": "bat_5a313676de8d",
+        "task_id": "side_01",
+        "job": null,
+        "selected": true,
+        "note": null
+      },
+      {
+        "item_id": "item_004",
+        "purpose": "back",
+        "manifest_id": "bat_5a313676de8d",
+        "task_id": "back_01",
+        "job": null,
+        "selected": true,
+        "note": null
+      }
+    ],
+    "consistency_notes": "Same character in every view."
+  },
+  "checklist": {
+    "items": [
+      {
+        "item_id": "identity_each",
+        "checked": true,
+        "note": null
+      },
+      {
+        "item_id": "anatomy_ok",
+        "checked": true,
+        "note": null
+      },
+      {
+        "item_id": "no_crop_or_occlusion",
+        "checked": true,
+        "note": null
+      },
+      {
+        "item_id": "multiview_same_character",
+        "checked": true,
+        "note": null
+      },
+      {
+        "item_id": "proportions_stable",
+        "checked": true,
+        "note": null
+      },
+      {
+        "item_id": "front_back_readable",
+        "checked": true,
+        "note": null
+      },
+      {
+        "item_id": "set_reviewed_as_whole",
+        "checked": true,
+        "note": null
+      }
+    ]
+  },
+  "source_revisions": {
+    "s4": 1,
+    "s2": 1
+  },
+  "submitted_at": "2026-11-06T13:42:58Z",
+  "decision": "approved",
+  "decided_at": "2026-11-06T13:42:58Z",
+  "note": "Front, side and back show the same character.",
+  "frozen_assets": [
+    {
+      "asset_id": "ast_2a680accc04f",
+      "purpose": "full_body",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 26307,
+      "sha256": "8b152f4ad2746fd24b5b2fd0ac2b2650add9ae60a88cae03cd80fe8160884c90",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_2a680accc04f/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_01",
+        "task_id": "fullbody_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+        "negative_prompt": null,
+        "seed": 41000,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41000,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_859436b40620",
+      "purpose": "front",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27101,
+      "sha256": "d05825d97c92a94103f463119d4160afa79bcc849e9fcddb3e30537a797933bb",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_859436b40620/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_02",
+        "task_id": "front_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+        "negative_prompt": null,
+        "seed": 41001,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41001,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_fe134e9b9d59",
+      "purpose": "side",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 28492,
+      "sha256": "c8ae669727ece0b59ebcf9c74c7ac97f94f6393ee9364a7c34d94e8e4262c49d",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_fe134e9b9d59/content",
+      "source": {
+        "job_id": "job_20261106T134257Z_82cc53",
+        "artifact_id": "art_01",
+        "task_id": "side_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+        "negative_prompt": null,
+        "seed": 41002,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41002,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_efcbe722f9c8",
+      "purpose": "back",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27681,
+      "sha256": "ab0486473dbb6214e36fa0fffc5a5f4ecbe738009941f76f80eb1364287709b2",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_efcbe722f9c8/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_03",
+        "task_id": "back_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+        "negative_prompt": null,
+        "seed": 41003,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41003,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    }
+  ],
+  "batch_manifest_id": null
+}

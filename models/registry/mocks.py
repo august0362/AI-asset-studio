@@ -1,6 +1,8 @@
 """The five mock capability records (docs/CONTRACTS.md §2.2). Test fixtures, not a model selection.
 
-Values the table does not state are marked ``# gap`` and reported to the owner.
+Values the table does not state are marked ``# gap``. The owner accepted them on 2026-11-06 (DECISIONS A-07);
+they match the frontend fixtures. A ``None`` image dimension means "no constraint", and a file-size gap falls back to
+the global 50 MiB limit.
 """
 
 from __future__ import annotations
@@ -24,13 +26,20 @@ _NO_IMAGES = {
 }
 _PROMPT_REQUIRED = {"prompt_supported": True, "prompt_required": True, "prompt_max_length": 1000}
 _NO_PROMPT = {"prompt_supported": False, "prompt_required": False, "prompt_max_length": None}
-_I3D_IMAGE_LIMITS = {  # §2.1 example values; reused for mock-i3d-single (gap)
+_I3D_IMAGE_LIMITS = {  # the §2.1 example values (mock-i3d-multiview)
     "supported_mime_types": ["image/png", "image/jpeg"],
     "maximum_file_size_bytes": 20971520,
     "min_image_width": 512,
     "min_image_height": 512,
     "max_image_width": 4096,
     "max_image_height": 4096,
+}
+_GAP_IMAGE_LIMITS = {  # gap: the global file-size limit, no dimension constraints
+    "maximum_file_size_bytes": 52428800,
+    "min_image_width": None,
+    "min_image_height": None,
+    "max_image_width": None,
+    "max_image_height": None,
 }
 
 MOCK_CAPABILITIES: list[ModelCapabilities] = [
@@ -39,7 +48,7 @@ MOCK_CAPABILITIES: list[ModelCapabilities] = [
         {
             "contract_version": "1.0",
             "model_id": "mock-t2d-basic",
-            "display_name": "Mock Text→2D",
+            "display_name": "Mock Basic Text→2D",
             "adapter": "mock_text_to_2d",
             "is_mock": True,
             "availability": "available",
@@ -65,7 +74,7 @@ MOCK_CAPABILITIES: list[ModelCapabilities] = [
         {
             "contract_version": "1.0",
             "model_id": "mock-t2d-styleref",
-            "display_name": "Mock Text→2D with style reference",
+            "display_name": "Mock Style Reference Text→2D",
             "adapter": "mock_text_to_2d",
             "is_mock": True,
             "availability": "experimental",
@@ -78,11 +87,7 @@ MOCK_CAPABILITIES: list[ModelCapabilities] = [
                 "supported_image_roles": ["style_reference"],
                 "required_image_roles": [],
                 "supported_mime_types": ["image/png", "image/jpeg", "image/webp"],  # gap
-                "maximum_file_size_bytes": 20971520,  # gap
-                "min_image_width": 256,  # gap
-                "min_image_height": 256,  # gap
-                "max_image_width": 4096,  # gap
-                "max_image_height": 4096,  # gap
+                **_GAP_IMAGE_LIMITS,
             },
             "supported_output_formats": ["png"],
             "runtime": {
@@ -97,7 +102,7 @@ MOCK_CAPABILITIES: list[ModelCapabilities] = [
         {
             "contract_version": "1.0",
             "model_id": "mock-i3d-single",
-            "display_name": "Mock Single-view Image→3D",
+            "display_name": "Mock Single Image→3D",
             "adapter": "mock_image_to_3d",
             "is_mock": True,
             "availability": "available",
@@ -109,7 +114,8 @@ MOCK_CAPABILITIES: list[ModelCapabilities] = [
                 "max_images": 1,
                 "supported_image_roles": ["front"],
                 "required_image_roles": ["front"],
-                **_I3D_IMAGE_LIMITS,
+                "supported_mime_types": ["image/png", "image/jpeg"],  # gap (V-12 needs WebP rejected)
+                **_GAP_IMAGE_LIMITS,
             },
             "supported_output_formats": ["glb"],
             "runtime": {
@@ -154,7 +160,7 @@ MOCK_CAPABILITIES: list[ModelCapabilities] = [
         {
             "contract_version": "1.0",
             "model_id": "mock-t3d-basic",
-            "display_name": "Mock Text→3D",
+            "display_name": "Mock Basic Text→3D",
             "adapter": "mock_text_to_3d",  # no adapter until M6; the model is `planned` and never invoked
             "is_mock": True,
             "availability": "planned",

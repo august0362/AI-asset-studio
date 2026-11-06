@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-asset-studio"
-version = "0.2.0"
-description = "AI Asset Studio: FastAPI backend, model contracts/adapters and the Kaggle connector (M2: mock compute)."
+version = "0.3.0"
+description = "AI Asset Studio: FastAPI backend, model contracts/adapters and the Kaggle connector (M3: mock and Kaggle compute)."
 requires-python = ">=3.11"
 # Pinned when the package was created (docs/ARCHITECTURE.md §3).
 dependencies = [
@@ -13,6 +13,7 @@ dependencies = [
     "uvicorn==0.54.0",
     "pydantic==2.14.3",
     "pydantic-settings==2.16.2",
+    "python-dotenv==1.2.4",  # already required by pydantic-settings; imported directly for AAS_PROFILE_* (M3)
     "python-multipart==0.0.33",
     "pillow==13.0.0",
 ]

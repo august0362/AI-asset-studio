@@ -1,6 +1,7 @@
 """The canonical examples in docs/CONTRACTS.md validate against the Pydantic models, and the mocks match them.
 
-Shared fixtures in ``tests/fixtures/contracts/*.json`` (CONTRACTS §11) are validated too when present.
+Shared fixtures (CONTRACTS §11) are validated too: ``tests/fixtures/contracts/*.json`` and the copies the frontend
+serves from ``interface/frontend/tests/fixtures/contracts/*.json``.
 """
 
 from __future__ import annotations
@@ -37,7 +38,10 @@ from models.registry.validation import parse_create_job_request
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACTS = ROOT / "docs" / "CONTRACTS.md"
-FIXTURES = ROOT / "tests" / "fixtures" / "contracts"
+FIXTURE_DIRS = [
+    ROOT / "tests" / "fixtures" / "contracts",
+    ROOT / "interface" / "frontend" / "tests" / "fixtures" / "contracts",
+]
 PLACEHOLDER_TIME = "2026-11-06T10:20:00Z"
 
 SECTION_MODELS: dict[str, type[BaseModel]] = {
@@ -113,7 +117,7 @@ def json_examples() -> list[tuple[str, Any]]:
     return examples
 
 
-EXAMPLES = json_examples()
+EXAMPLES = [(s, e) for s, e in json_examples() if not s.startswith("13")]  # §13 (v1.1): test_contract_v2.py
 
 
 def test_every_documented_example_is_covered():
@@ -129,12 +133,8 @@ def test_example_validates_against_its_model(section, example):
         assert request is not None, errors
         return
     payload = fill_placeholders(example)
-    if model is GenerationResult:
-        # §3.4 abbreviates compute.resource_plan to three fields of request B's plan; the full plan is §7.3.
-        full_plan = next(obj for s, obj in EXAMPLES if s == "7.3")
-        abbreviated = payload["compute"]["resource_plan"]
-        assert {k: full_plan[k] for k in abbreviated} == abbreviated
-        payload["compute"]["resource_plan"] = full_plan
+    if model is GenerationResult:  # D-020: the job detail carries the full §7.3 plan of request B
+        assert payload["compute"]["resource_plan"] == next(obj for s, obj in EXAMPLES if s == "7.3")
     instance = model.model_validate(payload)
     if model is not GenerationResult:  # the §3.4 example also abbreviates timestamps
         assert instance.model_dump(mode="json") == example
@@ -218,7 +218,8 @@ def classify(payload: dict[str, Any]) -> type[BaseModel] | None:
     return next((model for required, model in rules if required <= keys), None)
 
 
-FIXTURE_FILES = sorted(FIXTURES.glob("*.json")) if FIXTURES.is_dir() else []
+FIXTURE_FILES = sorted(path for d in FIXTURE_DIRS if d.is_dir() for path in d.glob("*.json"))
+LIST_CONTAINERS = ("models", "profiles", "jobs", "artifacts")
 
 
 @pytest.mark.skipif(not FIXTURE_FILES, reason="no shared fixtures in tests/fixtures/contracts yet")
@@ -226,11 +227,27 @@ FIXTURE_FILES = sorted(FIXTURES.glob("*.json")) if FIXTURES.is_dir() else []
 def test_shared_fixture_validates(path):
     payload = json.loads(path.read_text(encoding="utf-8"))
     items = payload if isinstance(payload, list) else [payload]
+    if isinstance(payload, dict) and classify(payload) is None:  # e.g. {"models": [...]} from a list endpoint
+        items = next((payload[k] for k in LIST_CONTAINERS if isinstance(payload.get(k), list)), items)
     for item in items:
         model = classify(item) if isinstance(item, dict) else None
         if model is None:
-            pytest.skip(f"{path.name}: payload type not recognized")
+            pytest.skip(f"{path.name}: not a contract payload (e.g. binary-fixture metadata)")
         if model is CreateJobRequest:
             assert parse_create_job_request(item)[0] is not None
         else:
             model.model_validate(item)
+
+
+FRONTEND_MODELS = ROOT / "interface" / "frontend" / "tests" / "fixtures" / "contracts" / "models.json"
+
+
+@pytest.mark.skipif(not FRONTEND_MODELS.is_file(), reason="frontend model fixtures not present")
+def test_frontend_mock_records_equal_the_backend_registry():
+    """Both sides must use the same five mock records, including the A-07 placeholder values."""
+    payload = json.loads(FRONTEND_MODELS.read_text(encoding="utf-8"))
+    frontend = payload["models"] if isinstance(payload, dict) else payload
+    registry = default_registry()
+    assert {m["model_id"] for m in frontend} == {m.model_id for m in registry.list()}
+    for record in frontend:
+        assert registry.get(record["model_id"]).model_dump(mode="json") == record, record["model_id"]

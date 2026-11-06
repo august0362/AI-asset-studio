@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./mockTest";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -7,29 +7,23 @@ test("upload decoding rejects corrupt content and uses bytes instead of filename
   page,
 }) => {
   await page.goto("/generate/image-to-3d");
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "not-an-image.png",
-      mimeType: "image/png",
-      buffer: Buffer.from("plain text"),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "not-an-image.png",
+    mimeType: "image/png",
+    buffer: Buffer.from("plain text"),
+  });
   await expect(page.getByText("UPLOAD_UNSUPPORTED_TYPE · file")).toBeVisible();
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "corrupt.png",
-      mimeType: "image/png",
-      buffer: Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "corrupt.png",
+    mimeType: "image/png",
+    buffer: Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+  });
   await expect(page.getByText("UPLOAD_CORRUPT · file")).toBeVisible();
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "valid-but-named.jpg",
-      mimeType: "image/jpeg",
-      buffer: await readFile(png),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "valid-but-named.jpg",
+    mimeType: "image/jpeg",
+    buffer: await readFile(png),
+  });
   await expect(
     page.getByText("valid-but-named.jpg", { exact: true }),
   ).toBeVisible();
@@ -257,7 +251,7 @@ test("all resource scenarios and planned route remain honest", async ({
       ).toBeVisible();
     if (scenario === "quota_missing")
       await expect(
-        page.getByText("Quota was not reported in this mock scenario."),
+        page.getByText("COMPUTE_QUOTA_UNKNOWN · compute.profile_id").first(),
       ).toBeVisible();
     if (scenario === "quota_low")
       await expect(

@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useI18n } from "../../i18n";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Box, LockKeyhole, WandSparkles } from "lucide-react";
@@ -8,28 +9,29 @@ import type { Category, CreateJobRequest, Pipeline } from "../../api/types";
 import { validateRequest } from "../../validation/validate";
 import {
   ArtifactPreview,
+  ArtifactImage,
   DownloadButton,
 } from "../../components/ArtifactPreview";
 import {
   Badge,
-  categoryLabels,
   Empty,
   Failure,
   Issues,
   Loading,
   Panel,
-  pipelineLabels,
   Status,
 } from "../../components/ui";
 import { useDraft } from "./Draft";
 import { ImageInputs } from "./ImageInputs";
 import { ComputeInspector } from "./ComputeInspector";
+import { formatModelTime } from "./modelTime";
 const routeToPipeline: Record<string, Pipeline> = {
   "text-to-2d": "text_to_2d",
   "image-to-3d": "image_to_3d",
   "text-to-3d": "text_to_3d",
 };
 export function GeneratePage() {
+  const { t, number, categoryLabels, pipelineLabels } = useI18n();
   const { pipeline: route = "image-to-3d" } = useParams(),
     pipeline = routeToPipeline[route];
   const { draft, setDraft } = useDraft(),
@@ -40,6 +42,10 @@ export function GeneratePage() {
   const jobs = useJobs({ status: "completed" }),
     active = useJob(draft.jobId);
   const model = data.models?.find((m) => m.model_id === draft.modelId);
+  useEffect(() => {
+    if (!draft.profileId && data.profileId)
+      setDraft((d) => ({ ...d, profileId: d.profileId || data.profileId! }));
+  }, [draft.profileId, data.profileId, setDraft]);
   const request = useMemo<CreateJobRequest>(
     () => ({
       contract_version: "1.0",
@@ -59,14 +65,18 @@ export function GeneratePage() {
       ),
       output_format: pipeline === "text_to_2d" ? "png" : "glb",
       compute: {
-        profile_id: draft.profileId,
+        profile_id: data.profileId ?? "",
         accelerator_id: draft.acceleratorId,
       },
     }),
-    [draft, model, pipeline, requestId],
+    [draft, model, pipeline, requestId, data.profileId],
   );
   const report =
-    data.catalog && data.models && data.profiles && data.snapshot
+    data.catalog &&
+    data.models &&
+    data.profiles &&
+    data.snapshot &&
+    !data.snapshotError
       ? validateRequest(request, {
           catalog: data.catalog,
           models: data.models,
@@ -91,8 +101,8 @@ export function GeneratePage() {
   });
   if (!pipeline)
     return (
-      <Empty title="Unknown pipeline">
-        <Link to="/generate/image-to-3d">Open Image → 3D</Link>
+      <Empty title={t("copy.unknownPipeline")}>
+        <Link to="/generate/image-to-3d">{t("copy.openImage3D")}</Link>
       </Empty>
     );
   if (data.error) return <Failure error={data.error} />;
@@ -103,6 +113,7 @@ export function GeneratePage() {
       m.supported_pipeline_types.includes(pipeline) &&
       m.supported_asset_categories.includes(draft.category),
   );
+  const modelTime = formatModelTime(model, { t, number });
   const example = jobs.data?.pages
     .flatMap((p) => p.jobs)
     .find((j) => j.pipeline_type === pipeline);
@@ -112,6 +123,11 @@ export function GeneratePage() {
   const output =
     exampleJob?.artifacts.find((a) => a.is_primary) ??
     (!draft.jobId ? example?.primary_artifact : null);
+  const preview = active.data?.artifacts.find(
+    (a) =>
+      a.kind === "preview" &&
+      a.artifact_id === active.data?.preview?.artifact_id,
+  );
   const isRunning =
     active.data && !["completed", "failed"].includes(active.data.status);
   const invalid = report?.errors.map((e) => e.field ?? "") ?? [];
@@ -119,13 +135,13 @@ export function GeneratePage() {
     <>
       <div className="page-heading">
         <div>
-          <div className="breadcrumb">Workspace / Generation</div>
-          <h1>Generate studio</h1>
+          <div className="breadcrumb">{t("copy.workspaceGeneration")}</div>
+          <h1>{t("copy.generateStudio")}</h1>
         </div>
-        <Badge tone="violet">M1 · Mock workstation</Badge>
+        <Badge tone="secondary">{t("copy.m1MockWorkstation")}</Badge>
       </div>
       <div className="studio-controls">
-        <div className="pipeline-tabs" aria-label="Pipeline selector">
+        <div className="pipeline-tabs" aria-label={t("copy.pipelineSelector")}>
           {data.catalog.pipelines.map((p) => (
             <button
               key={p.pipeline_type}
@@ -134,7 +150,7 @@ export function GeneratePage() {
               aria-pressed={pipeline === p.pipeline_type}
               title={
                 p.availability === "planned"
-                  ? "PIPELINE_NOT_AVAILABLE — Planned for M6"
+                  ? t("copy.pipelineNotAvailablePlannedForM6")
                   : undefined
               }
               onClick={() => {
@@ -158,13 +174,15 @@ export function GeneratePage() {
               ) : (
                 <WandSparkles size={15} aria-hidden="true" />
               )}
-              {p.display_name}
-              {p.availability === "planned" && <small>Planned · M6</small>}
+              {pipelineLabels[p.pipeline_type]}
+              {p.availability === "planned" && (
+                <small>{t("copy.plannedM6")}</small>
+              )}
             </button>
           ))}
         </div>
         <label className="inline-field">
-          Asset category
+          {t("copy.assetCategory")}
           <select
             name="asset-category"
             value={draft.category}
@@ -180,7 +198,7 @@ export function GeneratePage() {
           </select>
         </label>
         <Link className="text-link history-link" to="/jobs">
-          Job history
+          {t("copy.jobHistory")}
         </Link>
       </div>
       {pipeline === "text_to_3d" ? (
@@ -189,16 +207,19 @@ export function GeneratePage() {
       <div className="studio-grid">
         <Panel
           title={
-            model.inputs.max_images ? "Reference ingestion" : "Prompt workspace"
+            model.inputs.max_images
+              ? t("copy.referenceIngestion")
+              : t("copy.promptWorkspace")
           }
           extra={<Badge>{pipelineLabels[pipeline]}</Badge>}
           className="input-panel"
         >
           <div className="panel-body">
             <label className="field">
-              <span>Model</span>
+              <span>{t("copy.model")}</span>
               <select
                 name="model"
+                title={modelTime?.tooltip}
                 value={draft.modelId}
                 aria-invalid={
                   invalid.includes("model_id") ||
@@ -209,29 +230,47 @@ export function GeneratePage() {
                 }
               >
                 {!compatible.includes(model) && (
-                  <option value={model.model_id}>
-                    {model.display_name} (incompatible, retained)
+                  <option value={model.model_id} title={modelTime?.tooltip}>
+                    {model.display_name}
+                    {modelTime ? ` ${modelTime.label}` : ""}
+                    {t("copy.incompatibleRetained")}
                   </option>
                 )}
-                {compatible.map((m) => (
-                  <option value={m.model_id} key={m.model_id}>
-                    {m.display_name}
-                    {m.availability === "experimental" ? " · Experimental" : ""}
-                  </option>
-                ))}
+                {compatible.map((m) => {
+                  const time = formatModelTime(m, { t, number });
+                  return (
+                    <option
+                      value={m.model_id}
+                      key={m.model_id}
+                      title={time?.tooltip}
+                    >
+                      {m.display_name}
+                      {time ? ` ${time.label}` : ""}
+                      {m.availability === "experimental"
+                        ? t("copy.experimental")
+                        : ""}
+                    </option>
+                  );
+                })}
               </select>
             </label>
             <p className="small muted">
               {model.inputs.max_images
-                ? "Use clear, consistent views. Full-body references help preserve silhouette and identity."
-                : "Describe the subject, materials, silhouette and visual style."}
+                ? t(
+                    "copy.useClearConsistentViewsFullBodyReferencesHelpPreserveSilhouetteAndIdentity",
+                  )
+                : t("copy.describeTheSubjectMaterialsSilhouetteAndVisualStyle")}
             </p>
             {model.inputs.prompt_supported || draft.prompt ? (
               <label className="field">
                 <span>
                   {model.inputs.prompt_supported
-                    ? `Prompt${model.inputs.prompt_required ? " · Required" : " · Optional"}`
-                    : "Retained prompt · Unsupported"}
+                    ? t(
+                        model.inputs.prompt_required
+                          ? "generate.requiredPrompt"
+                          : "generate.optionalPrompt",
+                      )
+                    : t("copy.retainedPromptUnsupported")}
                 </span>
                 <textarea
                   name="prompt"
@@ -241,18 +280,23 @@ export function GeneratePage() {
                   onChange={(e) =>
                     setDraft((d) => ({ ...d, prompt: e.target.value }))
                   }
-                  placeholder="Ornate frost greatsword, crystalline blade…"
+                  placeholder={t("copy.ornateFrostGreatswordCrystallineBlade")}
                   rows={6}
                 />
                 <small>
-                  {draft.prompt.trim().length} /{" "}
-                  {model.inputs.prompt_max_length ?? "not supported"}
+                  {t("generate.promptCount", {
+                    count: number(draft.prompt.trim().length, 0),
+                    max:
+                      model.inputs.prompt_max_length === null
+                        ? t("copy.notSupported")
+                        : number(model.inputs.prompt_max_length, 0),
+                  })}
                 </small>
               </label>
             ) : null}
             {!model.inputs.prompt_supported && draft.prompt && (
               <button onClick={() => setDraft((d) => ({ ...d, prompt: "" }))}>
-                Clear retained prompt
+                {t("copy.clearRetainedPrompt")}
               </button>
             )}
             {model.inputs.max_images > 0 || draft.uploads.length > 0 ? (
@@ -290,13 +334,13 @@ export function GeneratePage() {
           </div>
           <div className="panel-foot">
             <span className="status-dot" />
-            Inputs stay in your draft when switching models.
+            {t("copy.inputsStayInYourDraftWhenSwitchingModels")}
           </div>
         </Panel>
         <Panel
-          title="Asset viewport"
+          title={t("copy.assetViewport")}
           extra={
-            <Badge tone="cyan">
+            <Badge tone="info">
               {output?.format.toUpperCase() ??
                 request.output_format.toUpperCase()}
             </Badge>
@@ -304,8 +348,10 @@ export function GeneratePage() {
           className="viewport-panel"
         >
           <div className="viewport-subhead">
-            <span>{draft.jobId ? "Current job" : "Example fixture"}</span>
-            <Badge>MOCK output</Badge>
+            <span>
+              {draft.jobId ? t("copy.currentJob") : t("copy.exampleFixture")}
+            </span>
+            <Badge>{t("copy.mockOutput")}</Badge>
           </div>
           {output && previewJobId ? (
             <ArtifactPreview jobId={previewJobId} artifact={output} />
@@ -313,13 +359,17 @@ export function GeneratePage() {
             <Empty
               title={
                 isRunning
-                  ? "Your mock job is processing"
-                  : "Your next asset starts here"
+                  ? t("copy.yourMockJobIsProcessing")
+                  : t("copy.yourNextAssetStartsHere")
               }
             >
               {isRunning
-                ? "Status updates every 2 seconds. Progress percentage is not reported."
-                : "Add inputs, review compatibility and generate a fixture preview."}
+                ? t(
+                    "copy.statusUpdatesEvery2SecondsProgressPercentageIsNotReported",
+                  )
+                : t(
+                    "copy.addInputsReviewCompatibilityAndGenerateAFixturePreview",
+                  )}
             </Empty>
           )}
           <div className="panel-body result-summary" aria-live="polite">
@@ -331,7 +381,7 @@ export function GeneratePage() {
                     to={`/jobs/${active.data.job_id}`}
                     className="text-link"
                   >
-                    View job & logs
+                    {t("copy.viewJobLogs")}
                   </Link>
                 </div>
                 <small className="muted break-word">{active.data.job_id}</small>
@@ -341,13 +391,24 @@ export function GeneratePage() {
             {active.error && <Failure error={active.error} />}
             <p className="muted small">
               {pipeline === "image_to_3d"
-                ? "Reconstruction may approximate unseen regions. "
+                ? t("copy.reconstructionMayApproximateUnseenRegions")
                 : ""}
-              M1 returns fixed test artifacts. Prompt and options are validated;
-              no AI inference runs.
+              {t(
+                "copy.m1ReturnsFixedTestArtifactsPromptAndOptionsAreValidatedNoAiInferenceRuns",
+              )}
             </p>
             {output && previewJobId && (
               <DownloadButton jobId={previewJobId} artifact={output} />
+            )}
+            {preview && previewJobId && (
+              <figure className="artifact-thumbnail">
+                <ArtifactImage
+                  jobId={previewJobId}
+                  artifact={preview}
+                  alt={t("copy.pngPreviewOfTheGenerated3DArtifact")}
+                />
+                <figcaption>{t("copy.previewPng")}</figcaption>
+              </figure>
             )}
           </div>
         </Panel>
@@ -355,6 +416,7 @@ export function GeneratePage() {
           model={model}
           models={data.models}
           profiles={data.profiles}
+          snapshotError={data.snapshotError}
           report={report}
           outputFormat={request.output_format}
           isRunning={!!isRunning}

@@ -71,6 +71,7 @@ def build_snapshot(
     telemetry_source: Source,
     now: datetime,
     reporter_interval: int = DEFAULT_REPORTER_INTERVAL,
+    auth_message: str | None = None,
 ) -> KaggleResourceSnapshot:
     errors: list[ErrorItem] = []
     accelerators = {a.accelerator_id: a for a in profile.accelerators}
@@ -81,7 +82,7 @@ def build_snapshot(
                 "KAGGLE_AUTH_FAILED",
                 "error",
                 "authentication_status",
-                "The Kaggle credentials for this profile are missing or were rejected.",
+                auth_message or "The Kaggle credentials for this profile are missing or were rejected.",
             )
         )
 
@@ -307,14 +308,16 @@ class ResourceMonitor:
         self._clock = clock
         self._lock = threading.Lock()
         self.auth_status: AuthStatus = "unknown"
+        self.auth_message: str | None = None
         self.quota: QuotaReading | None = None
         self.session: SessionState | None = None
         self.telemetry: TelemetrySample | None = None
         self.session_job_id: str | None = None
 
-    def set_auth(self, status: AuthStatus) -> None:
+    def set_auth(self, status: AuthStatus, message: str | None = None) -> None:
         with self._lock:
             self.auth_status = status
+            self.auth_message = message
 
     def set_quota(self, reading: QuotaReading | None) -> None:
         with self._lock:
@@ -360,4 +363,5 @@ class ResourceMonitor:
                 telemetry_source=self._telemetry_source,
                 now=self._clock(),
                 reporter_interval=self._interval,
+                auth_message=self.auth_message,
             )

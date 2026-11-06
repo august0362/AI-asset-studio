@@ -1,6 +1,6 @@
 import type {
   ApiClient,
-  Artifact,
+  ArtifactsResponse,
   Catalog,
   Category,
   ComputeProfile,
@@ -18,8 +18,11 @@ import type {
   ValidationReport,
 } from "./types";
 import { ApiError } from "./errors";
-export class HttpApiClient implements ApiClient {
-  constructor(private base = "http://127.0.0.1:8000/api/v1") {}
+import { HttpCharacterApi } from "./HttpCharacterApi";
+export class HttpApiClient extends HttpCharacterApi implements ApiClient {
+  constructor(private base = "http://127.0.0.1:8000/api/v1") {
+    super(base);
+  }
   private async request<T>(
     path: string,
     method = "GET",
@@ -69,6 +72,9 @@ export class HttpApiClient implements ApiClient {
   uploadContent(id: string) {
     return this.content(`/uploads/${encodeURIComponent(id)}/content`);
   }
+  uploadRecord(id: string) {
+    return this.request<UploadRecord>(`/uploads/${encodeURIComponent(id)}`);
+  }
   deleteUpload(id: string) {
     return this.request<void>(`/uploads/${encodeURIComponent(id)}`, "DELETE");
   }
@@ -111,7 +117,7 @@ export class HttpApiClient implements ApiClient {
     return this.request<void>(`/jobs/${encodeURIComponent(id)}`, "DELETE");
   }
   artifacts(id: string) {
-    return this.request<Artifact[]>(
+    return this.request<ArtifactsResponse>(
       `/jobs/${encodeURIComponent(id)}/artifacts`,
     );
   }

@@ -7,6 +7,7 @@ from collections.abc import Iterable
 from ..adapters import ADAPTERS, ModelAdapter
 from ..contracts import ModelCapabilities
 from .mocks import MOCK_CAPABILITIES
+from .real import REAL_CAPABILITIES
 
 
 class ModelRegistry:
@@ -44,4 +45,15 @@ class ModelRegistry:
 
 
 def default_registry() -> ModelRegistry:
+    """The five mocks: mock compute mode and the contract tests."""
     return ModelRegistry(MOCK_CAPABILITIES)
+
+
+def full_registry() -> ModelRegistry:
+    """Mocks plus the real models (D-034). Used in Kaggle mode only: real models need a Kaggle GPU and the
+    internet, so mock mode, which runs entrypoints on this machine, never offers them."""
+    return ModelRegistry([*MOCK_CAPABILITIES, *REAL_CAPABILITIES])
+
+
+def registry_for(compute_mode: str) -> ModelRegistry:
+    return full_registry() if compute_mode == "kaggle" else default_registry()

@@ -1,0 +1,17 @@
+{
+  "contract_version": "1.1",
+  "reference_id": "ref_8b8ce85ac1ae",
+  "character_id": "chr_9d27a617fd42",
+  "kind": "image",
+  "purpose": "moodboard",
+  "title": "Lotus pond palette",
+  "url": null,
+  "source_note": "Own photo",
+  "mime_type": "image/png",
+  "width": 96,
+  "height": 64,
+  "size_bytes": 209,
+  "sha256": "ac7d080b9bffc30df72ca2f8041b7d9a39ea4c209bef8af3e1df7da6d7e2066a",
+  "content_url": "/api/v1/characters/chr_9d27a617fd42/references/ref_8b8ce85ac1ae/content",
+  "created_at": "2026-11-06T13:42:53Z"
+}

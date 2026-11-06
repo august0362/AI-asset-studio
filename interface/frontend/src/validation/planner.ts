@@ -5,7 +5,7 @@ import type {
   ModelCapabilities,
   ResourcePlan,
 } from "../api/types";
-import { issue } from "../api/errors";
+import { validationIssue as issue } from "../i18n/validation";
 
 export function planResources(
   model: ModelCapabilities,
@@ -34,63 +34,29 @@ export function planResources(
         a.vram_bytes_per_device !== null &&
         runtime.minimum_gpu_vram_bytes > a.vram_bytes_per_device
       )
-        add(
-          issue(
-            "COMPUTE_VRAM_INSUFFICIENT",
-            "compute.accelerator_id",
-            "This model exceeds the VRAM available on each device. Select another accelerator.",
-          ),
-        );
+        add(issue("COMPUTE_VRAM_INSUFFICIENT", "compute.accelerator_id"));
       else if (
         a.vram_bytes_per_device === null ||
         model.unknown_requirements.includes("runtime.minimum_gpu_vram_bytes")
       )
-        add(
-          issue(
-            "COMPUTE_VRAM_UNKNOWN",
-            "compute.accelerator_id",
-            "Minimum VRAM is unknown. Compatibility cannot be confirmed.",
-            "warning",
-          ),
-        );
+        add(issue("COMPUTE_VRAM_UNKNOWN", "compute.accelerator_id", "warning"));
     }
     if (required === null)
-      add(
-        issue(
-          "MODEL_RUNTIME_UNKNOWN",
-          "model_id",
-          "Runtime is unknown; the session estimate cannot be confirmed.",
-          "warning",
-        ),
-      );
+      add(issue("MODEL_RUNTIME_UNKNOWN", "model_id", "warning"));
     else if (required > a.max_session_seconds)
-      add(
-        issue(
-          "COMPUTE_SESSION_LIMIT_EXCEEDED",
-          "compute.accelerator_id",
-          "Estimated runtime exceeds the session limit. Choose a faster model or a longer session.",
-        ),
-      );
+      add(issue("COMPUTE_SESSION_LIMIT_EXCEEDED", "compute.accelerator_id"));
     if (a.kind !== "cpu") {
       const quota =
         a.kind === "tpu"
           ? snapshot.tpu_quota_remaining_hours
           : snapshot.gpu_quota_remaining_hours;
       if (quota === null || snapshot.freshness_status.quota !== "fresh")
-        add(
-          issue(
-            "COMPUTE_QUOTA_UNKNOWN",
-            "compute.profile_id",
-            "Quota is unknown or stale. Verify availability before a real run.",
-            "warning",
-          ),
-        );
+        add(issue("COMPUTE_QUOTA_UNKNOWN", "compute.profile_id", "warning"));
       else if (required !== null && required > quota * 3600)
         add(
           issue(
             "COMPUTE_QUOTA_INSUFFICIENT",
             "compute.accelerator_id",
-            "Estimated runtime exceeds remaining quota. Wait for a reset or use a smaller job.",
             "error",
             {},
             true,
@@ -141,11 +107,7 @@ export function planResources(
     candidates,
     warnings: result?.reasons.filter((e) => e.severity === "warning") ?? [],
     errors: result?.reasons.filter((e) => e.severity === "error") ?? [
-      issue(
-        "MODEL_ACCELERATOR_INCOMPATIBLE",
-        "compute.accelerator_id",
-        "This accelerator does not meet the model requirements. Choose a compatible accelerator.",
-      ),
+      issue("MODEL_ACCELERATOR_INCOMPATIBLE", "compute.accelerator_id"),
     ],
   };
 }

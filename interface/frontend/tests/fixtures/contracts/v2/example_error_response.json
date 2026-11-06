@@ -1,0 +1,29 @@
+{
+  "contract_version": "1.1",
+  "warnings": [],
+  "errors": [
+    {
+      "code": "STAGE_CHECKLIST_INCOMPLETE",
+      "severity": "error",
+      "field": "checklist",
+      "message": "Required checklist items are not checked.",
+      "details": {
+        "item_ids": [
+          "manifest_reviewed"
+        ]
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.tasks",
+      "message": "Required purpose 'back' has no production task.",
+      "details": {
+        "rule": "required_purpose_task",
+        "purpose": "back"
+      },
+      "retryable": false
+    }
+  ]
+}

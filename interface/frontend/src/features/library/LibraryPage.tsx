@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import { Link, useSearchParams } from "react-router-dom";
 import { Box, Search, X } from "lucide-react";
 import { useJobs, useJob } from "../../api/queries";
@@ -7,15 +8,7 @@ import {
   ArtifactPreview,
   DownloadButton,
 } from "../../components/ArtifactPreview";
-import {
-  Badge,
-  categoryLabels,
-  date,
-  Empty,
-  Failure,
-  Loading,
-  Panel,
-} from "../../components/ui";
+import { Badge, Empty, Failure, Loading, Panel } from "../../components/ui";
 
 function AssetCard({
   job,
@@ -26,6 +19,7 @@ function AssetCard({
   onSelect: () => void;
   selected: boolean;
 }) {
+  const { t, date, categoryLabels } = useI18n();
   const detail = useJob(job.job_id),
     preview = detail.data?.artifacts.find(
       (a) => a.artifact_id === detail.data?.preview?.artifact_id,
@@ -35,7 +29,11 @@ function AssetCard({
       <button
         className="asset-open"
         onClick={onSelect}
-        aria-label={`Inspect ${categoryLabels[job.asset_category]} ${job.primary_artifact?.format.toUpperCase()} ${job.job_id}`}
+        aria-label={t("library.inspect", {
+          category: categoryLabels[job.asset_category],
+          format: job.primary_artifact?.format.toUpperCase(),
+          id: job.job_id,
+        })}
       >
         <div className="asset-thumb">
           {preview ? (
@@ -43,24 +41,29 @@ function AssetCard({
           ) : (
             <Box size={40} aria-hidden="true" />
           )}
-          <Badge>{job.primary_artifact?.format.toUpperCase()} · MOCK</Badge>
+          <Badge>
+            {job.primary_artifact?.format.toUpperCase()} · {t("common.mock")}
+          </Badge>
         </div>
         <div className="asset-info">
           <span className="muted small">
             {categoryLabels[job.asset_category]}
           </span>
           <h2>
-            {categoryLabels[job.asset_category]}{" "}
-            {job.primary_artifact?.format === "glb"
-              ? "3D study"
-              : "concept study"}
+            {t("library.cardStudy", {
+              category: categoryLabels[job.asset_category],
+              study:
+                job.primary_artifact?.format === "glb"
+                  ? t("copy.3dStudy")
+                  : t("copy.conceptStudy"),
+            })}
           </h2>
           <p>{job.model_id}</p>
           <small>{date(job.created_at)}</small>
         </div>
       </button>
       <div className="asset-actions">
-        <span className="badge success">Completed</span>
+        <span className="badge success">{t("copy.completed")}</span>
         {job.primary_artifact && (
           <DownloadButton jobId={job.job_id} artifact={job.primary_artifact} />
         )}
@@ -69,18 +72,19 @@ function AssetCard({
   );
 }
 function AssetDetail({ id, onClose }: { id: string; onClose: () => void }) {
+  const { t, date, categoryLabels } = useI18n();
   const job = useJob(id);
   if (job.error) return <Failure error={job.error} />;
-  if (!job.data) return <Loading>Loading asset details…</Loading>;
+  if (!job.data) return <Loading>{t("copy.loadingAssetDetails")}</Loading>;
   const j = job.data,
     primary = j.artifacts.find((a) => a.is_primary);
   return (
     <Panel
-      title="Asset inspector"
+      title={t("copy.assetInspector")}
       extra={
         <button
           className="icon-button"
-          aria-label="Close asset inspector"
+          aria-label={t("copy.closeAssetInspector")}
           onClick={onClose}
         >
           <X size={16} aria-hidden="true" />
@@ -88,37 +92,43 @@ function AssetDetail({ id, onClose }: { id: string; onClose: () => void }) {
       }
     >
       <div className="panel-body">
-        <h2>{categoryLabels[j.request.asset_category]} study</h2>
+        <h2>
+          {t("library.study", {
+            category: categoryLabels[j.request.asset_category],
+          })}
+        </h2>
         <p className="muted">
-          {j.request.prompt ?? "Image-based mock reconstruction"}
+          {j.request.prompt ?? t("copy.imageBasedMockReconstruction")}
         </p>
         <code className="job-id">{id}</code>
       </div>
       {primary && <ArtifactPreview jobId={id} artifact={primary} />}
       <div className="panel-body">
         <dl className="properties">
-          <dt>Category</dt>
+          <dt>{t("copy.category")}</dt>
           <dd>{categoryLabels[j.request.asset_category]}</dd>
-          <dt>Format</dt>
+          <dt>{t("copy.format")}</dt>
           <dd>{primary?.format.toUpperCase()}</dd>
-          <dt>Model</dt>
+          <dt>{t("copy.model")}</dt>
           <dd>{j.request.model_id}</dd>
-          <dt>Created</dt>
+          <dt>{t("copy.created")}</dt>
           <dd>{date(j.created_at)}</dd>
         </dl>
         <p className="small muted">
-          Mock fixture. Unseen regions in future reconstructions may be
-          approximated.
+          {t(
+            "copy.mockFixtureUnseenRegionsInFutureReconstructionsMayBeApproximated",
+          )}
         </p>
         {primary && <DownloadButton jobId={id} artifact={primary} />}
         <Link className="text-link" to={`/jobs/${id}`}>
-          Open source job & logs
+          {t("copy.openSourceJobLogs")}
         </Link>
       </div>
     </Panel>
   );
 }
 export function LibraryPage() {
+  const { t, number, categoryLabels } = useI18n();
   const [params, setParams] = useSearchParams(),
     jobs = useJobs({ status: "completed" });
   const search = params.get("q") ?? "",
@@ -144,32 +154,32 @@ export function LibraryPage() {
     <>
       <div className="page-heading">
         <div>
-          <div className="breadcrumb">Workspace / Local repository</div>
-          <h1>Asset library</h1>
+          <div className="breadcrumb">{t("copy.workspaceLocalRepository")}</div>
+          <h1>{t("copy.assetLibrary")}</h1>
         </div>
-        <Badge tone="success">Derived from completed jobs</Badge>
+        <Badge tone="success">{t("copy.derivedFromCompletedJobs")}</Badge>
       </div>
       <div className="library-filters">
         <label className="search-field">
           <Search size={16} aria-hidden="true" />
-          <span className="sr-only">Search assets</span>
+          <span className="sr-only">{t("copy.searchAssets")}</span>
           <input
             name="asset-search"
             autoComplete="off"
             value={search}
             onChange={(e) => update("q", e.target.value)}
-            placeholder="Search category, model or job ID…"
+            placeholder={t("copy.searchCategoryModelOrJobId")}
             type="search"
           />
         </label>
         <label className="inline-field">
-          Category
+          {t("copy.category")}
           <select
             name="library-category"
             value={category}
             onChange={(e) => update("category", e.target.value)}
           >
-            <option value="">All categories</option>
+            <option value="">{t("copy.allCategories")}</option>
             {Object.entries(categoryLabels).map(([k, v]) => (
               <option key={k} value={k}>
                 {v}
@@ -178,32 +188,38 @@ export function LibraryPage() {
           </select>
         </label>
         <label className="inline-field">
-          Format
+          {t("copy.format")}
           <select
             name="library-format"
             value={format}
             onChange={(e) => update("format", e.target.value)}
           >
-            <option value="">All formats</option>
-            <option value="png">PNG · 2D image</option>
-            <option value="glb">GLB · 3D model</option>
+            <option value="">{t("copy.allFormats")}</option>
+            <option value="png">{t("copy.png2DImage")}</option>
+            <option value="glb">{t("copy.glb3DModel")}</option>
           </select>
         </label>
       </div>
       <div className={`library-layout ${selected ? "has-detail" : ""}`}>
         <div>
           <div className="section-title">
-            <h2>Repository items</h2>
-            <span className="muted">{assets.length} matching assets</span>
+            <h2>{t("copy.repositoryItems")}</h2>
+            <span className="muted">
+              {t("library.matching", { count: number(assets.length, 0) })}
+            </span>
           </div>
           {jobs.error ? (
             <Failure error={jobs.error} />
           ) : jobs.isPending ? (
             <Loading />
           ) : !assets.length ? (
-            <Empty title="No assets match your filters">
-              <button onClick={() => setParams({})}>Clear filters</button> or{" "}
-              <Link to="/generate/text-to-2d">generate an asset</Link>.
+            <Empty title={t("copy.noAssetsMatchYourFilters")}>
+              <button onClick={() => setParams({})}>
+                {t("copy.clearFilters")}
+              </button>{" "}
+              {t("copy.or")}{" "}
+              <Link to="/generate/text-to-2d">{t("copy.generateAnAsset")}</Link>
+              .
             </Empty>
           ) : (
             <div className="asset-grid">
@@ -222,7 +238,7 @@ export function LibraryPage() {
               onClick={() => void jobs.fetchNextPage()}
               disabled={jobs.isFetchingNextPage}
             >
-              Load more completed jobs
+              {t("copy.loadMoreCompletedJobs")}
             </button>
           )}
         </div>

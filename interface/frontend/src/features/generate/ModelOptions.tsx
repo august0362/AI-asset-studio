@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import type { ModelCapabilities, OptionValue } from "../../api/types";
 export function ModelOptions({
   model,
@@ -10,17 +11,18 @@ export function ModelOptions({
   onChange: (key: string, value: OptionValue) => void;
   invalid: string[];
 }) {
+  const { t, label, number } = useI18n();
   return (
     <div className="options-grid">
       {Object.entries(model.options_schema).map(([name, rule]) => {
         const value = values[name] === undefined ? rule.default : values[name];
-        const label = name.replaceAll("_", " ");
+        const optionLabel = label("option", name);
         return (
           <label
             className={`field ${name === "negative_prompt" ? "span-two" : ""}`}
             key={name}
           >
-            <span>{label}</span>
+            <span>{optionLabel}</span>
             {rule.enum ? (
               <select
                 name={name}
@@ -37,7 +39,7 @@ export function ModelOptions({
               >
                 {rule.enum.map((v) => (
                   <option key={String(v)} value={String(v)}>
-                    {String(v)}
+                    {typeof v === "number" ? number(v, 0) : String(v)}
                   </option>
                 ))}
               </select>
@@ -57,7 +59,7 @@ export function ModelOptions({
                 max={rule.maximum}
                 step={rule.type === "integer" ? 1 : "any"}
                 value={value === null ? "" : String(value)}
-                placeholder={rule.default === null ? "Auto…" : undefined}
+                placeholder={rule.default === null ? t("copy.auto") : undefined}
                 aria-invalid={invalid.includes(`options.${name}`)}
                 onChange={(e) =>
                   onChange(
@@ -71,7 +73,11 @@ export function ModelOptions({
                 }
               />
             )}
-            {rule.description && <small>{rule.description}</small>}
+            {rule.description && (
+              <small>
+                {label("option.description", name, rule.description)}
+              </small>
+            )}
           </label>
         );
       })}

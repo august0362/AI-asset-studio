@@ -1,6 +1,7 @@
 """Backend configuration from the environment and ``.env`` (pydantic-settings).
 
-Kaggle profile credentials (``AAS_PROFILE_*``) are **not** read in mock mode. Unknown ``AAS_*`` keys are ignored.
+Kaggle profile credentials (``AAS_PROFILE_*``) are **not** read in mock mode; in kaggle mode only the active
+profile's credentials are read (:mod:`aas_backend.profiles`). Unknown ``AAS_*`` keys are ignored.
 """
 
 from __future__ import annotations
@@ -25,6 +26,13 @@ class Settings(BaseSettings):
     backend_port: int = Field(default=8000, ge=1, le=65535)
     frontend_origin: str = "http://localhost:5173"
 
+    # Kaggle compute (AAS_COMPUTE_MODE=kaggle). Exactly one profile is active (D-008, D-025).
+    compute_profiles: str = "default"
+    active_profile: str | None = None
+    kaggle_cli: str | None = None  # path to the kaggle executable; default: found on PATH
+    # Test switch (D-031): "kernel_error" makes every Kaggle run fail on purpose inside the real notebook.
+    kaggle_test_failure: Literal["kernel_error"] | None = None
+
     # Mock compute (AAS_COMPUTE_MODE=mock)
     mock_scenario: str = "fresh"
     mock_failure: str = "none"
@@ -37,6 +45,11 @@ class Settings(BaseSettings):
     upload_ttl_hours: float = Field(default=24.0, gt=0)
     sweep_interval_seconds: float = Field(default=3600.0, gt=0)
     job_deadline_factor: float = Field(default=1.25, gt=0)
+
+    @field_validator("kaggle_test_failure", mode="before")
+    @classmethod
+    def _empty_is_off(cls, value: object) -> object:
+        return None if value in ("", "none", "off") else value
 
     @field_validator("backend_host")
     @classmethod

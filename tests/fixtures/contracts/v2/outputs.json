@@ -1,0 +1,175 @@
+{
+  "contract_version": "1.1",
+  "outputs": [
+    {
+      "asset_id": "ast_41e3fb2afcf7",
+      "purpose": "key_visual",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27598,
+      "sha256": "ffbe8a52af03eff7a1ff9cc9cca45f5a373bc442a383527c410fcf48a4db19b8",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_41e3fb2afcf7/content",
+      "source": {
+        "job_id": "job_20261106T134254Z_7b89a9",
+        "artifact_id": "art_01",
+        "task_id": "preview_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+        "negative_prompt": null,
+        "seed": null,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": null,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s3",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:54Z"
+    },
+    {
+      "asset_id": "ast_2a680accc04f",
+      "purpose": "full_body",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 26307,
+      "sha256": "8b152f4ad2746fd24b5b2fd0ac2b2650add9ae60a88cae03cd80fe8160884c90",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_2a680accc04f/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_01",
+        "task_id": "fullbody_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+        "negative_prompt": null,
+        "seed": 41000,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41000,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_859436b40620",
+      "purpose": "front",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27101,
+      "sha256": "d05825d97c92a94103f463119d4160afa79bcc849e9fcddb3e30537a797933bb",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_859436b40620/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_02",
+        "task_id": "front_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+        "negative_prompt": null,
+        "seed": 41001,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41001,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_fe134e9b9d59",
+      "purpose": "side",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 28492,
+      "sha256": "c8ae669727ece0b59ebcf9c74c7ac97f94f6393ee9364a7c34d94e8e4262c49d",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_fe134e9b9d59/content",
+      "source": {
+        "job_id": "job_20261106T134257Z_82cc53",
+        "artifact_id": "art_01",
+        "task_id": "side_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+        "negative_prompt": null,
+        "seed": 41002,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41002,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    },
+    {
+      "asset_id": "ast_efcbe722f9c8",
+      "purpose": "back",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 512,
+      "size_bytes": 27681,
+      "sha256": "ab0486473dbb6214e36fa0fffc5a5f4ecbe738009941f76f80eb1364287709b2",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_efcbe722f9c8/content",
+      "source": {
+        "job_id": "job_20261106T134255Z_eeee08",
+        "artifact_id": "art_03",
+        "task_id": "back_01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+        "negative_prompt": null,
+        "seed": 41003,
+        "width": 512,
+        "height": 512,
+        "options": {
+          "seed": 41003,
+          "width": 512,
+          "height": 512,
+          "negative_prompt": null
+        }
+      },
+      "reference_id": null,
+      "frozen_in": {
+        "stage_id": "s5",
+        "revision": 1
+      },
+      "created_at": "2026-11-06T13:42:58Z"
+    }
+  ]
+}

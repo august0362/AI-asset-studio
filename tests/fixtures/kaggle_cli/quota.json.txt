@@ -1,0 +1,2 @@
+Warning: Looks like you're using an outdated `kaggle` version (installed: 2.2.4), please consider upgrading to the latest version (2.2.5)
+[{"resource":"GPU","used":"25.13h","remaining":"4.87h","total":"30.00h","refreshAt":"2026-11-07T00:00:00"},{"resource":"TPU","used":"0.00h","remaining":"20.00h","total":"20.00h","refreshAt":"2026-11-07T00:00:00"}]

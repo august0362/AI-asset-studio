@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { RefreshCw, Trash2 } from "lucide-react";
@@ -8,18 +9,23 @@ import {
   DownloadButton,
 } from "../../components/ArtifactPreview";
 import {
-  categoryLabels,
-  date,
-  duration,
   Failure,
   Issues,
   Loading,
   Panel,
-  pipelineLabels,
   PlanPanel,
   Status,
 } from "../../components/ui";
 export function JobDetail({ id }: { id: string }) {
+  const {
+    t,
+    label,
+    date,
+    duration,
+    categoryLabels,
+    pipelineLabels,
+    intlLocale,
+  } = useI18n();
   const job = useJob(id),
     queryClient = useQueryClient(),
     navigate = useNavigate();
@@ -52,13 +58,16 @@ export function JobDetail({ id }: { id: string }) {
     },
   });
   if (job.error) return <Failure error={job.error} />;
-  if (!job.data) return <Loading>Loading job details…</Loading>;
+  if (!job.data) return <Loading>{t("copy.loadingJobDetails")}</Loading>;
   const j = job.data,
     primary = j.artifacts.find((a) => a.is_primary),
     terminal = ["completed", "failed"].includes(j.status);
   return (
     <div className="job-detail-stack">
-      <Panel title="Job inspector" extra={<Status status={j.status} />}>
+      <Panel
+        title={t("copy.jobInspector")}
+        extra={<Status status={j.status} />}
+      >
         <div className="panel-body">
           <code className="job-id">{id}</code>
           <h3>
@@ -66,19 +75,19 @@ export function JobDetail({ id }: { id: string }) {
             {pipelineLabels[j.request.pipeline_type]}
           </h3>
           <p className="muted">
-            {j.request.model_id} · {j.execution.backend.toUpperCase()}
+            {j.request.model_id} · {label("mode", j.execution.backend)}
           </p>
           <dl className="properties">
-            <dt>Created</dt>
+            <dt>{t("copy.created")}</dt>
             <dd>{date(j.created_at)}</dd>
-            <dt>Duration</dt>
+            <dt>{t("copy.duration")}</dt>
             <dd>{duration(j.execution.duration_seconds)}</dd>
-            <dt>Retry of</dt>
+            <dt>{t("copy.retryOf")}</dt>
             <dd className="break-word">
-              {j.execution.retry_of ?? "Original job"}
+              {j.execution.retry_of ?? t("copy.originalJob")}
             </dd>
           </dl>
-          <div className="timeline" aria-label="Status timeline">
+          <div className="timeline" aria-label={t("copy.statusTimeline")}>
             {j.status_history.map((h) => (
               <div className={`timeline-item ${h.status}`} key={h.status}>
                 <span className="timeline-dot" aria-hidden="true" />
@@ -96,15 +105,15 @@ export function JobDetail({ id }: { id: string }) {
                     <progress
                       max={100}
                       value={status.data.progress.percent}
-                      aria-label="Reported job progress"
+                      aria-label={t("copy.reportedJobProgress")}
                     />
                   ) : (
-                    <progress aria-label="Job processing" />
+                    <progress aria-label={t("copy.jobProcessing")} />
                   )}
                 </>
               ) : (
                 <p className="muted">
-                  Processing · No progress percentage reported.
+                  {t("copy.processingNoProgressPercentageReported")}
                 </p>
               )}
             </div>
@@ -113,9 +122,13 @@ export function JobDetail({ id }: { id: string }) {
           <Issues items={[...(j.error ? [j.error] : []), ...j.warnings]} />
           <div className="button-row">
             {j.status === "failed" && j.error?.retryable && (
-              <button onClick={() => retry.mutate()} disabled={retry.isPending}>
+              <button
+                className="primary"
+                onClick={() => retry.mutate()}
+                disabled={retry.isPending}
+              >
                 <RefreshCw size={14} aria-hidden="true" />
-                {retry.isPending ? "Retrying…" : "Retry job"}
+                {retry.isPending ? t("copy.retrying") : t("copy.retryJob")}
               </button>
             )}
             {terminal && (
@@ -125,14 +138,16 @@ export function JobDetail({ id }: { id: string }) {
                 onClick={() => {
                   if (
                     window.confirm(
-                      "Delete this job, its inputs, logs and artifacts? This cannot be undone.",
+                      t(
+                        "copy.deleteThisJobItsInputsLogsAndArtifactsThisCannotBeUndone",
+                      ),
                     )
                   )
                     remove.mutate();
                 }}
               >
                 <Trash2 size={14} aria-hidden="true" />
-                Delete job
+                {t("copy.deleteJob")}
               </button>
             )}
           </div>
@@ -141,33 +156,51 @@ export function JobDetail({ id }: { id: string }) {
         </div>
       </Panel>
       <Panel
-        title="Execution logs"
+        title={t("copy.executionLogs")}
         extra={
           <span className="muted small">
-            {logs.data?.complete ? "Complete" : "Polling every 2 s"}
+            {logs.data?.complete
+              ? t("copy.complete")
+              : t("copy.pollingEvery2S")}
           </span>
         }
       >
-        <div className="terminal" role="log" aria-label="Execution logs">
+        <div
+          className="terminal"
+          tabIndex={0}
+          role="log"
+          aria-label={t("copy.executionLogs")}
+        >
           {logs.error ? (
             <Failure error={logs.error} />
           ) : (
             (logs.data?.lines.map((l) => (
               <div key={l.n}>
                 <time dateTime={l.at}>
-                  {new Intl.DateTimeFormat(undefined, {
+                  {new Intl.DateTimeFormat(intlLocale, {
                     timeStyle: "medium",
                   }).format(new Date(l.at))}
                 </time>
                 <span>{l.text}</span>
               </div>
-            )) ?? <span>Loading logs…</span>)
+            )) ?? <span>{t("copy.loadingLogs")}</span>)
           )}
         </div>
       </Panel>
       {primary && (
-        <Panel title="Job artifacts">
-          <ArtifactPreview jobId={id} artifact={primary} />
+        <Panel title={t("copy.jobArtifacts")}>
+          {j.request.batch ? (
+            j.artifacts.map((a) => (
+              <div key={a.artifact_id}>
+                <p className="panel-body">
+                  <code>{a.task_id ?? a.artifact_id}</code>
+                </p>
+                <ArtifactPreview jobId={id} artifact={a} />
+              </div>
+            ))
+          ) : (
+            <ArtifactPreview jobId={id} artifact={primary} />
+          )}
           <div className="panel-body button-row">
             {j.artifacts.map((a) => (
               <DownloadButton key={a.artifact_id} jobId={id} artifact={a} />

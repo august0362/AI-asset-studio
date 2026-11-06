@@ -38,33 +38,39 @@ def _remaining_quota_seconds(kind: str, snapshot: KaggleResourceSnapshot) -> tup
 
 
 def _evaluate(
-    c: AcceleratorSpec, req: ResourceRequirements, required: int | None, snapshot: KaggleResourceSnapshot
+    c: AcceleratorSpec,
+    req: ResourceRequirements,
+    required: int | None,
+    snapshot: KaggleResourceSnapshot,
+    vram_requirement_unknown: bool,
 ) -> CandidateFit:
     reasons: list[ErrorItem] = []
-    if c.kind != "cpu":
+    if c.kind == "gpu_cuda":
         available = c.vram_bytes_per_device
-        if req.minimum_gpu_vram_bytes is None or available is None:
+        if req.minimum_gpu_vram_bytes is not None and available is not None:
+            if req.minimum_gpu_vram_bytes > available:
+                reasons.append(
+                    issue(
+                        "COMPUTE_VRAM_INSUFFICIENT",
+                        "error",
+                        ACCELERATOR_FIELD,
+                        f"{c.accelerator_id} has {available} bytes of VRAM per device; the model needs "
+                        f"{req.minimum_gpu_vram_bytes}.",
+                        {
+                            "accelerator_id": c.accelerator_id,
+                            "required_vram_bytes": req.minimum_gpu_vram_bytes,
+                            "available_vram_bytes": available,
+                        },
+                    )
+                )
+        elif available is None or vram_requirement_unknown:
+            # A null requirement that is not declared unknown means "not applicable": nothing to check.
             reasons.append(
                 issue(
                     "COMPUTE_VRAM_UNKNOWN",
                     "warning",
                     ACCELERATOR_FIELD,
                     f"GPU memory fit on {c.accelerator_id} cannot be checked: the requirement or capacity is unknown.",
-                    {
-                        "accelerator_id": c.accelerator_id,
-                        "required_vram_bytes": req.minimum_gpu_vram_bytes,
-                        "available_vram_bytes": available,
-                    },
-                )
-            )
-        elif req.minimum_gpu_vram_bytes > available:
-            reasons.append(
-                issue(
-                    "COMPUTE_VRAM_INSUFFICIENT",
-                    "error",
-                    ACCELERATOR_FIELD,
-                    f"{c.accelerator_id} has {available} bytes of VRAM per device; the model needs "
-                    f"{req.minimum_gpu_vram_bytes}.",
                     {
                         "accelerator_id": c.accelerator_id,
                         "required_vram_bytes": req.minimum_gpu_vram_bytes,
@@ -138,9 +144,17 @@ def plan(
     snapshot: KaggleResourceSnapshot,
     accelerator_id: str | None,
     *,
+    vram_requirement_unknown: bool | None = None,
     safety_factor: float = SAFETY_FACTOR,
     overhead_seconds: int = OVERHEAD_SECONDS,
 ) -> ResourcePlan:
+    """Plan for the explicitly selected profile only.
+
+    ``vram_requirement_unknown`` says whether a null ``minimum_gpu_vram_bytes`` is *unknown* (the model lists it in
+    ``unknown_requirements``) or *not applicable*. ``None`` treats a null requirement as unknown.
+    """
+    if vram_requirement_unknown is None:
+        vram_requirement_unknown = req.minimum_gpu_vram_bytes is None
     required = required_seconds(req.estimated_runtime_seconds, safety_factor, overhead_seconds)
     basis = EstimateBasis(
         estimated_runtime_seconds=req.estimated_runtime_seconds,
@@ -182,10 +196,10 @@ def plan(
 
     by_id = {c.accelerator_id: c for c in candidates}
     if accelerator_id is not None:  # only the user's choice is evaluated (as in the §7.3 example)
-        fits = [_evaluate(by_id[accelerator_id], req, required, snapshot)]
+        fits = [_evaluate(by_id[accelerator_id], req, required, snapshot, vram_requirement_unknown)]
         chosen = fits[0]
     else:
-        fits = [_evaluate(c, req, required, snapshot) for c in candidates]
+        fits = [_evaluate(c, req, required, snapshot, vram_requirement_unknown) for c in candidates]
         chosen = next((f for f in fits if f.fit == "ok"), None) or next(
             (f for f in fits if f.fit == "unknown"), None
         )

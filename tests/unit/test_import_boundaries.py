@@ -18,6 +18,18 @@ ALLOWED_THIRD_PARTY = {
     "kaggle_connector/runtime": {"psutil", "pynvml"},  # runs in the notebook: stdlib + optional metrics libs
     "models/adapters/remote": {"PIL"},  # remote entrypoints: stdlib + Pillow only
 }
+# Real-model entrypoints run only inside the Kaggle notebook, which installs their pinned libraries (D-032, D-034).
+# They import them inside functions; nothing in this repository imports these files at runtime.
+REAL_REMOTE_ENTRIES = {
+    "models/adapters/diffusers_text_to_2d/remote_entry.py": {
+        "PIL",
+        "numpy",
+        "torch",
+        "diffusers",
+        "transformers",
+        "huggingface_hub",
+    },
+}
 FORBIDDEN_FIRST_PARTY = {
     "models": {"kaggle_connector", "aas_backend", "interface"},
     "kaggle_connector": {"models", "aas_backend", "interface"},
@@ -50,6 +62,7 @@ def test_no_forbidden_first_party_imports(package):
 def test_only_allowed_third_party_dependencies(package):
     for path in files(package):
         allowed = ALLOWED_THIRD_PARTY[package]
+        allowed = REAL_REMOTE_ENTRIES.get(path.relative_to(ROOT).as_posix(), allowed)
         if "runtime" in path.parts:
             allowed = ALLOWED_THIRD_PARTY["kaggle_connector/runtime"]
         third_party = top_level_imports(path) - STDLIB - FIRST_PARTY
@@ -62,7 +75,9 @@ def test_notebook_runner_and_remote_entrypoints_are_self_contained():
     for entry in (ROOT / "models" / "adapters").rglob("remote_entry.py"):
         tree = ast.parse(entry.read_text(encoding="utf-8"))
         assert not any(isinstance(n, ast.ImportFrom) and n.level > 0 for n in ast.walk(tree)), entry
-        assert top_level_imports(entry) - STDLIB <= ALLOWED_THIRD_PARTY["models/adapters/remote"], entry
+        default = ALLOWED_THIRD_PARTY["models/adapters/remote"]
+        allowed = REAL_REMOTE_ENTRIES.get(entry.relative_to(ROOT).as_posix(), default)
+        assert top_level_imports(entry) - STDLIB <= allowed, entry
 
 
 def test_backend_never_runs_the_kaggle_cli_directly():
@@ -71,3 +86,16 @@ def test_backend_never_runs_the_kaggle_cli_directly():
         assert "subprocess" not in source, (
             f"{path.relative_to(ROOT)} must leave CLI calls to kaggle_connector"
         )
+
+
+def test_character_production_imports_neither_kaggle_connector_nor_the_frontend():
+    """docs/v2/ARCHITECTURE.md §2: characters/ is a backend feature; it reaches compute only through the job service."""
+    package = ROOT / "interface" / "backend" / "aas_backend" / "characters"
+    paths = [
+        *sorted(package.rglob("*.py")),
+        ROOT / "interface" / "backend" / "aas_backend" / "api" / "characters.py",
+    ]
+    assert len(paths) >= 7
+    for path in paths:
+        bad = top_level_imports(path) & {"kaggle_connector", "interface"}
+        assert not bad, f"{path.relative_to(ROOT)} imports {bad}"

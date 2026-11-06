@@ -289,3 +289,10 @@ def test_malformed_json_is_400(harness):
         f"{API}/validate", content=b"{not json", headers={"Content-Type": "application/json"}
     )
     assert response.status_code == 400 and codes(response.json()["errors"]) == ["REQUEST_FIELD_INVALID"]
+
+
+def test_cpu_capable_model_on_gpu_has_no_vram_warning(harness):
+    """mock-t2d-basic has VRAM "n/a" (CONTRACTS §2.2), so choosing a GPU gives no COMPUTE_VRAM_UNKNOWN."""
+    body = request_body(compute={"profile_id": "default", "accelerator_id": "gpu_t4x2"})
+    report = validate(harness, body)
+    assert report["valid"] and "COMPUTE_VRAM_UNKNOWN" not in codes(report["warnings"])

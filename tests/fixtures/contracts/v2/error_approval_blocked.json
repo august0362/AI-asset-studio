@@ -1,0 +1,114 @@
+{
+  "contract_version": "1.1",
+  "warnings": [],
+  "errors": [
+    {
+      "code": "STAGE_BLOCKED",
+      "severity": "error",
+      "field": "stage_id",
+      "message": "Stage S3 has no approved revision yet.",
+      "details": {
+        "stage_id": "s3"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.entries",
+      "message": "Required purpose 'full_body' has no canonical prompt.",
+      "details": {
+        "rule": "required_purpose_prompt",
+        "purpose": "full_body"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.tasks",
+      "message": "Required purpose 'full_body' has no production task.",
+      "details": {
+        "rule": "required_purpose_task",
+        "purpose": "full_body"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.entries",
+      "message": "Required purpose 'front' has no canonical prompt.",
+      "details": {
+        "rule": "required_purpose_prompt",
+        "purpose": "front"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.tasks",
+      "message": "Required purpose 'front' has no production task.",
+      "details": {
+        "rule": "required_purpose_task",
+        "purpose": "front"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.entries",
+      "message": "Required purpose 'side' has no canonical prompt.",
+      "details": {
+        "rule": "required_purpose_prompt",
+        "purpose": "side"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.tasks",
+      "message": "Required purpose 'side' has no production task.",
+      "details": {
+        "rule": "required_purpose_task",
+        "purpose": "side"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.entries",
+      "message": "Required purpose 'back' has no canonical prompt.",
+      "details": {
+        "rule": "required_purpose_prompt",
+        "purpose": "back"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.tasks",
+      "message": "Required purpose 'back' has no production task.",
+      "details": {
+        "rule": "required_purpose_task",
+        "purpose": "back"
+      },
+      "retryable": false
+    },
+    {
+      "code": "STAGE_CONTENT_INCOMPLETE",
+      "severity": "error",
+      "field": "content.production_profile",
+      "message": "Choose the production model.",
+      "details": {
+        "rule": "production_profile_required"
+      },
+      "retryable": false
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,13 +21,10 @@ import { planResources } from "../../validation/planner";
 import {
   acceleratorLabels,
   Badge,
-  bytes,
-  date,
-  duration,
+  Empty,
   Failure,
   Issues,
   Loading,
-  number,
   Panel,
   PlanPanel,
 } from "../../components/ui";
@@ -38,13 +36,18 @@ function Provenance({
   snapshot: KaggleResourceSnapshot;
   group: MetricGroup;
 }) {
+  const { t, label, date } = useI18n();
   const freshness = snapshot.freshness_status[group];
   return (
     <div className="provenance">
       <Badge tone={freshness === "fresh" ? "success" : "warning"}>
-        {freshness.replaceAll("_", " ")}
+        {label("freshness", freshness)}
       </Badge>
-      <span>Source: {snapshot.source[group].replaceAll("_", " ")}</span>
+      <span>
+        {t("resource.source", {
+          source: label("source", snapshot.source[group]),
+        })}
+      </span>
       <time dateTime={snapshot.observed_at[group] ?? undefined}>
         {date(snapshot.observed_at[group])}
       </time>
@@ -55,13 +58,14 @@ export function Gauge({
   label,
   value,
   max = 100,
-  unit = "%",
+  unit,
 }: {
   label: string;
   value: number | null;
   max?: number | null;
   unit?: string;
 }) {
+  const { t, number } = useI18n();
   const percent =
     value === null || !max
       ? null
@@ -71,7 +75,9 @@ export function Gauge({
       <div className="flex-between">
         <span>{label}</span>
         <strong>
-          {value === null ? "Unknown" : `${number(value)}${unit}`}
+          {value === null
+            ? t("common.unknown")
+            : `${number(value)}${unit ?? t("unit.percent")}`}
         </strong>
       </div>
       {percent !== null ? (
@@ -96,50 +102,64 @@ export function SnapshotDashboard({
 }: {
   snapshot: KaggleResourceSnapshot;
 }) {
+  const { t, label, number, date, duration, bytes, quantity } = useI18n();
   return (
     <>
       <div className="resource-top-grid">
-        <Panel title="Weekly compute quota" extra={<Badge>MOCK</Badge>}>
+        <Panel
+          title={t("copy.weeklyComputeQuota")}
+          extra={<Badge>{t("common.mock")}</Badge>}
+        >
           <div className="panel-body quota-grid">
             <div>
-              <h3>GPU allocation</h3>
+              <h3>{t("copy.gpuAllocation")}</h3>
               <div className="big-metric">
                 {number(s.gpu_quota_remaining_hours)}
-                <small> hours remaining</small>
+                <small>{t("resource.remainingHours")}</small>
               </div>
               <Gauge
-                label="GPU quota used"
+                label={t("copy.gpuQuotaUsed")}
                 value={s.gpu_quota_used_hours}
                 max={s.gpu_quota_total_hours}
-                unit=" h"
+                unit={` ${t("unit.hours")}`}
               />
               <p className="muted small">
-                Total: {number(s.gpu_quota_total_hours)} h · Used:{" "}
-                {number(s.gpu_quota_used_hours)} h · Remaining:{" "}
-                {number(s.gpu_quota_remaining_hours)} h
+                {t("resource.quotaTotals", {
+                  total: number(s.gpu_quota_total_hours),
+                  used: number(s.gpu_quota_used_hours),
+                  remaining: number(s.gpu_quota_remaining_hours),
+                  unit: t("unit.hours"),
+                })}
               </p>
             </div>
             <div>
-              <h3>TPU allocation</h3>
+              <h3>{t("copy.tpuAllocation")}</h3>
               <div className="big-metric">
                 {number(s.tpu_quota_remaining_hours)}
-                <small> hours remaining</small>
+                <small>{t("resource.remainingHours")}</small>
               </div>
               <p className="muted">
-                Total: {number(s.tpu_quota_total_hours)} h · Used:{" "}
-                {number(s.tpu_quota_used_hours)} h
+                {t("resource.quotaUsed", {
+                  total: number(s.tpu_quota_total_hours),
+                  used: number(s.tpu_quota_used_hours),
+                  unit: t("unit.hours"),
+                })}
               </p>
-              <Badge tone="warning">TPU telemetry · Unsupported in M1</Badge>
+              <Badge tone="warning">
+                {t("copy.tpuTelemetryUnsupportedInM1")}
+              </Badge>
             </div>
-            <p className="quota-reset">Quota reset: {date(s.quota_reset_at)}</p>
+            <p className="quota-reset">
+              {t("resource.reset", { date: date(s.quota_reset_at) })}
+            </p>
           </div>
           <Provenance snapshot={s} group="quota" />
         </Panel>
         <Panel
-          title="Session status"
+          title={t("copy.sessionStatus")}
           extra={
             <Badge tone={s.session_status === "running" ? "success" : ""}>
-              {s.session_status}
+              {label("session", s.session_status)}
             </Badge>
           }
         >
@@ -150,34 +170,39 @@ export function SnapshotDashboard({
             <h3>
               {s.accelerator_type
                 ? (acceleratorLabels[s.accelerator_type] ?? s.accelerator_type)
-                : "No active session"}
+                : t("copy.noActiveSession")}
             </h3>
             <dl className="properties">
-              <dt>Observed start</dt>
+              <dt>{t("copy.observedStart")}</dt>
               <dd>{date(s.session_started_at)}</dd>
-              <dt>Estimated time remaining</dt>
+              <dt>{t("copy.estimatedTimeRemaining")}</dt>
               <dd>{duration(s.estimated_session_remaining_seconds)}</dd>
             </dl>
             <p className="small muted">
-              Remaining time is an estimate from known session and quota limits.
+              {t(
+                "copy.remainingTimeIsAnEstimateFromKnownSessionAndQuotaLimits",
+              )}
             </p>
           </div>
           <Provenance snapshot={s} group="session" />
         </Panel>
       </div>
       <div className="section-title">
-        <h2>Notebook telemetry</h2>
-        <Badge>MOCK · Not a Kaggle connection</Badge>
+        <h2>{t("copy.notebookTelemetry")}</h2>
+        <Badge>{t("copy.mockNotAKaggleConnection")}</Badge>
       </div>
       <div className="telemetry-grid">
         <Panel
-          title="Host resources"
+          title={t("copy.hostResources")}
           extra={<Cpu size={17} aria-hidden="true" />}
         >
           <div className="panel-body">
-            <Gauge label="CPU utilization" value={s.cpu_utilization_percent} />
             <Gauge
-              label="RAM used"
+              label={t("copy.cpuUtilization")}
+              value={s.cpu_utilization_percent}
+            />
+            <Gauge
+              label={t("copy.ramUsed")}
               value={
                 s.ram_used_bytes === null ? null : s.ram_used_bytes / 1024 ** 3
               }
@@ -186,10 +211,10 @@ export function SnapshotDashboard({
                   ? null
                   : s.ram_total_bytes / 1024 ** 3
               }
-              unit=" GiB"
+              unit={` ${t("unit.gib")}`}
             />
             <div className="flex-between muted small">
-              <span>RAM total</span>
+              <span>{t("copy.ramTotal")}</span>
               <span>{bytes(s.ram_total_bytes)}</span>
             </div>
           </div>
@@ -198,21 +223,26 @@ export function SnapshotDashboard({
         {s.gpu_devices.length ? (
           s.gpu_devices.map((g) => (
             <Panel
-              title={`GPU${g.index} · ${g.name ?? "Unknown device"}`}
+              title={t("resource.gpuTitle", {
+                index: number(g.index, 0),
+                name: g.name ?? t("copy.unknownDevice"),
+              })}
               key={g.index}
               extra={
                 <Badge tone={g.status === "available" ? "success" : "warning"}>
-                  {g.status}
+                  {label("device", g.status)}
                 </Badge>
               }
             >
               <div className="panel-body">
                 <Gauge
-                  label={`GPU${g.index} utilization`}
+                  label={t("resource.gpuUtilization", {
+                    index: number(g.index, 0),
+                  })}
                   value={g.utilization_percent}
                 />
                 <Gauge
-                  label={`GPU${g.index} VRAM used`}
+                  label={t("resource.gpuVram", { index: number(g.index, 0) })}
                   value={
                     g.vram_used_bytes === null
                       ? null
@@ -223,16 +253,16 @@ export function SnapshotDashboard({
                       ? null
                       : g.vram_total_bytes / 1024 ** 3
                   }
-                  unit=" GiB"
+                  unit={` ${t("unit.gib")}`}
                 />
                 <dl className="properties">
-                  <dt>VRAM total</dt>
+                  <dt>{t("copy.vramTotal")}</dt>
                   <dd>{bytes(g.vram_total_bytes)}</dd>
-                  <dt>Temperature</dt>
+                  <dt>{t("copy.temperature")}</dt>
                   <dd>
                     {g.temperature_c === null
-                      ? "Unknown"
-                      : `${number(g.temperature_c)} °C`}
+                      ? t("common.unknown")
+                      : quantity(g.temperature_c, "unit.celsius")}
                   </dd>
                 </dl>
               </div>
@@ -240,10 +270,10 @@ export function SnapshotDashboard({
             </Panel>
           ))
         ) : (
-          <Panel title="GPU telemetry">
+          <Panel title={t("copy.gpuTelemetry")}>
             <div className="panel-body">
               <p className="muted">
-                No session · GPU telemetry is not applicable.
+                {t("copy.noSessionGpuTelemetryIsNotApplicable")}
               </p>
             </div>
             <Provenance snapshot={s} group="gpu" />
@@ -255,18 +285,25 @@ export function SnapshotDashboard({
   );
 }
 export function ResourcesPage() {
+  const { t, label, number, date, errorText } = useI18n();
   const [params, setParams] = useSearchParams(),
     queryClient = useQueryClient();
   const scenario = scenarios.includes(params.get("scenario") as Scenario)
     ? (params.get("scenario") as Scenario)
     : "fresh";
-  const profileId = params.get("profile") ?? "default",
-    modelId = params.get("model") ?? "mock-i3d-multiview";
-  const data = useStudioData(profileId, isMock ? scenario : undefined),
+  const modelId = params.get("model") ?? "mock-i3d-multiview";
+  const data = useStudioData(
+      params.get("profile"),
+      isMock ? scenario : undefined,
+    ),
     [refreshAt, setRefreshAt] = useState(0),
     [clock, setClock] = useState(Date.now()),
     [refreshing, setRefreshing] = useState(false),
     [error, setError] = useState<unknown>();
+  const profileId = data.profileId;
+  useEffect(() => {
+    setError(undefined);
+  }, [profileId]);
   useEffect(() => {
     const id = setInterval(() => setClock(Date.now()), 1000);
     return () => clearInterval(id);
@@ -277,6 +314,7 @@ export function ResourcesPage() {
     setParams(next);
   }
   async function refresh() {
+    if (!profileId) return;
     setRefreshing(true);
     setError(undefined);
     try {
@@ -293,12 +331,12 @@ export function ResourcesPage() {
     }
   }
   if (data.error) return <Failure error={data.error} />;
-  if (!data.profiles || !data.models || !data.snapshot)
-    return <Loading>Loading compute resources…</Loading>;
+  if (!data.profiles || !data.models)
+    return <Loading>{t("copy.loadingComputeResources")}</Loading>;
   const profile = data.profiles.find((p) => p.profile_id === profileId),
     model = data.models.find((m) => m.model_id === modelId);
   const plan =
-    profile && model
+    profile && model && data.snapshot
       ? planResources(model, profile, data.snapshot, null)
       : null;
   const remaining = Math.max(0, 60 - Math.floor((clock - refreshAt) / 1000));
@@ -306,33 +344,44 @@ export function ResourcesPage() {
     <>
       <div className="page-heading">
         <div>
-          <div className="breadcrumb">Workspace / Compute monitoring</div>
-          <h1>Kaggle resources</h1>
+          <div className="breadcrumb">
+            {t("copy.workspaceComputeMonitoring")}
+          </div>
+          <h1>{t("copy.kaggleResources")}</h1>
         </div>
-        <Badge tone="violet">
-          {isMock ? "MOCK · Simulated resource data" : "HTTP resource data"}
+        <Badge tone="secondary">
+          {isMock
+            ? t("copy.mockSimulatedResourceData")
+            : t("copy.httpResourceData")}
         </Badge>
       </div>
       <div className="resource-controls">
         <label className="inline-field">
-          Authorized profile
+          {t("copy.authorizedProfile")}
           <select
             name="resource-profile"
-            value={profileId}
+            value={profileId ?? ""}
             onChange={(e) => update("profile", e.target.value)}
           >
-            {data.profiles
-              .filter((p) => p.enabled && p.authorization_confirmed)
-              .map((p) => (
-                <option key={p.profile_id} value={p.profile_id}>
-                  {p.display_name}
-                </option>
-              ))}
+            {!data.profiles.some((p) => p.profile_id === profileId) && (
+              <option value={profileId ?? ""} disabled>
+                {profileId || t("compute.noEnabledProfiles")}
+              </option>
+            )}
+            {data.profiles.map((p) => (
+              <option
+                key={p.profile_id}
+                value={p.profile_id}
+                disabled={!p.enabled}
+              >
+                {p.display_name}
+              </option>
+            ))}
           </select>
         </label>
         {isMock && (
           <label className="inline-field">
-            Development scenario
+            {t("copy.developmentScenario")}
             <select
               name="mock-scenario"
               value={scenario}
@@ -340,7 +389,7 @@ export function ResourcesPage() {
             >
               {scenarios.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {label("scenario", s)}
                 </option>
               ))}
             </select>
@@ -348,118 +397,134 @@ export function ResourcesPage() {
         )}
         <button
           onClick={() => void refresh()}
-          disabled={refreshing || remaining > 0}
+          disabled={!profileId || refreshing || remaining > 0}
         >
           <RefreshCw size={14} aria-hidden="true" />
           {refreshing
-            ? "Refreshing…"
+            ? t("copy.refreshing")
             : remaining > 0
-              ? `Refresh in ${remaining} s`
-              : "Refresh sample"}
+              ? t("resource.refreshIn", { seconds: number(remaining, 0) })
+              : t("copy.refreshSample")}
         </button>
       </div>
-      <div className="profile-banner">
-        <div className="profile-emblem">
-          <ShieldCheck size={24} aria-hidden="true" />
-        </div>
-        <div>
-          <h2>{profile?.display_name ?? profileId}</h2>
-          <p>
-            {profile?.owner_label} · Explicitly selected ·{" "}
-            {profile?.mode.toUpperCase()}
-          </p>
-        </div>
-        <Badge
-          tone={
-            data.snapshot.authentication_status === "authenticated"
-              ? "success"
-              : "danger"
-          }
-        >
-          <Fingerprint size={13} aria-hidden="true" />
-          {data.snapshot.authentication_status}
-        </Badge>
-        <Badge>
-          {profile?.authorization_confirmed
-            ? "Authorized profile"
-            : "Authorization required"}
-        </Badge>
-      </div>
-      {error && <Failure error={error} />}
-      <SnapshotDashboard snapshot={data.snapshot} />
-      <div className="resource-plan-grid">
-        <div>
-          <div className="section-title">
-            <h2>Model compatibility</h2>
-            <label className="field">
-              <span className="sr-only">Model for resource plan</span>
-              <select
-                name="plan-model"
-                value={modelId}
-                onChange={(e) => update("model", e.target.value)}
-              >
-                {data.models
-                  .filter((m) => m.availability !== "planned")
-                  .map((m) => (
-                    <option key={m.model_id} value={m.model_id}>
-                      {m.display_name}
-                    </option>
-                  ))}
-              </select>
-            </label>
-          </div>
-          <Panel title="Compatible accelerators">
-            <div className="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Accelerator</th>
-                    <th>Fit</th>
-                    <th>Reasons</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {plan?.candidates.map((c) => (
-                    <tr key={c.accelerator_id}>
-                      <td>
-                        {acceleratorLabels[c.accelerator_id] ??
-                          c.accelerator_id}
-                      </td>
-                      <td>
-                        <Badge
-                          tone={
-                            c.fit === "ok"
-                              ? "success"
-                              : c.fit === "insufficient"
-                                ? "danger"
-                                : "warning"
-                          }
-                        >
-                          {c.fit}
-                        </Badge>
-                      </td>
-                      <td>
-                        {c.reasons.length
-                          ? c.reasons.map((r) => r.message).join(" ")
-                          : "Meets known requirements"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {!data.profiles.some((p) => p.enabled) ? (
+        <Empty title={t("compute.noEnabledProfiles")}>
+          {t("compute.noEnabledProfilesHelp")}
+        </Empty>
+      ) : data.snapshotError ? (
+        <Failure error={data.snapshotError} />
+      ) : !data.snapshot ? (
+        <Loading>{t("copy.loadingComputeResources")}</Loading>
+      ) : (
+        <>
+          <div className="profile-banner">
+            <div className="profile-emblem">
+              <ShieldCheck size={24} aria-hidden="true" />
             </div>
-            <Issues
-              items={[...(plan?.errors ?? []), ...(plan?.warnings ?? [])]}
-            />
-          </Panel>
-        </div>
-        <PlanPanel plan={plan} />
-      </div>
-      <p className="small muted">
-        Snapshot: {date(data.snapshot.observed_at.snapshot)}. Every metric group
-        carries its own source and freshness. Mock samples are simulated,
-        including timestamps. Hardware limits remain provisional until M3.
-      </p>
+            <div>
+              <h2>{profile?.display_name ?? profileId}</h2>
+              <p>
+                {t("resource.selected", {
+                  owner: profile?.owner_label,
+                  mode: label("mode", profile?.mode ?? "mock"),
+                })}
+              </p>
+            </div>
+            <Badge
+              tone={
+                data.snapshot.authentication_status === "authenticated"
+                  ? "success"
+                  : "danger"
+              }
+            >
+              <Fingerprint size={13} aria-hidden="true" />
+              {label("authentication", data.snapshot.authentication_status)}
+            </Badge>
+            <Badge>
+              {profile?.authorization_confirmed
+                ? t("copy.authorizedProfile")
+                : t("copy.authorizationRequired")}
+            </Badge>
+          </div>
+          {error && <Failure error={error} />}
+          <SnapshotDashboard snapshot={data.snapshot} />
+          <div className="resource-plan-grid">
+            <div>
+              <div className="section-title">
+                <h2>{t("copy.modelCompatibility")}</h2>
+                <label className="field">
+                  <span className="sr-only">
+                    {t("copy.modelForResourcePlan")}
+                  </span>
+                  <select
+                    name="plan-model"
+                    value={modelId}
+                    onChange={(e) => update("model", e.target.value)}
+                  >
+                    {data.models
+                      .filter((m) => m.availability !== "planned")
+                      .map((m) => (
+                        <option key={m.model_id} value={m.model_id}>
+                          {m.display_name}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+              </div>
+              <Panel title={t("copy.compatibleAccelerators")}>
+                <div className="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>{t("copy.accelerator")}</th>
+                        <th>{t("copy.fit")}</th>
+                        <th>{t("copy.reasons")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {plan?.candidates.map((c) => (
+                        <tr key={c.accelerator_id}>
+                          <td>
+                            {acceleratorLabels[c.accelerator_id] ??
+                              c.accelerator_id}
+                          </td>
+                          <td>
+                            <Badge
+                              tone={
+                                c.fit === "ok"
+                                  ? "success"
+                                  : c.fit === "insufficient"
+                                    ? "danger"
+                                    : "warning"
+                              }
+                            >
+                              {label("fit", c.fit)}
+                            </Badge>
+                          </td>
+                          <td>
+                            {c.reasons.length
+                              ? c.reasons.map((r) => errorText(r)).join(" ")
+                              : t("copy.meetsKnownRequirements")}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <Issues
+                  items={[...(plan?.errors ?? []), ...(plan?.warnings ?? [])]}
+                />
+              </Panel>
+            </div>
+            <PlanPanel plan={plan} />
+          </div>
+          <p className="small muted">
+            {t("resource.snapshotNote", {
+              date: date(data.snapshot.observed_at.snapshot),
+            })}
+          </p>
+        </>
+      )}
     </>
   );
 }

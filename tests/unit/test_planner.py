@@ -164,3 +164,30 @@ def test_recommendation_falls_back_to_unknown_when_nothing_is_ok():
 def test_run_timeout_is_capped_by_the_session_limit():
     result = plan(req(), mock_profile(), snapshot(), "gpu_t4x2")
     assert run_timeout_seconds(result) == 1950
+
+
+def test_not_applicable_vram_gives_no_warning():
+    """A null VRAM requirement that the model does not list as unknown is "not applicable" (CONTRACTS §2.1)."""
+    result = plan(
+        req(kinds=("cpu", "gpu_cuda"), vram=None, runtime=30),
+        mock_profile(),
+        snapshot(),
+        "gpu_t4x2",
+        vram_requirement_unknown=False,
+    )
+    assert result.fit == "ok" and not result.warnings and not result.errors
+
+
+def test_declared_unknown_vram_still_warns():
+    result = plan(req(vram=None), mock_profile(), snapshot(), "gpu_t4x2", vram_requirement_unknown=True)
+    assert codes(result.warnings) == ["COMPUTE_VRAM_UNKNOWN"] and result.fit == "unknown"
+
+
+def test_unknown_accelerator_vram_warns_even_with_a_known_requirement():
+    profile = mock_profile()
+    accelerators = [
+        a.model_copy(update={"vram_bytes_per_device": None}) if a.accelerator_id == "gpu_t4x2" else a
+        for a in profile.accelerators
+    ]
+    result = plan(req(), profile.model_copy(update={"accelerators": accelerators}), snapshot(), "gpu_t4x2")
+    assert codes(result.warnings) == ["COMPUTE_VRAM_UNKNOWN"]

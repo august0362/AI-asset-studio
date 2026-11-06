@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary":"#755750","primary":"#72564c","inverse-on-surface":"#ffede7","on-primary":"#ffffff","surface-container-low":"#fff1ec","primary-fixed":"#ffdbce","error-container":"#ffdad6","surface-container":"#ffe9e3","surface":"#fff8f6","background":"#fff8f6","surface-bright":"#fff8f6","surface-container-lowest":"#ffffff","outline-variant":"#d4c3be","on-error-container":"#93000a","on-primary-fixed-variant":"#5b4137","tertiary-fixed":"#e9ddff","outline":"#827470","primary-container":"#8d6e63","surface-container-highest":"#ffdbcf","on-background":"#2e150b","on-surface-variant":"#504441","secondary-fixed":"#ffdad2","on-surface":"#2e150b","on-secondary-fixed":"#2b1611","on-secondary-fixed-variant":"#5c403a","secondary-container":"#ffd7ce","tertiary-container":"#8555ef","on-tertiary-container":"#fffcff","surface-container-high":"#ffe2d9","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#5516be","inverse-primary":"#e4beb2","on-primary-fixed":"#2b160f","on-primary-container":"#fffcff","inverse-surface":"#46291e","tertiary":"#6b38d5","primary-fixed-dim":"#e4beb2","secondary-fixed-dim":"#e5beb5","surface-dim":"#ffd0bf","on-error":"#ffffff","error":"#ba1a1a","surface-variant":"#ffdbcf","tertiary-fixed-dim":"#d0bcff","on-tertiary-fixed":"#23005c","surface-tint":"#75584d","on-tertiary":"#ffffff","on-secondary-container":"#7a5b54"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2rem","margin":"1.5rem","margin-desktop":"2.5rem","space-2xl":"3rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"1.5rem","space-md":"1rem","space-sm":"0.5rem","gutter":"1.25rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"title-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"body-lg":["Be Vietnam Pro"],"headline-lg":["Plus Jakarta Sans"],"body-sm":["Be Vietnam Pro"],"body-md":["Be Vietnam Pro"],"code-sm":["Be Vietnam Pro"]},fontSize:{"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"700"}],"headline-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"title-sm":["16px",{"lineHeight":"24px","fontWeight":"600"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.015em","fontWeight":"700"}],"display-lg":["40px",{"lineHeight":"52px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"18px","fontWeight":"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(78,52,46,0.05)]"><div class="flex flex-col h-full"><div class="p-space-lg flex flex-col gap-space-xs"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_2px_8px_-2px_rgba(78,52,46,0.15)]"><span class="material-symbols-outlined text-[22px]">auto_awesome</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md text-on-surface tracking-tight leading-none">AI Asset Studio</span><span class="font-code-sm text-code-sm text-on-surface-variant leading-tight">V2 Creative Suite</span></div></div><div class="mt-space-xs flex items-center gap-space-xs"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider">v2.4 Pro (DEMO)</span><span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Tokyo Engine</span></div></div><div class="flex-1 overflow-y-auto px-space-md py-space-xs space-y-space-md"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Core Studio</span><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-md"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="generate-studio" href="#"><span class="material-symbols-outlined text-[20px]">auto_fix_high</span><span class="font-body-md text-body-md font-medium">Generate Studio</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="jobs-and-logs" href="#"><span class="material-symbols-outlined text-[20px]">terminal</span><span class="font-body-md text-body-md font-medium">Jobs &amp; Logs</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="kaggle-resources" href="#"><span class="material-symbols-outlined text-[20px]">memory</span><span class="font-body-md text-body-md font-medium">Kaggle Resources</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="asset-library" href="#"><span class="material-symbols-outlined text-[20px]">folder_special</span><span class="font-body-md text-body-md font-medium">Asset Library</span></a></nav></div><div class="flex flex-col gap-space-xs"><div class="flex items-center justify-between px-space-sm"><span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">New Extension</span><span class="px-2 py-0.5 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-[0_0_12px_rgba(107,56,213,0.35)]">NEW</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-md"><div class="flex items-center justify-between px-space-sm py-2 rounded-xl bg-surface-container-high/60"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-tertiary text-[20px]">person_add</span><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface">Character Production</span><span class="font-body-sm text-body-sm text-on-surface-variant leading-none">Sản xuất nhân vật</span></div></div></div><div class="pl-space-md flex flex-col gap-1 border-l-2 border-outline-variant/30 ml-space-sm"><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="character-library" href="#"><span class="font-body-sm text-body-sm font-medium">Character Library</span><span class="font-body-sm text-[10px] text-outline leading-tight">Thư viện nhân vật</span></a><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="character-workspace" href="#"><span class="font-body-sm text-body-sm font-medium">Character Workspace</span><span class="font-body-sm text-[10px] text-outline leading-tight">Không gian làm việc</span></a><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="stage-detail" href="#"><span class="font-body-sm text-body-sm font-medium">Stage Detail</span><span class="font-body-sm text-[10px] text-outline leading-tight">Chi tiết giai đoạn</span></a></div></nav></div></div><div class="p-space-md mx-space-md mb-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant">Environment</span><span class="font-code-sm text-code-sm text-primary font-bold">Sandbox V2</span></div><div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span>Mana Engine: 4.8 GFLOPS</span></div></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(78,52,46,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md flex-1 max-w-lg"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="w-full h-10 pl-10 pr-12 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/30 transition-all" placeholder="Search assets &amp; characters... (Ctrl+K)" readonly="" type="text"/><span class="absolute right-2 px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-[10px]">⌘K</span></div></div><div class="flex items-center gap-space-md"><div class="hidden xl:flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-tertiary-container"></span><span class="font-code-sm text-code-sm text-on-surface font-medium">Kaggle T4x2 / P100</span><span class="px-1.5 py-0.2 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[10px]">Online - Idle</span></div><div class="flex items-center gap-1 p-1 rounded-xl bg-surface-container-low"><button class="flex items-center gap-1 px-2 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm" title="Coffee (Latte/Caffe) Scheme"><span class="material-symbols-outlined text-[15px] text-primary">coffee</span><span>Latte</span></button><button class="flex items-center gap-1 px-2 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm" title="Green (Mint/Matcha) Scheme"><span class="material-symbols-outlined text-[15px]">eco</span><span>Mint</span></button></div><div class="flex items-center p-0.5 rounded-xl bg-surface-container-low"><button class="p-1.5 rounded-lg bg-surface text-on-surface" title="Light Mode"><span class="material-symbols-outlined text-[16px]">light_mode</span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface" title="Dark Mode"><span class="material-symbols-outlined text-[16px]">dark_mode</span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface" title="System Sync"><span class="material-symbols-outlined text-[16px]">desktop_windows</span></button></div><div class="flex items-center rounded-xl bg-surface-container-low p-1 text-on-surface-variant font-label-sm text-label-sm"><span class="px-2 py-0.5 rounded bg-surface text-on-surface font-bold">VN</span><span class="px-2 py-0.5 text-outline">EN</span></div><div class="flex items-center gap-space-xs pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full pt-16 pb-12 bg-background"><div class="flex flex-col w-full">
+<!-- Top Command & Pipeline Header -->
+<section class="w-full bg-surface-container-low/80 backdrop-blur-md px-space-lg py-space-md shadow-sm">
+<div class="max-w-[1440px] mx-auto flex flex-col gap-space-sm">
+<!-- Breadcrumb + Mode Status -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs flex-wrap">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Character Production</a>
+<span class="text-outline text-[12px]">/</span>
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-0.5 rounded-lg bg-surface-container">#CHR-0042 Yao Guang</span>
+<span class="text-outline text-[12px]">/</span>
+<span class="font-headline-md text-title-sm text-on-surface">Stage S4: Prompt Design (Thiết kế &amp; Tối ưu Prompt)</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-highest text-on-surface font-label-sm text-label-sm uppercase tracking-wider">
+            DEMO PROTOTYPE
+          </span>
+<span class="px-3 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm flex items-center gap-1.5 shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+            Đã Khóa &amp; Phê Duyệt v3.0 (Approved)
+          </span>
+</div>
+</div>
+<!-- Action Bar & Dataflow Indicator -->
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-space-xs">
+<!-- Breadcrumb Dataflow -->
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-xl text-on-surface-variant font-code-sm text-[11px]">
+<span class="flex items-center gap-1 text-on-surface font-medium">
+<span class="material-symbols-outlined text-[15px] text-primary">input</span>
+            Nguồn: S2 Spec &amp; S3 Concept Preview v1.8
+          </span>
+<span class="material-symbols-outlined text-[13px] text-outline">arrow_forward</span>
+<span class="flex items-center gap-1 text-tertiary font-bold">
+<span class="material-symbols-outlined text-[15px] text-tertiary">tune</span>
+            Hiện tại: S4 Canonical &amp; Model Prompts v3.0
+          </span>
+<span class="material-symbols-outlined text-[13px] text-outline">arrow_forward</span>
+<span class="flex items-center gap-1 text-on-surface font-medium">
+<span class="material-symbols-outlined text-[15px] text-secondary">output</span>
+            Đích: S5 2D Production &amp; Generate Studio
+          </span>
+</div>
+<!-- Buttons -->
+<div class="flex items-center gap-space-xs">
+<button class="flex items-center gap-1 px-3 py-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high text-label-md font-label-md transition-all shadow-sm">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Quay lại Workspace</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest text-label-md font-label-md transition-all shadow-sm">
+<span class="material-symbols-outlined text-[16px]">save</span>
+<span>Lưu Bản Nháp</span>
+</button>
+<button class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary text-label-md font-label-md transition-all shadow-md">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Phê Duyệt Bộ Prompt S4</span>
+</button>
+<button class="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-tertiary text-on-tertiary hover:opacity-90 text-label-md font-label-md transition-all shadow-md">
+<span>Sang S5: 2D Production</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 3-Zone Workspace Body (1440 Target Grid) -->
+<div class="w-full max-w-[1440px] mx-auto px-space-lg py-space-md grid grid-cols-12 gap-gutter-desktop items-start">
+<!-- ZONE TRÁI: Dữ liệu đầu vào kế thừa (3 Cols) -->
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-space-md">
+<!-- S2 Spec Summary -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Đầu Vào S2 Spec</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-code-sm text-[10px]">Đã Khóa</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]">assignment_turned_in</span>
+          Yao Guang (#CHR-0042)
+        </h3>
+<div class="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
+<div class="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">Đặc tả nhân dạng &amp; Ngoại hình:</span>
+<p class="leading-relaxed">Giới tính Nữ, tóc bạch kim ánh tím oải hương buộc cao, ánh mắt ngọc băng sắc sảo, phong thái Tiên Tôn Dao Quang uy nghiêm tĩnh lặng.</p>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container-low flex flex-col gap-1">
+<span class="font-label-md text-label-md text-on-surface">Trang phục &amp; Phụ kiện:</span>
+<p class="leading-relaxed">Xường xám cách tân celestine xẻ tà, họa tiết khổng tước dát bạc, ngọc bội băng đăng, viền tay áo thêu chỉ mây.</p>
+</div>
+</div>
+<!-- Palette Preview -->
+<div class="flex flex-col gap-1.5 pt-1">
+<span class="font-label-sm text-label-sm text-outline">Bảng màu cốt lõi (S2 Approved):</span>
+<div class="grid grid-cols-3 gap-2">
+<div class="p-2 rounded-lg bg-surface-container flex flex-col items-center gap-1 shadow-sm">
+<span class="w-5 h-5 rounded-full shadow-inner bg-[#5370C9]"></span>
+<span class="font-code-sm text-[10px] text-on-surface">#5370C9</span>
+<span class="font-label-sm text-[9px] text-on-surface-variant">Celestine</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container flex flex-col items-center gap-1 shadow-sm">
+<span class="w-5 h-5 rounded-full shadow-inner bg-[#9D8DF1]"></span>
+<span class="font-code-sm text-[10px] text-on-surface">#9D8DF1</span>
+<span class="font-label-sm text-[9px] text-on-surface-variant">Frost Purple</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container flex flex-col items-center gap-1 shadow-sm">
+<span class="w-5 h-5 rounded-full shadow-inner bg-[#E2E8F0]"></span>
+<span class="font-code-sm text-[10px] text-on-surface">#E2E8F0</span>
+<span class="font-label-sm text-[9px] text-on-surface-variant">Silver Silk</span>
+</div>
+</div>
+</div>
+</div>
+<!-- S3 Concept Preview Key Visual -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">S3 Concept Key Visual</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-code-sm text-[10px]">Tương đồng 96%</span>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-sm group">
+<img class="w-full h-52 object-cover object-top transition-transform duration-300 group-hover:scale-105" data-alt="Anime grandmaster Yao Guang standing elegantly with long silver-lavender hair, ice-blue crystalline eyes, modern stylized celestine cheongsam with silver peacock patterns, ethereal anime studio key visual, soft warm ambient rim lighting, cozy fantasy studio concept art" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI2K3r9c322SyoVWfq9Yq2xnbn5pJp-HqXwUSDSVtmlYwZGMvisC_r2a07LeOVd9TdnS4gXchGMRfbkv2mSMrkYXcIzjWC-MSVz4HT7ClAIZbZhv1R4By08XPneoXaBJXp9TGEZIMZlAdZAm-8TQV_bXxWNylTZJsOSb7KDZCsc3t0pUWDsQkJpfzJ9Yk6qWopZOx3cfEepcgSbqxQDQUCONYnd43HS18SDIzCCow"/>
+<div class="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/60 to-transparent flex items-center justify-between text-inverse-on-surface">
+<span class="font-label-md text-label-md">KV_Approval_v1.8.webp</span>
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low font-body-sm text-[11px] text-on-surface-variant leading-relaxed">
+          Tỷ lệ phong cách 96% so với định hướng art direction Nhật Bản hiện đại kết hợp cổ phong Xianzhou.
+        </div>
+</div>
+<!-- Trigger Tokens & LoRA Links -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Trigger Tokens &amp; LoRAs</span>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container">
+<div class="flex items-center gap-1.5 font-code-sm text-code-sm text-on-surface">
+<span class="material-symbols-outlined text-tertiary text-[16px]">token</span>
+<span>yaoguang_v2</span>
+</div>
+<span class="font-label-sm text-[10px] text-primary bg-primary-fixed px-1.5 py-0.5 rounded">Core ID</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container">
+<div class="flex items-center gap-1.5 font-code-sm text-code-sm text-on-surface">
+<span class="material-symbols-outlined text-tertiary text-[16px]">token</span>
+<span>ice_celestine</span>
+</div>
+<span class="font-label-sm text-[10px] text-outline bg-surface-container-high px-1.5 py-0.5 rounded">Vibe Trigger</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg bg-surface-container">
+<div class="flex flex-col">
+<span class="font-code-sm text-code-sm text-on-surface">xianzhou_celestial_v2</span>
+<span class="font-label-sm text-[10px] text-outline">LoRA Weight: 0.85 (Khuyến nghị)</span>
+</div>
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+</div>
+</div>
+</div>
+</aside>
+<!-- ZONE GIỮA: Trung tâm quản lý & Soạn thảo Prompt (6 Cols) -->
+<main class="col-span-12 lg:col-span-6 flex flex-col gap-space-md">
+<!-- Category Tabs -->
+<div class="rounded-xl bg-surface-container-lowest p-1.5 shadow-sm flex items-center gap-1 overflow-x-auto">
+<button class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container font-label-md text-label-md whitespace-nowrap transition-colors">
+          Full-body (Toàn thân)
+        </button>
+<button class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container font-label-md text-label-md whitespace-nowrap transition-colors">
+          Portrait (Chân dung)
+        </button>
+<button class="px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container font-label-md text-label-md whitespace-nowrap transition-colors">
+          Key Visual (Minh họa chính)
+        </button>
+<button class="px-3 py-2 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md whitespace-nowrap shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">view_in_ar</span>
+          Multiview Ortho (Bộ xoay đa góc)
+        </button>
+<button class="px-3 py-2 rounded-lg text-outline hover:text-on-surface-variant font-label-md text-label-md whitespace-nowrap transition-colors">
+          Chibi (Tùy chọn)
+        </button>
+</div>
+<!-- Main Editor Card -->
+<div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-2">
+<span class="p-2 rounded-xl bg-secondary-container text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+</span>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface leading-tight">Multiview Turnaround Sheet</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Dành riêng cho pipeline 2D dựng sprite &amp; chuyển giao 3D rigging</p>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-code-sm text-[11px] font-bold">
+            Target: Tokyo Anime Engine v2.4
+          </span>
+</div>
+<!-- 1. Canonical Prompt -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">feed</span>
+              Prompt Tiêu chuẩn (Canonical Prompt — Trung lập theo Spec)
+            </label>
+<span class="font-code-sm text-[11px] text-outline">Spec Reference</span>
+</div>
+<div class="p-3.5 rounded-xl bg-surface-container-low font-body-sm text-body-sm text-on-surface leading-relaxed">
+            1girl, Yao Guang grandmaster, full body character sheet, orthographic view from front, side, and back, standing calm A-pose, braided silver lavender hair with frost highlights, icy cyan gaze, modernized split cheongsam in celestine blue with silver peacock embroidery, sheer cuffs, neutral studio lighting.
+          </div>
+</div>
+<!-- 2. Model-Specific Prompt -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-tertiary flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[16px] text-tertiary">bolt</span>
+              Prompt Tối ưu hóa theo Model (Tokyo Anime Engine v2.4 Pro)
+            </label>
+<span class="font-code-sm text-[11px] px-2 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed font-bold">
+              Token Count: 74 / 77 tokens
+            </span>
+</div>
+<div class="relative">
+<textarea class="w-full p-3.5 rounded-xl bg-surface-container font-code-sm text-code-sm text-on-surface focus:outline-none focus:bg-surface-container-highest transition-all resize-none shadow-inner" id="modelPromptInput" readonly="" rows="4">masterpiece, best quality, orthographic multi-view turnaround of 1girl, yaoguang_v2, celestial grandmaster, front view, side view, back view, standing straight, a-pose, lavender-silver hair, celestine blue cheongsam, silver peacock embroidery, neutral calm expression, white clean background, game asset sheet, detailed cloth folds, 8k anime art</textarea>
+</div>
+</div>
+<!-- 3. Negative Prompt -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-error flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[16px] text-error">block</span>
+            Negative Prompt (Tùy chọn &amp; Ngăn ngừa biến dạng)
+          </label>
+<textarea class="w-full p-3 rounded-xl bg-surface-container-low font-code-sm text-code-sm text-on-surface-variant focus:outline-none resize-none" readonly="" rows="3">lowres, bad anatomy, bad hands, asymmetric eyes, perspective distortion, dynamic tilt, 3d render look, complex background, shadow gradients, deformed limbs, blurry, missing fingers, extra accessories</textarea>
+</div>
+<!-- Quick Action Toolbar -->
+<div class="flex flex-wrap items-center justify-between gap-space-xs pt-1">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-all shadow-sm" id="copyPromptBtn">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span id="copyPromptText">Sao chép Model Prompt</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-2 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span>Diff Compare</span>
+</button>
+</div>
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed font-label-md text-label-md transition-all shadow-sm">
+<span>Thử nghiệm nhanh tại Generate Studio</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Version History & Diff Compare -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Lịch Sử Phiên Bản &amp; Thay Đổi (Version History)</span>
+<span class="font-code-sm text-[11px] text-on-surface-variant">3 bản lưu vết</span>
+</div>
+<div class="space-y-2">
+<!-- Current Approved Version -->
+<div class="p-3 rounded-xl bg-surface-container flex items-start justify-between gap-3 shadow-sm">
+<div class="flex items-start gap-2.5">
+<span class="p-1 rounded bg-tertiary text-on-tertiary mt-0.5">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-on-surface font-bold">Phiên bản v3.0 (Hiện tại)</span>
+<span class="px-2 py-0.2 rounded-full bg-primary-fixed text-on-primary-fixed font-code-sm text-[10px]">Approved</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Bổ sung "a-pose" chuẩn rigging, khóa góc nhìn orthographic không góc nghiêng camera.</p>
+</div>
+</div>
+<span class="font-code-sm text-[11px] text-outline whitespace-nowrap">Hôm nay, 14:20</span>
+</div>
+<!-- v2.1 -->
+<div class="p-3 rounded-xl bg-surface-container-low flex items-start justify-between gap-3">
+<div class="flex items-start gap-2.5">
+<span class="p-1 rounded bg-surface-container-high text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Phiên bản v2.1</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Chỉnh sửa sắc thái mắt ngọc băng và thêm chi tiết viền khổng tước dát bạc.</p>
+</div>
+</div>
+<span class="font-code-sm text-[11px] text-outline whitespace-nowrap">Hôm qua, 18:45</span>
+</div>
+<!-- v1.0 -->
+<div class="p-3 rounded-xl bg-surface-container-low flex items-start justify-between gap-3">
+<div class="flex items-start gap-2.5">
+<span class="p-1 rounded bg-surface-container-high text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[15px]">start</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Phiên bản v1.0</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Bản nháp khởi tạo ban đầu ánh xạ trực tiếp từ tài liệu S2 Spec.</p>
+</div>
+</div>
+<span class="font-code-sm text-[11px] text-outline whitespace-nowrap">12 Th05, 09:12</span>
+</div>
+</div>
+</div>
+</main>
+<!-- ZONE PHẢI: Tiêu chuẩn nghiệm thu & Gate Chuyển giao S5 (3 Cols) -->
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-space-md">
+<!-- Mục tiêu giai đoạn S4 -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Mục Tiêu Stage S4</span>
+<h3 class="font-title-sm text-title-sm text-on-surface">Chuẩn Hóa Bộ Prompt</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Tối ưu hóa các trigger tokens, loại bỏ từ ngữ gây nhiễu và bảo đảm đầu ra prompt tương thích hoàn hảo với bộ sinh ảnh xoay đa góc độ phân giải cao tại Stage S5.
+        </p>
+<div class="p-3 rounded-xl bg-surface-container flex items-center justify-between text-on-surface">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">speed</span>
+<span class="font-label-md text-label-md">Độ nhạy Prompt</span>
+</div>
+<span class="font-code-sm text-code-sm font-bold text-tertiary">Optimal (0.94)</span>
+</div>
+</div>
+<!-- Gate S4 Checklist (4/4 Đạt Chuẩn) -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">S4 Gate Acceptance</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-code-sm text-[11px] font-bold">4/4 Đạt</span>
+</div>
+<!-- Progress ring & score widget -->
+<div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low">
+<svg class="w-12 h-12 text-tertiary" viewbox="0 0 36 36">
+<path class="text-surface-container-highest" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="100, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface leading-none">100%</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant">Sẵn sàng chuyển giao S5</span>
+</div>
+</div>
+<div class="space-y-2.5 font-body-sm text-body-sm text-on-surface">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="leading-tight">Đầy đủ 4 danh mục prompt cốt lõi (Full-body, Portrait, KV, Multiview).</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="leading-tight">Kiểm định không xung đột trigger tokens LoRA (xianzhou_celestial_v2).</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="leading-tight">Độ dài prompt nằm trong ngưỡng an toàn clip_skip 2 (74/77 tokens).</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5">check_circle</span>
+<span class="leading-tight">Đã thử nghiệm render mẫu 3 lần đạt độ nhất quán ngoại hình &gt;95%.</span>
+</div>
+</div>
+</div>
+<!-- Quick Test Render Sample Thumbnail -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Render Thử Nghiệm Kiểm Định S4</span>
+<div class="grid grid-cols-3 gap-2">
+<div class="rounded-lg overflow-hidden bg-surface-container relative">
+<img class="w-full h-20 object-cover object-center" data-alt="Orthographic front view of anime character Yao Guang with silver lavender hair and celestine dress against clean studio white background, consistent character design sheet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoBLRdgfzcE8V1zZFW1OQYjzRzWCfExDELjVVypvCbniLtHZWuAY0PrvRwzbyKlGzsXjDUnLUVOerm80IN6jD1rztxGgu3F4hjF_epOEGZadx7ejJJfwDxY_BcrMfOB49n3KDZli62kh3worHQ11lWJLJzjxKTDUyzo8Pt6omBZYJ5sIY1YDCo26IvNJCqv4S6dIUjit9SMCRJE8dbPb4ReBeMDycKJ4YLcCO1ZRA"/>
+<span class="absolute bottom-1 left-1 px-1 bg-inverse-surface/80 text-inverse-on-surface rounded font-code-sm text-[8px]">Front</span>
+</div>
+<div class="rounded-lg overflow-hidden bg-surface-container relative">
+<img class="w-full h-20 object-cover object-center" data-alt="Orthographic side view turnaround of anime character Yao Guang with long hair braid in celestine blue gown, studio lighting sheet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwt8P4VrHoo4ZsXPdv3I6LaLXR7BlD1HRV9oc_06LqCLHkUwzhNgBzsNva4fojaW9--flYMPUkXgcvY-cizwlOFg-VUn1j_USiZVUlAs_u0ZJ3MfaMLqMpppAavyfHqdPXl413anb7GGPPshEKhTFitnuEzmMBIFotDTA-acFJxwOcjzMDnPf0wg_Alu-yQieuG_BmxZhi7UUNgI78I509C9cE2f_rVeBcAJukU6A"/>
+<span class="absolute bottom-1 left-1 px-1 bg-inverse-surface/80 text-inverse-on-surface rounded font-code-sm text-[8px]">Side</span>
+</div>
+<div class="rounded-lg overflow-hidden bg-surface-container relative">
+<img class="w-full h-20 object-cover object-center" data-alt="Orthographic back view turnaround of female grandmaster Yao Guang showing silver peacock patterns on back, white clean background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByOXIKJav5kUDNhWZUm0hfXVYkTZc5cW9HySdgn2gWAP8MRiQpFFKr5WdQBW0GcYXvgOB-es6LHhRudtTyAJWpS8uVgDijCyRCFBFxcSo93eu9Kjra70CSTbl0wtXHMZY4MfYmECzF7jFGRAwZYGbfI8BStWnJ_vTY8yQrAHtsxnweidxEjP-mb3eGruxMDfkuZ8AYa1VCSX48K01vxWNlgwY3quExZjyEY5e88EA"/>
+<span class="absolute bottom-1 left-1 px-1 bg-inverse-surface/80 text-inverse-on-surface rounded font-code-sm text-[8px]">Back</span>
+</div>
+</div>
+</div>
+<!-- System Handoff & Export -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex flex-col gap-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Chuyển Giao Sang Hệ Thống</span>
+<button class="w-full py-2.5 px-3 rounded-lg bg-primary-container text-on-primary-container hover:bg-primary font-label-md text-label-md flex items-center justify-center gap-1.5 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px]">forward</span>
+<span>Bàn giao sang S5: 2D Production</span>
+</button>
+<button class="w-full py-2 px-3 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-md text-label-md flex items-center justify-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-[18px]">palette</span>
+<span>Mở Generate Studio với v3.0</span>
+</button>
+<button class="w-full py-2 px-3 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md flex items-center justify-center gap-1.5 transition-all" id="exportJsonBtn">
+<span class="material-symbols-outlined text-[18px]">data_object</span>
+<span id="exportJsonText">Xuất JSON prompts_bundle_v3.json</span>
+</button>
+</div>
+</aside>
+</div>
+<!-- Notification Toast container for interaction feedback -->
+<div class="fixed bottom-14 right-8 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-xl font-label-md text-label-md shadow-xl flex items-center gap-2 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 z-50" id="toastNotification">
+<span class="material-symbols-outlined text-primary-fixed text-[20px]">check_circle</span>
+<span id="toastMessage">Thông báo</span>
+</div>
+<script>
+    // Lightweight vanilla micro-interactions for demonstration
+    const toast = document.getElementById('toastNotification');
+    const toastMsg = document.getElementById('toastMessage');
+
+    function showToast(message) {
+      if (!toast) return;
+      toastMsg.textContent = message;
+      toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+      }, 2600);
+    }
+
+    const copyBtn = document.getElementById('copyPromptBtn');
+    const modelPromptInput = document.getElementById('modelPromptInput');
+    if (copyBtn && modelPromptInput) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(modelPromptInput.value).then(() => {
+          showToast('Đã sao chép Model Prompt v3.0 vào bộ nhớ tạm!');
+        }).catch(() => {
+          showToast('Đã chọn văn bản Model Prompt v3.0!');
+        });
+      });
+    }
+
+    const exportBtn = document.getElementById('exportJsonBtn');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        showToast('Đã kết xuất file prompts_bundle_v3.json thành công!');
+      });
+    }
+  </script>
+</div></main><footer class="fixed bottom-0 left-72 right-0 h-10 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_-1px_6px_rgba(78,52,46,0.04)] z-30 flex items-center justify-between px-space-lg text-on-surface-variant font-code-sm text-code-sm"><div class="flex items-center gap-space-md"><span>Latency: <strong class="text-on-surface font-medium">24ms</strong></span><span>Memory Cache: <strong class="text-on-surface font-medium">1.4 GB / 8 GB</strong></span><span>GPU Quota: <strong class="text-tertiary font-medium">18.4h / 30h</strong> (T4)</span></div><div class="flex items-center gap-space-sm"><span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">Prototype Mode</span><span>AI Asset Studio V2 Production Build</span></div></footer></div></body></html>

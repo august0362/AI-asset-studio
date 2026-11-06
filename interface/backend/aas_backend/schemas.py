@@ -48,7 +48,7 @@ class ValidationReport(ContractModel):
 
 
 class ErrorResponse(ContractModel):
-    contract_version: ContractVersion
+    contract_version: Literal["1.0", "1.1"]  # 1.1 on Character Production routes (§13.1)
     warnings: list[ErrorItem]
     errors: list[ErrorItem]
 
@@ -64,6 +64,7 @@ class ArtifactView(ContractModel):
     height: int | None
     is_primary: bool
     content_url: str
+    task_id: str | None = None  # v1.1: the batch task this image belongs to (§13.9)
 
 
 class ArtifactList(ContractModel):
@@ -81,6 +82,16 @@ class InputView(ContractModel):
     content_url: str
 
 
+class BatchRef(ContractModel):
+    """v1.1 (§13.9): the character batch a job belongs to. ``null`` for every other job."""
+
+    character_id: str
+    manifest_id: str
+    group_id: str
+    attempt: int
+    task_ids: list[str]
+
+
 class RequestView(ContractModel):
     pipeline_type: PipelineType
     asset_category: AssetCategory
@@ -89,6 +100,7 @@ class RequestView(ContractModel):
     output_format: OutputFormat
     options: dict[str, Any]
     inputs: list[InputView]
+    batch: BatchRef | None = None
 
 
 class ComputeView(ContractModel):

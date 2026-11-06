@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import { Play } from "lucide-react";
 import { isMock } from "../../api/client";
 import type {
@@ -10,6 +11,7 @@ import type {
 import {
   acceleratorLabels,
   Badge,
+  Empty,
   Failure,
   Issues,
   Panel,
@@ -21,6 +23,7 @@ interface Props {
   model: ModelCapabilities;
   models: ModelCapabilities[];
   profiles: ComputeProfile[];
+  snapshotError: unknown;
   report: ValidationReport | null;
   outputFormat: OutputFormat;
   isRunning: boolean;
@@ -33,6 +36,7 @@ export function ComputeInspector({
   model,
   models,
   profiles,
+  snapshotError,
   report,
   outputFormat,
   isRunning,
@@ -41,6 +45,7 @@ export function ComputeInspector({
   serverErrors,
   onGenerate,
 }: Props) {
+  const { t, label, number } = useI18n();
   const { draft, setDraft } = useDraft();
   const invalid = report?.errors.map((e) => e.field ?? "") ?? [];
   const hidden = Object.entries(draft.options).filter(
@@ -54,8 +59,12 @@ export function ComputeInspector({
   return (
     <div className="inspector-stack">
       <Panel
-        title="Compute & generation"
-        extra={<Badge tone="success">{isMock ? "MOCK" : "HTTP"}</Badge>}
+        title={t("copy.computeGeneration")}
+        extra={
+          <Badge tone="success">
+            {isMock ? t("common.mock") : t("common.http")}
+          </Badge>
+        }
       >
         <form
           className="panel-body"
@@ -65,7 +74,7 @@ export function ComputeInspector({
           }}
         >
           <label className="field">
-            <span>Compute profile · Explicit selection</span>
+            <span>{t("copy.computeProfileExplicitSelection")}</span>
             <select
               name="compute-profile"
               value={draft.profileId}
@@ -77,17 +86,31 @@ export function ComputeInspector({
                 }))
               }
             >
-              {profiles
-                .filter((p) => p.enabled && p.authorization_confirmed)
-                .map((p) => (
-                  <option key={p.profile_id} value={p.profile_id}>
-                    {p.display_name} ({p.mode})
-                  </option>
-                ))}
+              {!profiles.some((p) => p.profile_id === draft.profileId) && (
+                <option value={draft.profileId} disabled>
+                  {draft.profileId || t("compute.noEnabledProfiles")}
+                </option>
+              )}
+              {profiles.map((p) => (
+                <option
+                  key={p.profile_id}
+                  value={p.profile_id}
+                  disabled={!p.enabled}
+                >
+                  {p.display_name} ({label("mode", p.mode)})
+                </option>
+              ))}
             </select>
           </label>
+          {!profiles.some((p) => p.enabled) ? (
+            <Empty title={t("compute.noEnabledProfiles")}>
+              {t("compute.noEnabledProfilesHelp")}
+            </Empty>
+          ) : snapshotError ? (
+            <Failure error={snapshotError} />
+          ) : null}
           <label className="field">
-            <span>Accelerator</span>
+            <span>{t("copy.accelerator")}</span>
             <select
               name="accelerator"
               value={draft.acceleratorId ?? ""}
@@ -99,7 +122,7 @@ export function ComputeInspector({
                 }))
               }
             >
-              <option value="">Auto · Within selected profile</option>
+              <option value="">{t("copy.autoWithinSelectedProfile")}</option>
               {profiles
                 .find((p) => p.profile_id === draft.profileId)
                 ?.accelerators.map((a) => {
@@ -116,14 +139,14 @@ export function ComputeInspector({
                       }
                     >
                       {acceleratorLabels[a.accelerator_id] ?? a.accelerator_id}
-                      {!eligible ? " (incompatible)" : ""}
+                      {!eligible ? t("copy.incompatible") : ""}
                     </option>
                   );
                 })}
             </select>
           </label>
           <div className="section-divider" />
-          <h3>Model options</h3>
+          <h3>{t("copy.modelOptions")}</h3>
           <ModelOptions
             model={model}
             values={draft.options}
@@ -138,9 +161,18 @@ export function ComputeInspector({
           {hidden.length > 0 && (
             <div className="notice warning">
               <div>
-                <strong>Not used by this model</strong>
-                <p>{hidden.map(([k, v]) => `${k}: ${v}`).join(", ")}</p>
-                <small>Values are retained and restored when supported.</small>
+                <strong>{t("copy.notUsedByThisModel")}</strong>
+                <p>
+                  {hidden
+                    .map(
+                      ([k, v]) =>
+                        `${label("option", k)}: ${typeof v === "number" ? number(v, 0) : v}`,
+                    )
+                    .join(", ")}
+                </p>
+                <small>
+                  {t("copy.valuesAreRetainedAndRestoredWhenSupported")}
+                </small>
               </div>
             </div>
           )}
@@ -160,15 +192,21 @@ export function ComputeInspector({
           >
             <Play size={16} aria-hidden="true" />
             {pending
-              ? "Creating job…"
+              ? t("copy.creatingJob")
               : isRunning
-                ? "Mock job in progress…"
-                : `Generate ${outputFormat === "png" ? "2D image" : "3D asset"}`}
+                ? t("copy.mockJobInProgress")
+                : t(
+                    outputFormat === "png"
+                      ? "generate.action2d"
+                      : "generate.action3d",
+                  )}
           </button>
           <p className="small muted">
             {report?.errors.length
-              ? `${report.errors.length} validation issue(s) to resolve.`
-              : "Ready to create a mock job."}
+              ? t("generate.issueCount", {
+                  count: number(report.errors.length, 0),
+                })
+              : t("copy.readyToCreateAMockJob")}
           </p>
         </form>
       </Panel>

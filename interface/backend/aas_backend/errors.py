@@ -40,11 +40,24 @@ def path_invalid(kind: str, value: str) -> ApiError:
     return api_error(400, "PATH_INVALID", None, f"Invalid {kind}.")
 
 
+CHARACTER_ROUTES = "/api/v1/characters"
+
+
+def version_for(request: Request | None) -> str:
+    """Character Production routes (§13) answer with contract 1.1 envelopes; every v1 route keeps 1.0."""
+    return (
+        "1.1" if request is not None and request.url.path.startswith(CHARACTER_ROUTES) else CONTRACT_VERSION
+    )
+
+
 def error_response(
-    status: int, errors: Iterable[ErrorItem], warnings: Iterable[ErrorItem] = ()
+    status: int,
+    errors: Iterable[ErrorItem],
+    warnings: Iterable[ErrorItem] = (),
+    version: str = CONTRACT_VERSION,
 ) -> JSONResponse:
     body = {
-        "contract_version": CONTRACT_VERSION,
+        "contract_version": version,
         "warnings": [w.model_dump(mode="json") for w in warnings],
         "errors": [e.model_dump(mode="json") for e in errors],
     }
@@ -58,26 +71,31 @@ def _location(loc: tuple[Any, ...]) -> str | None:
 
 def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(ApiError)
-    async def _api_error(_: Request, exc: ApiError) -> JSONResponse:
-        return error_response(exc.status, exc.errors, exc.warnings)
+    async def _api_error(request: Request, exc: ApiError) -> JSONResponse:
+        return error_response(exc.status, exc.errors, exc.warnings, version_for(request))
 
     @app.exception_handler(RequestValidationError)
-    async def _validation(_: Request, exc: RequestValidationError) -> JSONResponse:
+    async def _validation(request: Request, exc: RequestValidationError) -> JSONResponse:
         items = [
             error(
                 "REQUEST_FIELD_INVALID", _location(tuple(e.get("loc", ()))), f"Invalid value: {e.get('msg')}."
             )
             for e in exc.errors()
         ]
-        return error_response(422, items)
+        return error_response(422, items, version=version_for(request))
 
     @app.exception_handler(StarletteHTTPException)
-    async def _http(_: Request, exc: StarletteHTTPException) -> JSONResponse:
+    async def _http(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+        version = version_for(request)
         if exc.status_code == 404:
-            return error_response(404, [error("PATH_INVALID", None, "No such endpoint.")])
+            return error_response(404, [error("PATH_INVALID", None, "No such endpoint.")], version=version)
         if exc.status_code == 405:
-            return error_response(405, [error("REQUEST_FIELD_INVALID", None, "Method not allowed.")])
-        return error_response(exc.status_code, [error("REQUEST_FIELD_INVALID", None, str(exc.detail))])
+            return error_response(
+                405, [error("REQUEST_FIELD_INVALID", None, "Method not allowed.")], version=version
+            )
+        return error_response(
+            exc.status_code, [error("REQUEST_FIELD_INVALID", None, str(exc.detail))], version=version
+        )
 
     @app.middleware("http")
     async def _internal_errors(request: Request, call_next):
@@ -86,5 +104,7 @@ def install_error_handlers(app: FastAPI) -> None:
         except Exception:
             log.exception("internal error on %s %s", request.method, request.url.path)
             return error_response(
-                500, [error("INTERNAL_ERROR", None, "Internal error. Details are in the local log.")]
+                500,
+                [error("INTERNAL_ERROR", None, "Internal error. Details are in the local log.")],
+                version=version_for(request),
             )

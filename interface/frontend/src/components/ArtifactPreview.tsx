@@ -1,3 +1,4 @@
+import { useI18n } from "../i18n";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Download } from "lucide-react";
@@ -22,7 +23,7 @@ export function useBlobUrl(blob?: Blob) {
 export function ArtifactImage({
   jobId,
   artifact,
-  alt = "Mock fixture: cyan textured box concept",
+  alt,
   className = "",
 }: {
   jobId: string;
@@ -30,6 +31,7 @@ export function ArtifactImage({
   alt?: string;
   className?: string;
 }) {
+  const { t } = useI18n();
   const data = useQuery({
     queryKey: ["artifact", jobId, artifact.artifact_id],
     queryFn: () => api.artifactContent(jobId, artifact.artifact_id),
@@ -42,13 +44,13 @@ export function ArtifactImage({
     <img
       className={className}
       src={url}
-      alt={alt}
+      alt={alt ?? t("copy.generatedPngArtifact")}
       width={artifact.width ?? 768}
       height={artifact.height ?? 768}
       loading="lazy"
     />
   ) : (
-    <Loading>Loading preview…</Loading>
+    <Loading>{t("copy.loadingPreview")}</Loading>
   );
 }
 export function ArtifactPreview({
@@ -58,6 +60,7 @@ export function ArtifactPreview({
   jobId: string;
   artifact: Artifact;
 }) {
+  const { t } = useI18n();
   const data = useQuery({
     queryKey: ["artifact", jobId, artifact.artifact_id],
     queryFn: () => api.artifactContent(jobId, artifact.artifact_id),
@@ -65,16 +68,16 @@ export function ArtifactPreview({
   });
   const url = useBlobUrl(data.data);
   if (data.error) return <Failure error={data.error} />;
-  if (!url) return <Loading>Loading artifact…</Loading>;
+  if (!url) return <Loading>{t("copy.loadingArtifact")}</Loading>;
   return artifact.format === "glb" ? (
-    <Suspense fallback={<Loading>Loading 3D viewer…</Loading>}>
+    <Suspense fallback={<Loading>{t("copy.loading3DViewer")}</Loading>}>
       <GlbViewer url={url} />
     </Suspense>
   ) : (
     <div className="image-preview">
       <img
         src={url}
-        alt="Mock PNG output: a cyan textured box on an Obsidian grid"
+        alt={t("copy.generatedPngArtifact")}
         width={artifact.width ?? 768}
         height={artifact.height ?? 768}
       />
@@ -88,6 +91,7 @@ export function DownloadButton({
   jobId: string;
   artifact: Artifact;
 }) {
+  const { t } = useI18n();
   const [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>();
   async function download() {
@@ -114,7 +118,9 @@ export function DownloadButton({
     <div>
       <button type="button" onClick={download} disabled={busy}>
         <Download size={14} aria-hidden="true" />
-        {busy ? "Downloading…" : `Download ${artifact.format.toUpperCase()}`}
+        {busy
+          ? t("copy.downloading")
+          : t("download.action", { format: artifact.format.toUpperCase() })}
       </button>
       {error ? <Failure error={error} /> : null}
     </div>

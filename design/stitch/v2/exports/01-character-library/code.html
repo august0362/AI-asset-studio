@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"secondary":"#755750","primary":"#72564c","inverse-on-surface":"#ffede7","on-primary":"#ffffff","surface-container-low":"#fff1ec","primary-fixed":"#ffdbce","error-container":"#ffdad6","surface-container":"#ffe9e3","surface":"#fff8f6","background":"#fff8f6","surface-bright":"#fff8f6","surface-container-lowest":"#ffffff","outline-variant":"#d4c3be","on-error-container":"#93000a","on-primary-fixed-variant":"#5b4137","tertiary-fixed":"#e9ddff","outline":"#827470","primary-container":"#8d6e63","surface-container-highest":"#ffdbcf","on-background":"#2e150b","on-surface-variant":"#504441","secondary-fixed":"#ffdad2","on-surface":"#2e150b","on-secondary-fixed":"#2b1611","on-secondary-fixed-variant":"#5c403a","secondary-container":"#ffd7ce","tertiary-container":"#8555ef","on-tertiary-container":"#fffcff","surface-container-high":"#ffe2d9","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#5516be","inverse-primary":"#e4beb2","on-primary-fixed":"#2b160f","on-primary-container":"#fffcff","inverse-surface":"#46291e","tertiary":"#6b38d5","primary-fixed-dim":"#e4beb2","secondary-fixed-dim":"#e5beb5","surface-dim":"#ffd0bf","on-error":"#ffffff","error":"#ba1a1a","surface-variant":"#ffdbcf","tertiary-fixed-dim":"#d0bcff","on-tertiary-fixed":"#23005c","surface-tint":"#75584d","on-tertiary":"#ffffff","on-secondary-container":"#7a5b54"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-xl":"2rem","margin":"1.5rem","margin-desktop":"2.5rem","space-2xl":"3rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"1.5rem","space-md":"1rem","space-sm":"0.5rem","gutter":"1.25rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"title-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"body-lg":["Be Vietnam Pro"],"headline-lg":["Plus Jakarta Sans"],"body-sm":["Be Vietnam Pro"],"body-md":["Be Vietnam Pro"],"code-sm":["Be Vietnam Pro"]},fontSize:{"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"700"}],"headline-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"title-sm":["16px",{"lineHeight":"24px","fontWeight":"600"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.015em","fontWeight":"700"}],"display-lg":["40px",{"lineHeight":"52px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"700"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"18px","fontWeight":"500"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(78,52,46,0.05)]"><div class="flex flex-col h-full"><div class="p-space-lg flex flex-col gap-space-xs"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_2px_8px_-2px_rgba(78,52,46,0.15)]"><span class="material-symbols-outlined text-[22px]">auto_awesome</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md text-on-surface tracking-tight leading-none">AI Asset Studio</span><span class="font-code-sm text-code-sm text-on-surface-variant leading-tight">V2 Creative Suite</span></div></div><div class="mt-space-xs flex items-center gap-space-xs"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wider">v2.4 Pro (DEMO)</span><span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Tokyo Engine</span></div></div><div class="flex-1 overflow-y-auto px-space-md py-space-xs space-y-space-md"><div class="flex flex-col gap-space-xs"><span class="px-space-sm font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Core Studio</span><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-md"><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="generate-studio" href="#"><span class="material-symbols-outlined text-[20px]">auto_fix_high</span><span class="font-body-md text-body-md font-medium">Generate Studio</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="jobs-and-logs" href="#"><span class="material-symbols-outlined text-[20px]">terminal</span><span class="font-body-md text-body-md font-medium">Jobs &amp; Logs</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="kaggle-resources" href="#"><span class="material-symbols-outlined text-[20px]">memory</span><span class="font-body-md text-body-md font-medium">Kaggle Resources</span></a><a class="flex items-center gap-space-sm px-space-sm py-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="asset-library" href="#"><span class="material-symbols-outlined text-[20px]">folder_special</span><span class="font-body-md text-body-md font-medium">Asset Library</span></a></nav></div><div class="flex flex-col gap-space-xs"><div class="flex items-center justify-between px-space-sm"><span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">New Extension</span><span class="px-2 py-0.5 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-bold shadow-[0_0_12px_rgba(107,56,213,0.35)]">NEW</span></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-headline-md"><div class="flex items-center justify-between px-space-sm py-2 rounded-xl bg-surface-container-high/60"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-tertiary text-[20px]">person_add</span><div class="flex flex-col"><span class="font-label-md text-label-md text-on-surface">Character Production</span><span class="font-body-sm text-body-sm text-on-surface-variant leading-none">Sản xuất nhân vật</span></div></div></div><div class="pl-space-md flex flex-col gap-1 border-l-2 border-outline-variant/30 ml-space-sm"><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="character-library" href="#"><span class="font-body-sm text-body-sm font-medium">Character Library</span><span class="font-body-sm text-[10px] text-outline leading-tight">Thư viện nhân vật</span></a><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="character-workspace" href="#"><span class="font-body-sm text-body-sm font-medium">Character Workspace</span><span class="font-body-sm text-[10px] text-outline leading-tight">Không gian làm việc</span></a><a class="flex flex-col px-space-sm py-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" data-path="stage-detail" href="#"><span class="font-body-sm text-body-sm font-medium">Stage Detail</span><span class="font-body-sm text-[10px] text-outline leading-tight">Chi tiết giai đoạn</span></a></div></nav></div></div><div class="p-space-md mx-space-md mb-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant">Environment</span><span class="font-code-sm text-code-sm text-primary font-bold">Sandbox V2</span></div><div class="flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span>Mana Engine: 4.8 GFLOPS</span></div></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(78,52,46,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md flex-1 max-w-lg"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="w-full h-10 pl-10 pr-12 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/30 transition-all" placeholder="Search assets &amp; characters... (Ctrl+K)" readonly="" type="text"/><span class="absolute right-2 px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-[10px]">⌘K</span></div></div><div class="flex items-center gap-space-md"><div class="hidden xl:flex items-center gap-space-xs px-3 py-1.5 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-tertiary-container"></span><span class="font-code-sm text-code-sm text-on-surface font-medium">Kaggle T4x2 / P100</span><span class="px-1.5 py-0.2 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-[10px]">Online - Idle</span></div><div class="flex items-center gap-1 p-1 rounded-xl bg-surface-container-low"><button class="flex items-center gap-1 px-2 py-1 rounded-lg bg-surface-container text-on-surface font-label-sm text-label-sm" title="Coffee (Latte/Caffe) Scheme"><span class="material-symbols-outlined text-[15px] text-primary">coffee</span><span>Latte</span></button><button class="flex items-center gap-1 px-2 py-1 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm" title="Green (Mint/Matcha) Scheme"><span class="material-symbols-outlined text-[15px]">eco</span><span>Mint</span></button></div><div class="flex items-center p-0.5 rounded-xl bg-surface-container-low"><button class="p-1.5 rounded-lg bg-surface text-on-surface" title="Light Mode"><span class="material-symbols-outlined text-[16px]">light_mode</span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface" title="Dark Mode"><span class="material-symbols-outlined text-[16px]">dark_mode</span></button><button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface" title="System Sync"><span class="material-symbols-outlined text-[16px]">desktop_windows</span></button></div><div class="flex items-center rounded-xl bg-surface-container-low p-1 text-on-surface-variant font-label-sm text-label-sm"><span class="px-2 py-0.5 rounded bg-surface text-on-surface font-bold">VN</span><span class="px-2 py-0.5 text-outline">EN</span></div><div class="flex items-center gap-space-xs pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 w-full pt-16 pb-12 bg-background"><div class="flex flex-col w-full">
+<!-- Subtle decorative ambient glow behind the character library canvas -->
+<div class="relative w-full px-space-lg lg:px-space-xl py-space-md">
+<div class="absolute top-10 right-24 w-96 h-96 rounded-full bg-tertiary-fixed/35 blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute top-48 left-16 w-80 h-80 rounded-full bg-secondary-container/40 blur-3xl pointer-events-none -z-10"></div>
+<!-- 1. Header Breadcrumbs & Workspace Sub-Bar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm mb-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="hover:text-primary transition-colors cursor-pointer">Character Production</span>
+<span class="text-outline">/</span>
+<span class="font-headline-md text-label-md text-primary font-bold">Character Library</span>
+<span class="text-outline">·</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">Thư viện nhân vật</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-xl text-headline-xl text-on-surface font-extrabold tracking-tight">Thư Viện Nhân Vật</h1>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm shadow-sm uppercase tracking-wider">v2.4 Pro</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary font-label-sm text-label-sm font-semibold">DEMO PROTOTYPE</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-container shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-container animate-pulse"></span>
+<span class="font-code-sm text-code-sm text-on-surface font-medium">Kaggle T4x2 Mana Core</span>
+<span class="text-outline text-label-sm">•</span>
+<span class="font-code-sm text-code-sm text-primary font-semibold">Active Pipeline</span>
+</div>
+<button class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-all shadow-sm" id="quick-refresh-btn" title="Làm mới trạng thái sync">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+</button>
+</div>
+</div>
+<!-- 4. Summary Status Chips / Metrics Ribbon -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm mb-space-lg">
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Tổng số hồ sơ</span>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface mt-1">12 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">nhân vật</span></span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">group</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Đang sản xuất</span>
+<span class="font-headline-lg text-headline-lg font-bold text-tertiary mt-1">4 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">in progress</span></span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">cyclone</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Bản phác thảo</span>
+<span class="font-headline-lg text-headline-lg font-bold text-secondary mt-1">6 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">drafts</span></span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">draw</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-md rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Hoàn tất kiểm định</span>
+<span class="font-headline-lg text-headline-lg font-bold text-primary mt-1">2 <span class="font-body-sm text-body-sm font-normal text-on-surface-variant">completed</span></span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[22px]">verified</span>
+</div>
+</div>
+</div>
+<!-- 2 & 3. Top Action Bar: Search, Filters & CTA -->
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-sm mb-space-lg flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-space-md">
+<!-- Search Input -->
+<div class="relative flex-1 min-w-[280px]">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">manage_search</span>
+<input class="w-full h-11 pl-11 pr-4 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:bg-surface-container transition-all" id="character-search" placeholder="Tìm kiếm nhân vật theo tên, tag, ID (#CHR-...)" type="text"/>
+</div>
+<!-- Filters Ribbon -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Style Filter -->
+<div class="relative">
+<select class="h-11 pl-3.5 pr-8 rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md appearance-none focus:outline-none focus:bg-surface-container cursor-pointer transition-all">
+<option value="all">Tất cả phong cách (Style)</option>
+<option value="xianzhou">Xianzhou / Celestial Anime</option>
+<option value="cyberpunk">Cyber Ronin / Vanguard</option>
+<option value="cozy">Cozy Island / Forest</option>
+<option value="highfantasy">Star Rail Echo</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+</div>
+<!-- Stage Filter (S1 - S7) -->
+<div class="relative">
+<select class="h-11 pl-3.5 pr-8 rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md appearance-none focus:outline-none focus:bg-surface-container cursor-pointer transition-all">
+<option value="all">Giai đoạn: Tất cả (S1-S7)</option>
+<option value="s1">S1: Concept Exploration</option>
+<option value="s2">S2: Character Spec</option>
+<option value="s3">S3: Model Sheet / Turnaround</option>
+<option value="s4">S4: Prompt Design &amp; LoRA</option>
+<option value="s5">S5: Expression &amp; Poses</option>
+<option value="s6">S6: 3D Reconstruction</option>
+<option value="s7">S7: Production Asset Export</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">filter_list</span>
+</div>
+<!-- Editorial Status -->
+<div class="relative">
+<select class="h-11 pl-3.5 pr-8 rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md appearance-none focus:outline-none focus:bg-surface-container cursor-pointer transition-all">
+<option value="all">Trạng thái: Tất cả</option>
+<option value="approved">Approved (Đã duyệt)</option>
+<option value="review">In Review (Đang thẩm định)</option>
+<option value="draft">Draft (Bản nháp)</option>
+<option value="blocked">Blocked (Cần sửa)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">tune</span>
+</div>
+<!-- View Switcher -->
+<div class="flex items-center p-1 rounded-xl bg-surface-container-low">
+<button class="p-2 rounded-lg bg-surface text-on-surface shadow-xs" title="Grid View">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+<button class="p-2 rounded-lg text-on-surface-variant hover:text-on-surface" title="List View">
+<span class="material-symbols-outlined text-[18px]">view_agenda</span>
+</button>
+</div>
+<!-- Primary CTA: Create Character -->
+<button class="h-11 px-5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-headline-md text-title-sm flex items-center gap-2 shadow-md hover:shadow-lg transition-all active:scale-[0.98]" id="open-new-character-modal">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span>+ Tạo Nhân Vật Mới</span>
+</button>
+</div>
+</div>
+<!-- 5. Character Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-space-lg mb-space-xl">
+<!-- CARD 1: Yao Guang / Dao Quang (#CHR-0042) -->
+<div class="group flex flex-col rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden relative">
+<!-- Visual Showcase / Portrait (Hero Aspect) -->
+<div class="relative w-full h-72 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Anime fantasy heroine Yao Guang with celestial lavender-silver braided hair, intricate peacock plumage hairpins, glowing quantum ice crystal dress, serene grandmaster expression, ambient cool blue and warm cafe lighting reflections, ultra high detail game splash art style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9pej3MGKnt1UCFB_MMbsX1M15Av4s0d1GH7seh4XiSm9czNzRdm6qFZtrfQdUFMOdAcPawOcbNsOQYDDs21TDki-qPX23tZtBKMeIt1cFfmDiaE25MYpc5C211YEdAzTf-Sx53bIkLjyXywNuR6HZ8dhLW2KlPVr7TnSrnpclne4TcD0a64eZ6No7X6gtVPK8XS9fblrKYPBxozANiV_7OUXPpm9ZcJRc3yc8lKM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
+<!-- Top Badges Overlay -->
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded-full bg-surface/90 backdrop-blur-md text-primary font-code-sm text-code-sm font-bold shadow-sm">
+              #CHR-0042
+            </span>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container/90 backdrop-blur-md text-on-tertiary-container font-label-sm text-label-sm font-bold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container animate-pulse"></span>
+<span>S5 In Review</span>
+</div>
+</div>
+<!-- Bottom Image Meta Overlay -->
+<div class="absolute bottom-3 left-4 right-4 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-container-high font-semibold">Xianzhou Yuque · Quantum Seer</span>
+<h2 class="font-headline-lg text-headline-lg text-surface-container-lowest font-bold leading-tight">Yao Guang (Dao Quang)</h2>
+</div>
+<div class="flex items-center gap-1 text-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<!-- Body & Pipeline Stage Tracking -->
+<div class="p-space-md flex flex-col flex-1 justify-between bg-surface-container-lowest">
+<div class="space-y-space-sm">
+<!-- Tags Ribbon -->
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Ice/Quantum</span>
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Celestial Grandmaster</span>
+<span class="px-2 py-0.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed-variant font-code-sm text-[11px] font-semibold">Model Sheet: Locked</span>
+</div>
+<!-- Stage Progress Matrix -->
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tiến độ quy trình (4/7 Stages Approved)</span>
+<span class="font-code-sm text-code-sm font-bold text-tertiary">57%</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex gap-0.5">
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-tertiary animate-pulse"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-[11px]">
+<span>Giai đoạn hiện tại: Biểu cảm &amp; Tư thế (S5)</span>
+<span class="text-tertiary font-medium">Đang đợi review</span>
+</div>
+</div>
+</div>
+<!-- Card Footer Metadata & Actions -->
+<div class="pt-space-md mt-space-sm flex items-center justify-between border-t border-transparent">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Cập nhật: Hôm nay 14:32</span>
+</div>
+<a class="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-all" href="#">
+<span>Mở Workspace</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- CARD 2: Kurogane Ren (#CHR-0038) -->
+<div class="group flex flex-col rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden relative">
+<div class="relative w-full h-72 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Anime cyber ronin character Kurogane Ren with jet-black tactical haori coat, glowing neon cyan katana, metallic cybernetic eye implant, gritty futuristic neo-shibuya alleyway backdrop, cinematic anime character portrait with warm coffee studio accent lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1P5OWPAkPnaR_RoIAk3xW-yltasxnmvUOwLPhCj6AqL28kabP7bSOX20BcjC6uVHpMkIs7uQBkq8ZJldaaq5EaKMEr9YQ2VVdgXXO7G8ubTyZes4MicbugiC6XjWj9TXRhx1LxYtsPs61prZ3-UecHj4dntPiFvHZq3wZWPnabVdT2K5t1y3N3cArQVzKyC7tJIgrXu-0f5-yHSDDEP-TFF9XtIzGdGHjmLmbsaU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded-full bg-surface/90 backdrop-blur-md text-primary font-code-sm text-code-sm font-bold shadow-sm">
+              #CHR-0038
+            </span>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/90 backdrop-blur-md text-on-secondary-container font-label-sm text-label-sm font-bold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>S2 Specification</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-4 right-4 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-container-high font-semibold">Kaizen Vanguard · Cyber Ronin</span>
+<h2 class="font-headline-lg text-headline-lg text-surface-container-lowest font-bold leading-tight">Kurogane Ren</h2>
+</div>
+<div class="flex items-center gap-1 text-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between bg-surface-container-lowest">
+<div class="space-y-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Cyberpunk</span>
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Katana Tech</span>
+<span class="px-2 py-0.5 rounded-lg bg-secondary-container text-on-secondary-container font-code-sm text-[11px]">Lora Tag: Ren_v1</span>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tiến độ quy trình (1/7 Stages Approved)</span>
+<span class="font-code-sm text-code-sm font-bold text-secondary">14%</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex gap-0.5">
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-secondary-container animate-pulse"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-[11px]">
+<span>Giai đoạn: Thiết lập đặc tả kỹ thuật (S2)</span>
+<span class="text-secondary font-medium">Bản nháp 3/5</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md mt-space-sm flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Cập nhật: Hôm qua 18:20</span>
+</div>
+<a class="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-all" href="#">
+<span>Mở Workspace</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- CARD 3: Lyra Frostfall (#CHR-0019) -->
+<div class="group flex flex-col rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden relative">
+<div class="relative w-full h-72 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Anime glacial sorceress Lyra Frostfall with crystalline blue eyes, delicate white fur mantle, frost-encrusted staff, swirling snow sparks, soft moonlight and warm amber hearth ambient glow, masterclass anime portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs8WuixVJUd6JrV8ytxweOtHAzinrYTv4qrRX63K4CDxRi-FvceVSc8e3y-wrvDjYMpv-DgKDMHWh3-FYwQwV_YnCUzS6-NMMjNRi5MtHJMHdbR3-GkXjQrng9dTYIr3zoQV23KwO8CHWxWFVPGwsJ0GOyXo45s4yOVbAlOTuRPaW0rFGL6GTRO7hCqq-aN5d6NXWHy-Upn2XiL3f2iHRyObtNE2PsbyYV6vsH9Ek"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded-full bg-surface/90 backdrop-blur-md text-primary font-code-sm text-code-sm font-bold shadow-sm">
+              #CHR-0019
+            </span>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/90 backdrop-blur-md text-on-tertiary-fixed font-label-sm text-label-sm font-bold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>S4 Prompt Design</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-4 right-4 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-container-high font-semibold">Star Rail Echo · Glacial Mage</span>
+<h2 class="font-headline-lg text-headline-lg text-surface-container-lowest font-bold leading-tight">Lyra Frostfall</h2>
+</div>
+<div class="flex items-center gap-1 text-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between bg-surface-container-lowest">
+<div class="space-y-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Ice Sorcery</span>
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Astral Echo</span>
+<span class="px-2 py-0.5 rounded-lg bg-primary-fixed text-on-primary-fixed-variant font-code-sm text-[11px]">SDXL V2 Fine-tune</span>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tiến độ quy trình (3/7 Stages Approved)</span>
+<span class="font-code-sm text-code-sm font-bold text-primary">42%</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex gap-0.5">
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-tertiary-container animate-pulse"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-[11px]">
+<span>Giai đoạn: Thiết kế Prompt &amp; LoRA (S4)</span>
+<span class="text-tertiary font-medium">8 prompt tests</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md mt-space-sm flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Cập nhật: 02 ngày trước</span>
+</div>
+<a class="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-all" href="#">
+<span>Mở Workspace</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- CARD 4: Sherwood Tom (#CHR-0007) - Cozy Animal Guardian (Inspired by inspiration 1) -->
+<div class="group flex flex-col rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden relative">
+<div class="relative w-full h-72 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Cozy animal crossing inspired village character Sherwood Tom, charismatic raccoon guardian wearing an artisanal apron in a lush pine forest campsite, warm wooden textures, bright sunshine, peaceful storybook anime art style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeq9wmylTIDgq4z930j82zIsG9zuVy-56rOj2slNiYIXnrkoepHS3kMVRhAv2sB8LycQCjypezTakjFAxWrYEmjidh0UamnPTXOt7eZLr47RlFNruhmUYi_g8R8ty7YHeV3IUqgM6-jRXKkc1oPl1P2P1HDPSCiJWetvapcQ7KSHSGnTZw16pOFDnLgAT0l_u-CkaRGQ5gHd2AELusHL6gPB5SNQ47lW2QZp0zM4Q"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded-full bg-surface/90 backdrop-blur-md text-primary font-code-sm text-code-sm font-bold shadow-sm">
+              #CHR-0007
+            </span>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-fixed/90 backdrop-blur-md text-on-primary-fixed-variant font-label-sm text-label-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-[14px]">token</span>
+<span>S6 3D Recon (PLANNED)</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-4 right-4 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-container-high font-semibold">Forest Guardian · Cozy Island</span>
+<h2 class="font-headline-lg text-headline-lg text-surface-container-lowest font-bold leading-tight">Sherwood Tom</h2>
+</div>
+<div class="flex items-center gap-1 text-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between bg-surface-container-lowest">
+<div class="space-y-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Cozy Stylized</span>
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Animal Resident</span>
+<span class="px-2 py-0.5 rounded-lg bg-secondary-fixed text-on-secondary-fixed font-code-sm text-[11px]">Asset Bundle V1</span>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tiến độ quy trình (5/7 Stages Approved)</span>
+<span class="font-code-sm text-code-sm font-bold text-primary">71%</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex gap-0.5">
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-primary"></div>
+<div class="h-full w-[14.28%] bg-secondary animate-pulse"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-[11px]">
+<span>Giai đoạn: 3D Gaussian Reconstruction (S6)</span>
+<span class="text-secondary font-medium">Xếp hàng GPU</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md mt-space-sm flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Cập nhật: 05 ngày trước</span>
+</div>
+<a class="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-all" href="#">
+<span>Mở Workspace</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- CARD 5: Aethelgard (#CHR-0051) -->
+<div class="group flex flex-col rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden relative">
+<div class="relative w-full h-72 overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Anime fantasy celestial sentinel Aethelgard with golden winged circlet, radiant halo behind shoulders, gilded breastplate over pristine white silk robes, dawn light atmospheric fantasy anime concept art" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB08fBSRLfhDe3K-1ZxpYusmiSNInZCmUrKd-q6UUxXgSwiqf01PbMzWlnnUIjIGxpbBX4vVCT5-ETe175dMUGEaMUTGtJEiFa-RxoT2puv4bEAPYBHqMnO66JR0cu1EpdNh6VOHED1n2eqIvwrXJjA17dtjvVZzOotGppntdxJQho-gchAJttAx6IDN7SRELmS2w4S_MBmhGSR0Vyl881Wcj3N2iIN7UAgpRqYlas"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/90 via-on-surface/20 to-transparent"></div>
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded-full bg-surface/90 backdrop-blur-md text-primary font-code-sm text-code-sm font-bold shadow-sm">
+              #CHR-0051
+            </span>
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-highest/90 backdrop-blur-md text-on-surface-variant font-label-sm text-label-sm font-bold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span>S1 Concept Initial</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-4 right-4 flex items-end justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-container-high font-semibold">High Order · Celestial Sentinel</span>
+<h2 class="font-headline-lg text-headline-lg text-surface-container-lowest font-bold leading-tight">Aethelgard</h2>
+</div>
+<div class="flex items-center gap-1 text-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between bg-surface-container-lowest">
+<div class="space-y-space-sm">
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Celestial Guardian</span>
+<span class="px-2 py-0.5 rounded-lg bg-surface-container text-on-surface-variant font-code-sm text-[11px]">Solar Aura</span>
+<span class="px-2 py-0.5 rounded-lg bg-surface-container-high text-on-surface-variant font-code-sm text-[11px]">Draft Concept</span>
+</div>
+<div class="p-3 rounded-xl bg-surface-container-low flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tiến độ quy trình (0/7 Stages Approved)</span>
+<span class="font-code-sm text-code-sm font-bold text-outline">0%</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex gap-0.5">
+<div class="h-full w-[14.28%] bg-tertiary-container animate-pulse"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+<div class="h-full w-[14.28%] bg-outline-variant/40"></div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-[11px]">
+<span>Giai đoạn: Thăm dò ý tưởng &amp; Seed (S1)</span>
+<span class="text-tertiary font-medium">Khởi tạo</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md mt-space-sm flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Cập nhật: 1 giờ trước</span>
+</div>
+<a class="px-3.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center gap-1.5 transition-all" href="#">
+<span>Mở Workspace</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- CARD 6: Interactive Creator Slot / Template Tile -->
+<div class="cursor-pointer group flex flex-col items-center justify-center p-space-xl rounded-2xl bg-surface-container-lowest/60 hover:bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-300 min-h-[460px]" id="trigger-create-card">
+<div class="w-20 h-20 rounded-2xl bg-primary-container/15 group-hover:bg-primary-container text-primary group-hover:text-on-primary-container flex items-center justify-center mb-space-md transition-all duration-300 shadow-sm group-hover:scale-110">
+<span class="material-symbols-outlined text-[36px]">add_photo_alternate</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold text-center">Khởi Tạo Nhân Vật Mới</h3>
+<p class="font-body-md text-body-md text-on-surface-variant text-center max-w-xs mt-2">
+          Áp dụng mẫu pipeline 7 giai đoạn tiêu chuẩn (Concept Exploration → Asset Export).
+        </p>
+<div class="mt-space-lg flex flex-col gap-2 w-full max-w-xs">
+<div class="flex items-center gap-2 p-2 rounded-xl bg-surface-container-low text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<span>Mẫu chuẩn: Xianzhou / Genshin Anime</span>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-xl bg-surface-container-low text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">extension</span>
+<span>Hỗ trợ LoRA + Multi-ControlNet sẵn sàng</span>
+</div>
+</div>
+<button class="mt-space-lg px-6 py-2.5 rounded-xl bg-primary-container text-on-primary-container font-headline-md text-title-sm group-hover:bg-primary group-hover:text-on-primary shadow-sm transition-colors flex items-center gap-2">
+<span>+ Tạo Slot Trống</span>
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</button>
+</div>
+</div>
+<!-- 6. Footer Pagination & Storage Structure Note -->
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col lg:flex-row items-center justify-between gap-space-md">
+<!-- Storage Architecture Info Badge -->
+<div class="flex items-center gap-space-sm text-on-surface-variant font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_data</span>
+<div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+<span class="font-semibold text-on-surface">Cấu trúc lưu trữ:</span>
+<code class="px-2 py-0.5 rounded bg-surface-container text-primary font-code-sm text-code-sm">
+            /characters/:character_id (JSON metadata &amp; approved assets)
+          </code>
+</div>
+</div>
+<!-- Pagination Controls -->
+<div class="flex items-center gap-space-sm">
+<span class="font-body-sm text-body-sm text-on-surface-variant mr-2">Trang 1 / 2 (Hiển thị 5 của 12)</span>
+<button class="p-2 rounded-xl bg-surface-container text-outline cursor-not-allowed" disabled="" title="Trang trước">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-9 h-9 rounded-xl bg-primary-container text-on-primary-container font-headline-md text-label-md flex items-center justify-center shadow-xs">
+          1
+        </button>
+<button class="w-9 h-9 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-headline-md text-label-md flex items-center justify-center transition-colors">
+          2
+        </button>
+<button class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors" title="Trang kế tiếp">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal: Quick Create Character (Interactive Micro-Interaction) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/40 backdrop-blur-sm hidden transition-all" id="new-character-modal">
+<div class="w-full max-w-lg mx-4 rounded-3xl bg-surface-container-lowest shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<div class="px-space-lg py-space-md bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">person_add</span>
+<h3 class="font-headline-lg text-headline-md text-on-surface font-bold">Khởi Tạo Hồ Sơ Nhân Vật</h3>
+</div>
+<button class="p-1 rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" id="close-modal-btn">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<form class="p-space-lg space-y-space-md" id="create-character-form">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Tên nhân vật (Vietnamese / Latin)</label>
+<input class="w-full h-11 px-3.5 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:bg-surface-container transition-all" placeholder="ví dụ: Shenhe / Hàn Băng Thánh Nữ" required="" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-space-md">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Phong cách tạo hình</label>
+<select class="w-full h-11 px-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:bg-surface-container transition-all">
+<option>Xianzhou / Fantasy Anime</option>
+<option>Cyber Ronin Vanguard</option>
+<option>Cozy Storybook Island</option>
+<option>Mecha Pilot SF</option>
+</select>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Mã định danh ID</label>
+<input class="w-full h-11 px-3 rounded-xl bg-surface-container text-on-surface-variant font-code-sm text-code-sm cursor-not-allowed" readonly="" type="text" value="#CHR-0056"/>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-1">Đặc tả sơ bộ / Archetype Prompt</label>
+<textarea class="w-full p-3 rounded-xl bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:bg-surface-container transition-all resize-none" placeholder="Mô tả nguyên mẫu trang phục, ngũ hành, thuộc tính chiến đấu và màu sắc chủ đạo..." rows="3"></textarea>
+</div>
+<div class="p-3 rounded-xl bg-secondary-container/40 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">info</span>
+<p class="font-body-sm text-body-sm text-on-secondary-container">
+            Sau khi khởi tạo, thư mục <code class="font-code-sm">/characters/chr_0056/</code> sẽ tự động gán pipeline 7 bước và đồng bộ vào Kaggle Mana Workspace.
+          </p>
+</div>
+<div class="pt-space-sm flex items-center justify-end gap-space-sm">
+<button class="px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" id="cancel-modal-btn" type="button">
+            Hủy bỏ
+          </button>
+<button class="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-headline-md text-label-md shadow-md transition-all" type="submit">
+            + Bắt Đầu Pipeline S1
+          </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Inline Script for Micro-Interactions -->
+<script>
+    (function initCharacterLibrary() {
+      const modal = document.getElementById('new-character-modal');
+      const openBtn = document.getElementById('open-new-character-modal');
+      const cardSlotBtn = document.getElementById('trigger-create-card');
+      const closeBtn = document.getElementById('close-modal-btn');
+      const cancelBtn = document.getElementById('cancel-modal-btn');
+      const form = document.getElementById('create-character-form');
+      const searchInput = document.getElementById('character-search');
+      const refreshBtn = document.getElementById('quick-refresh-btn');
+
+      function openModal() {
+        if (!modal) return;
+        modal.classList.remove('hidden');
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+      }
+
+      if (openBtn) openBtn.addEventListener('click', openModal);
+      if (cardSlotBtn) cardSlotBtn.addEventListener('click', openModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+      if (modal) {
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) closeModal();
+        });
+      }
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          closeModal();
+          alert('Tạo nhân vật #CHR-0056 thành công! Pipeline S1 Concept Exploration đã kích hoạt.');
+        });
+      }
+
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+          this.classList.add('animate-spin');
+          setTimeout(() => {
+            this.classList.remove('animate-spin');
+          }, 600);
+        });
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          const query = e.target.value.toLowerCase();
+          const cards = document.querySelectorAll('.group.flex.flex-col');
+          cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            if (text.includes(query) || !query) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      }
+    })();
+  </script>
+</div></main><footer class="fixed bottom-0 left-72 right-0 h-10 bg-surface-container-lowest/90 backdrop-blur-md shadow-[0_-1px_6px_rgba(78,52,46,0.04)] z-30 flex items-center justify-between px-space-lg text-on-surface-variant font-code-sm text-code-sm"><div class="flex items-center gap-space-md"><span>Latency: <strong class="text-on-surface font-medium">24ms</strong></span><span>Memory Cache: <strong class="text-on-surface font-medium">1.4 GB / 8 GB</strong></span><span>GPU Quota: <strong class="text-tertiary font-medium">18.4h / 30h</strong> (T4)</span></div><div class="flex items-center gap-space-sm"><span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-[10px] uppercase tracking-wider">Prototype Mode</span><span>AI Asset Studio V2 Production Build</span></div></footer></div></body></html>

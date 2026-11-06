@@ -1,0 +1,799 @@
+{
+  "contract_version": "1.1",
+  "character": {
+    "character_id": "chr_9d27a617fd42",
+    "name": "Ice Lotus Mage",
+    "tags": [
+      "xianxia",
+      "mage"
+    ],
+    "cover_url": null,
+    "current_stage": "s6",
+    "approved_count": 5,
+    "stage_statuses": {
+      "s1": "approved",
+      "s2": "approved",
+      "s3": "approved",
+      "s4": "approved",
+      "s5": "approved",
+      "s6": "not_started",
+      "s7": "blocked"
+    },
+    "updated_at": "2026-11-06T13:42:58Z"
+  },
+  "character_version": 1,
+  "config": {
+    "stage_id": "s4",
+    "order": 4,
+    "title_key": "stage.s4.title",
+    "objective_key": "stage.s4.objective",
+    "availability": "available",
+    "availability_reason": null,
+    "dependencies": [
+      {
+        "stage_id": "s2",
+        "kind": "hard"
+      },
+      {
+        "stage_id": "s3",
+        "kind": "hard"
+      }
+    ],
+    "checklist": [
+      {
+        "item_id": "locked_covered",
+        "label_key": "stage.s4.check.locked_covered",
+        "required": true
+      },
+      {
+        "item_id": "no_invention",
+        "label_key": "stage.s4.check.no_invention",
+        "required": true
+      },
+      {
+        "item_id": "model_support_checked",
+        "label_key": "stage.s4.check.model_support_checked",
+        "required": true
+      },
+      {
+        "item_id": "turnaround_neutral",
+        "label_key": "stage.s4.check.turnaround_neutral",
+        "required": true
+      },
+      {
+        "item_id": "manifest_reviewed",
+        "label_key": "stage.s4.check.manifest_reviewed",
+        "required": true
+      },
+      {
+        "item_id": "params_separated",
+        "label_key": "stage.s4.check.params_separated",
+        "required": false
+      }
+    ],
+    "required_purposes": [
+      "full_body",
+      "front",
+      "side",
+      "back"
+    ],
+    "guided_questions": []
+  },
+  "state": {
+    "stage_id": "s4",
+    "editorial_status": "approved",
+    "availability": "available",
+    "draft_version": 1,
+    "has_unsubmitted_changes": false,
+    "latest_revision": 1,
+    "pending_revision": null,
+    "approved": {
+      "revision": 1,
+      "approved_at": "2026-11-06T13:42:55Z",
+      "source_revisions": {
+        "s2": 1,
+        "s3": 1
+      },
+      "stale": false,
+      "stale_reasons": []
+    },
+    "last_decision": "approved",
+    "blockers": []
+  },
+  "draft": {
+    "contract_version": "1.1",
+    "character_id": "chr_9d27a617fd42",
+    "stage_id": "s4",
+    "draft_version": 1,
+    "based_on_revision": null,
+    "content": {
+      "stage_id": "s4",
+      "entries": [
+        {
+          "purpose": "full_body",
+          "canonical_prompt": "full_body of the mage",
+          "negative_prompt": null,
+          "notes": null
+        },
+        {
+          "purpose": "front",
+          "canonical_prompt": "front of the mage",
+          "negative_prompt": null,
+          "notes": null
+        },
+        {
+          "purpose": "side",
+          "canonical_prompt": "side of the mage",
+          "negative_prompt": null,
+          "notes": null
+        },
+        {
+          "purpose": "back",
+          "canonical_prompt": "back of the mage",
+          "negative_prompt": null,
+          "notes": null
+        }
+      ],
+      "production_profile": {
+        "target_model_id": "mock-t2d-basic",
+        "compute_target": "kaggle",
+        "options": {}
+      },
+      "tasks": [
+        {
+          "task_id": "fullbody_01",
+          "purpose": "full_body",
+          "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+          "negative_prompt": null,
+          "seed": 41000,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        },
+        {
+          "task_id": "front_01",
+          "purpose": "front",
+          "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+          "negative_prompt": null,
+          "seed": 41001,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        },
+        {
+          "task_id": "side_01",
+          "purpose": "side",
+          "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+          "negative_prompt": null,
+          "seed": 41002,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        },
+        {
+          "task_id": "back_01",
+          "purpose": "back",
+          "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+          "negative_prompt": null,
+          "seed": 41003,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        }
+      ],
+      "reference_asset_ids": []
+    },
+    "checklist": {
+      "items": [
+        {
+          "item_id": "locked_covered",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "no_invention",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "model_support_checked",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "turnaround_neutral",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "manifest_reviewed",
+          "checked": true,
+          "note": null
+        }
+      ]
+    },
+    "updated_at": "2026-11-06T13:42:55Z"
+  },
+  "approved_revision": {
+    "contract_version": "1.1",
+    "character_id": "chr_9d27a617fd42",
+    "stage_id": "s4",
+    "revision": 1,
+    "content": {
+      "stage_id": "s4",
+      "entries": [
+        {
+          "purpose": "full_body",
+          "canonical_prompt": "full_body of the mage",
+          "negative_prompt": null,
+          "notes": null
+        },
+        {
+          "purpose": "front",
+          "canonical_prompt": "front of the mage",
+          "negative_prompt": null,
+          "notes": null
+        },
+        {
+          "purpose": "side",
+          "canonical_prompt": "side of the mage",
+          "negative_prompt": null,
+          "notes": null
+        },
+        {
+          "purpose": "back",
+          "canonical_prompt": "back of the mage",
+          "negative_prompt": null,
+          "notes": null
+        }
+      ],
+      "production_profile": {
+        "target_model_id": "mock-t2d-basic",
+        "compute_target": "kaggle",
+        "options": {}
+      },
+      "tasks": [
+        {
+          "task_id": "fullbody_01",
+          "purpose": "full_body",
+          "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+          "negative_prompt": null,
+          "seed": 41000,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        },
+        {
+          "task_id": "front_01",
+          "purpose": "front",
+          "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+          "negative_prompt": null,
+          "seed": 41001,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        },
+        {
+          "task_id": "side_01",
+          "purpose": "side",
+          "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+          "negative_prompt": null,
+          "seed": 41002,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        },
+        {
+          "task_id": "back_01",
+          "purpose": "back",
+          "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+          "negative_prompt": null,
+          "seed": 41003,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        }
+      ],
+      "reference_asset_ids": []
+    },
+    "checklist": {
+      "items": [
+        {
+          "item_id": "locked_covered",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "no_invention",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "model_support_checked",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "turnaround_neutral",
+          "checked": true,
+          "note": null
+        },
+        {
+          "item_id": "manifest_reviewed",
+          "checked": true,
+          "note": null
+        }
+      ]
+    },
+    "source_revisions": {
+      "s2": 1,
+      "s3": 1
+    },
+    "submitted_at": "2026-11-06T13:42:55Z",
+    "decision": "approved",
+    "decided_at": "2026-11-06T13:42:55Z",
+    "note": null,
+    "frozen_assets": [],
+    "batch_manifest_id": "bat_5a313676de8d"
+  },
+  "pending_revision": null,
+  "revisions": [
+    {
+      "revision": 1,
+      "decision": "approved",
+      "submitted_at": "2026-11-06T13:42:55Z",
+      "decided_at": "2026-11-06T13:42:55Z"
+    }
+  ],
+  "inputs": [
+    {
+      "stage_id": "s2",
+      "kind": "hard",
+      "revision": 1,
+      "content": {
+        "stage_id": "s2",
+        "summary": "An adult female ice-lotus mage.",
+        "attributes": [
+          {
+            "attribute_id": "hair",
+            "group": "hair",
+            "label": "Hair",
+            "value": "Long silver-white hair",
+            "lock": "locked",
+            "reference_ids": []
+          },
+          {
+            "attribute_id": "eyes",
+            "group": "eyes",
+            "label": "Eyes",
+            "value": "Pale blue",
+            "lock": "preferred",
+            "reference_ids": []
+          }
+        ],
+        "answers": [
+          {
+            "question_id": "q_name_role",
+            "status": "answered",
+            "answer": "Ice-lotus mage, ally"
+          }
+        ],
+        "open_questions": [],
+        "rejection_criteria": [
+          "Short hair"
+        ]
+      },
+      "frozen_assets": []
+    },
+    {
+      "stage_id": "s3",
+      "kind": "hard",
+      "revision": 1,
+      "content": {
+        "stage_id": "s3",
+        "preview_profile": {
+          "model_id": "mock-t2d-basic",
+          "compute_target": "kaggle",
+          "variations": 2,
+          "width": 512,
+          "height": 512,
+          "options": {}
+        },
+        "preview_prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+        "candidates": [
+          {
+            "candidate_id": "cand_01",
+            "source": "batch_task",
+            "manifest_id": "bat_764da078f092",
+            "task_id": "preview_01",
+            "job": null,
+            "reference_id": null,
+            "verdict": "selected",
+            "matches": [
+              "hair"
+            ],
+            "mismatches": [],
+            "feedback": null
+          }
+        ],
+        "selected_candidate_id": "cand_01",
+        "review_notes": null
+      },
+      "frozen_assets": [
+        {
+          "asset_id": "ast_41e3fb2afcf7",
+          "purpose": "key_visual",
+          "mime_type": "image/png",
+          "width": 512,
+          "height": 512,
+          "size_bytes": 27598,
+          "sha256": "ffbe8a52af03eff7a1ff9cc9cca45f5a373bc442a383527c410fcf48a4db19b8",
+          "content_url": "/api/v1/characters/chr_9d27a617fd42/assets/ast_41e3fb2afcf7/content",
+          "source": {
+            "job_id": "job_20261106T134254Z_7b89a9",
+            "artifact_id": "art_01",
+            "task_id": "preview_01",
+            "model_id": "mock-t2d-basic",
+            "model_revision": null,
+            "prompt": "1girl, solo, silver-white long hair, pale blue eyes, ice lotus mage, full body",
+            "negative_prompt": null,
+            "seed": null,
+            "width": 512,
+            "height": 512,
+            "options": {
+              "seed": null,
+              "width": 512,
+              "height": 512,
+              "negative_prompt": null
+            }
+          },
+          "reference_id": null,
+          "frozen_in": {
+            "stage_id": "s3",
+            "revision": 1
+          },
+          "created_at": "2026-11-06T13:42:54Z"
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "contract_version": "1.1",
+      "reference_id": "ref_1281737f8b78",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "url",
+      "purpose": "moodboard",
+      "title": "Ice mage board",
+      "url": "https://www.pinterest.com/example/ice-mage/",
+      "source_note": null,
+      "mime_type": null,
+      "width": null,
+      "height": null,
+      "size_bytes": null,
+      "sha256": null,
+      "content_url": null,
+      "created_at": "2026-11-06T13:42:53Z"
+    },
+    {
+      "contract_version": "1.1",
+      "reference_id": "ref_8b8ce85ac1ae",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "image",
+      "purpose": "moodboard",
+      "title": "Lotus pond palette",
+      "url": null,
+      "source_note": "Own photo",
+      "mime_type": "image/png",
+      "width": 96,
+      "height": 64,
+      "size_bytes": 209,
+      "sha256": "ac7d080b9bffc30df72ca2f8041b7d9a39ea4c209bef8af3e1df7da6d7e2066a",
+      "content_url": "/api/v1/characters/chr_9d27a617fd42/references/ref_8b8ce85ac1ae/content",
+      "created_at": "2026-11-06T13:42:53Z"
+    }
+  ],
+  "resolved_jobs": [],
+  "batches": [
+    {
+      "contract_version": "1.1",
+      "manifest_id": "bat_5a313676de8d",
+      "character_id": "chr_9d27a617fd42",
+      "kind": "production",
+      "status": "completed",
+      "approved_spec_revision": 1,
+      "prompt_set_revision": 1,
+      "concept_revision": 1,
+      "target_model_id": "mock-t2d-basic",
+      "model_revision": null,
+      "references": [],
+      "tasks": [
+        {
+          "task_id": "fullbody_01",
+          "purpose": "full_body",
+          "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+          "negative_prompt": null,
+          "seed": 41000,
+          "width": 512,
+          "height": 512,
+          "options": {},
+          "group_id": "g01"
+        },
+        {
+          "task_id": "front_01",
+          "purpose": "front",
+          "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+          "negative_prompt": null,
+          "seed": 41001,
+          "width": 512,
+          "height": 512,
+          "options": {},
+          "group_id": "g01"
+        },
+        {
+          "task_id": "side_01",
+          "purpose": "side",
+          "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+          "negative_prompt": null,
+          "seed": 41002,
+          "width": 512,
+          "height": 512,
+          "options": {},
+          "group_id": "g01"
+        },
+        {
+          "task_id": "back_01",
+          "purpose": "back",
+          "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+          "negative_prompt": null,
+          "seed": 41003,
+          "width": 512,
+          "height": 512,
+          "options": {},
+          "group_id": "g01"
+        }
+      ],
+      "groups": [
+        {
+          "group_id": "g01",
+          "model_id": "mock-t2d-basic",
+          "model_revision": null,
+          "task_ids": [
+            "fullbody_01",
+            "front_01",
+            "side_01",
+            "back_01"
+          ],
+          "micro_batch_size": 1,
+          "estimated_runtime_seconds": 120
+        }
+      ],
+      "expected_model_loads": 1,
+      "attempts": [
+        {
+          "attempt": 1,
+          "group_id": "g01",
+          "job_id": "job_20261106T134255Z_eeee08",
+          "task_ids": [
+            "fullbody_01",
+            "front_01",
+            "side_01",
+            "back_01"
+          ],
+          "submitted_at": "2026-11-06T13:42:55Z"
+        },
+        {
+          "attempt": 2,
+          "group_id": "g01",
+          "job_id": "job_20261106T134257Z_82cc53",
+          "task_ids": [
+            "side_01"
+          ],
+          "submitted_at": "2026-11-06T13:42:57Z"
+        }
+      ],
+      "results": [
+        {
+          "task_id": "fullbody_01",
+          "status": "succeeded",
+          "attempt": 1,
+          "job_id": "job_20261106T134255Z_eeee08",
+          "artifact_id": "art_01",
+          "sha256": "8b152f4ad2746fd24b5b2fd0ac2b2650add9ae60a88cae03cd80fe8160884c90",
+          "error": null,
+          "artifact_missing": false
+        },
+        {
+          "task_id": "front_01",
+          "status": "succeeded",
+          "attempt": 1,
+          "job_id": "job_20261106T134255Z_eeee08",
+          "artifact_id": "art_02",
+          "sha256": "d05825d97c92a94103f463119d4160afa79bcc849e9fcddb3e30537a797933bb",
+          "error": null,
+          "artifact_missing": false
+        },
+        {
+          "task_id": "side_01",
+          "status": "succeeded",
+          "attempt": 2,
+          "job_id": "job_20261106T134257Z_82cc53",
+          "artifact_id": "art_01",
+          "sha256": "c8ae669727ece0b59ebcf9c74c7ac97f94f6393ee9364a7c34d94e8e4262c49d",
+          "error": null,
+          "artifact_missing": false
+        },
+        {
+          "task_id": "back_01",
+          "status": "succeeded",
+          "attempt": 1,
+          "job_id": "job_20261106T134255Z_eeee08",
+          "artifact_id": "art_03",
+          "sha256": "ab0486473dbb6214e36fa0fffc5a5f4ecbe738009941f76f80eb1364287709b2",
+          "error": null,
+          "artifact_missing": false
+        }
+      ],
+      "retryable_task_ids": [],
+      "created_at": "2026-11-06T13:42:55Z",
+      "updated_at": "2026-11-06T13:42:57Z"
+    }
+  ],
+  "manifest_preview": {
+    "contract_version": "1.1",
+    "manifest_id": "bat_000000000000",
+    "character_id": "chr_9d27a617fd42",
+    "kind": "production",
+    "status": "ready",
+    "approved_spec_revision": 1,
+    "prompt_set_revision": null,
+    "concept_revision": 1,
+    "target_model_id": "mock-t2d-basic",
+    "model_revision": null,
+    "references": [],
+    "tasks": [
+      {
+        "task_id": "fullbody_01",
+        "purpose": "full_body",
+        "prompt": "1girl, solo, silver-white long hair, full body view, plain background",
+        "negative_prompt": null,
+        "seed": 41000,
+        "width": 512,
+        "height": 512,
+        "options": {},
+        "group_id": "g01"
+      },
+      {
+        "task_id": "front_01",
+        "purpose": "front",
+        "prompt": "1girl, solo, silver-white long hair, front view, plain background",
+        "negative_prompt": null,
+        "seed": 41001,
+        "width": 512,
+        "height": 512,
+        "options": {},
+        "group_id": "g01"
+      },
+      {
+        "task_id": "side_01",
+        "purpose": "side",
+        "prompt": "1girl, solo, silver-white long hair, side view, plain background",
+        "negative_prompt": null,
+        "seed": 41002,
+        "width": 512,
+        "height": 512,
+        "options": {},
+        "group_id": "g01"
+      },
+      {
+        "task_id": "back_01",
+        "purpose": "back",
+        "prompt": "1girl, solo, silver-white long hair, back view, plain background",
+        "negative_prompt": null,
+        "seed": 41003,
+        "width": 512,
+        "height": 512,
+        "options": {},
+        "group_id": "g01"
+      }
+    ],
+    "groups": [
+      {
+        "group_id": "g01",
+        "model_id": "mock-t2d-basic",
+        "model_revision": null,
+        "task_ids": [
+          "fullbody_01",
+          "front_01",
+          "side_01",
+          "back_01"
+        ],
+        "micro_batch_size": 1,
+        "estimated_runtime_seconds": 120
+      }
+    ],
+    "expected_model_loads": 1,
+    "attempts": [],
+    "results": [
+      {
+        "task_id": "fullbody_01",
+        "status": "pending",
+        "attempt": null,
+        "job_id": null,
+        "artifact_id": null,
+        "sha256": null,
+        "error": null,
+        "artifact_missing": false
+      },
+      {
+        "task_id": "front_01",
+        "status": "pending",
+        "attempt": null,
+        "job_id": null,
+        "artifact_id": null,
+        "sha256": null,
+        "error": null,
+        "artifact_missing": false
+      },
+      {
+        "task_id": "side_01",
+        "status": "pending",
+        "attempt": null,
+        "job_id": null,
+        "artifact_id": null,
+        "sha256": null,
+        "error": null,
+        "artifact_missing": false
+      },
+      {
+        "task_id": "back_01",
+        "status": "pending",
+        "attempt": null,
+        "job_id": null,
+        "artifact_id": null,
+        "sha256": null,
+        "error": null,
+        "artifact_missing": false
+      }
+    ],
+    "retryable_task_ids": [],
+    "created_at": "2026-11-06T13:43:01Z",
+    "updated_at": "2026-11-06T13:43:01Z"
+  },
+  "resource_plans": [
+    {
+      "contract_version": "1.0",
+      "profile_id": "default",
+      "accelerator_id": "cpu",
+      "selection": "recommended",
+      "fit": "ok",
+      "required_seconds": 780,
+      "estimate_basis": {
+        "estimated_runtime_seconds": 120,
+        "safety_factor": 1.5,
+        "overhead_seconds": 600
+      },
+      "session_limit_seconds": 43200,
+      "quota_remaining_seconds": null,
+      "candidates": [
+        {
+          "accelerator_id": "cpu",
+          "fit": "ok",
+          "reasons": []
+        },
+        {
+          "accelerator_id": "gpu_p100",
+          "fit": "ok",
+          "reasons": []
+        },
+        {
+          "accelerator_id": "gpu_t4x2",
+          "fit": "ok",
+          "reasons": []
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    }
+  ]
+}

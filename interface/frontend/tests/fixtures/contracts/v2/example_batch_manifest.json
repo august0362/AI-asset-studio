@@ -1,0 +1,105 @@
+{
+  "contract_version": "1.1",
+  "manifest_id": "bat_7c2d9e0f1a3b",
+  "character_id": "chr_3f9a0c1e2b7d",
+  "kind": "production",
+  "status": "partially_completed",
+  "approved_spec_revision": 2,
+  "prompt_set_revision": 1,
+  "concept_revision": 1,
+  "target_model_id": "animagine-xl-4",
+  "model_revision": "2b7c1b397761bf5bd3cc42e5b39ec99314a75a96",
+  "references": [
+    {
+      "asset_id": "ast_1d2e3f4a5b6c",
+      "applied": false,
+      "reason": "model_has_no_image_role"
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "front_01",
+      "purpose": "front",
+      "prompt": "safe, 1girl, solo, front view, …",
+      "negative_prompt": null,
+      "seed": 41001,
+      "width": 832,
+      "height": 1216,
+      "options": {},
+      "group_id": "g01"
+    },
+    {
+      "task_id": "back_01",
+      "purpose": "back",
+      "prompt": "safe, 1girl, solo, from behind, …",
+      "negative_prompt": null,
+      "seed": 41003,
+      "width": 832,
+      "height": 1216,
+      "options": {},
+      "group_id": "g01"
+    }
+  ],
+  "groups": [
+    {
+      "group_id": "g01",
+      "model_id": "animagine-xl-4",
+      "model_revision": "2b7c1b397761bf5bd3cc42e5b39ec99314a75a96",
+      "task_ids": [
+        "front_01",
+        "back_01"
+      ],
+      "micro_batch_size": 1,
+      "estimated_runtime_seconds": 50
+    }
+  ],
+  "expected_model_loads": 1,
+  "attempts": [
+    {
+      "attempt": 1,
+      "group_id": "g01",
+      "job_id": "job_20261106T130000Z_a1b2c3",
+      "task_ids": [
+        "front_01",
+        "back_01"
+      ],
+      "submitted_at": "2026-11-06T13:00:00Z"
+    }
+  ],
+  "results": [
+    {
+      "task_id": "front_01",
+      "status": "succeeded",
+      "attempt": 1,
+      "job_id": "job_20261106T130000Z_a1b2c3",
+      "artifact_id": "art_01",
+      "sha256": "9f2c…",
+      "error": null,
+      "artifact_missing": false
+    },
+    {
+      "task_id": "back_01",
+      "status": "not_run",
+      "attempt": 1,
+      "job_id": "job_20261106T130000Z_a1b2c3",
+      "artifact_id": null,
+      "sha256": null,
+      "error": {
+        "code": "BATCH_TASK_NOT_RUN",
+        "severity": "error",
+        "field": null,
+        "message": "The job's time budget ran out before this task started.",
+        "details": {
+          "reason": "deadline"
+        },
+        "retryable": true
+      },
+      "artifact_missing": false
+    }
+  ],
+  "retryable_task_ids": [
+    "back_01"
+  ],
+  "created_at": "2026-11-06T12:55:00Z",
+  "updated_at": "2026-11-06T13:09:00Z"
+}

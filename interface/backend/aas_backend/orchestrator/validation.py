@@ -70,12 +70,113 @@ def _stage_compute(
             None,
         )
     requirements = ResourceRequirements.model_validate(requirements_from(caps).model_dump())
-    resource_plan = plan_resources(requirements, profile, snapshot, req.compute.accelerator_id)
+    resource_plan = plan_resources(
+        requirements,
+        profile,
+        snapshot,
+        req.compute.accelerator_id,
+        vram_requirement_unknown="runtime.minimum_gpu_vram_bytes" in caps.unknown_requirements,
+    )
     return (
         [to_model_error(e) for e in resource_plan.errors],
         [to_model_error(w) for w in resource_plan.warnings],
         resource_plan,
     )
+
+
+@dataclass
+class BatchValidation:
+    """Stages 2-7 for one batch group (§13.9): the model rules per task, then one compute plan for all tasks."""
+
+    errors: list[ErrorItem]
+    warnings: list[ErrorItem]
+    capabilities: ModelCapabilities | None
+    plan: ResourcePlan | None
+    prompts: list[str]
+
+
+_MODEL_FIELDS = ("model_id", "pipeline_type", "asset_category", "output_format", "compute.profile_id")
+
+
+def validate_batch(
+    *,
+    model_id: str,
+    asset_category: str,
+    tasks: list[tuple[str, str, dict]],
+    compute: dict,
+    registry: ModelRegistry,
+    client: ComputeClient,
+    field_prefix: str = "tasks",
+) -> BatchValidation:
+    """``tasks`` = ``(task_id, prompt, options)`` in render order. Model-level errors are reported once; prompt and
+    option errors carry ``<field_prefix>[i].`` in their field. The plan uses the measured time per image × tasks."""
+    errors: list[ErrorItem] = []
+    warnings: list[ErrorItem] = []
+    caps: ModelCapabilities | None = None
+    prompts: list[str] = []
+    seen_model_errors: set[tuple[str, str | None]] = set()
+    for index, (_task_id, prompt, options) in enumerate(tasks):
+        raw = {
+            "contract_version": CONTRACT_VERSION,
+            "client_request_id": "00000000-0000-4000-8000-000000000000",
+            "pipeline_type": "text_to_2d",
+            "asset_category": asset_category,
+            "model_id": model_id,
+            "prompt": prompt,
+            "inputs": [],
+            "options": options,
+            "output_format": "png",
+            "compute": compute,
+        }
+        req, schema_errors = parse_create_job_request(raw)
+        if req is None:
+            errors += [_prefixed(e, f"{field_prefix}[{index}]") for e in schema_errors]
+            prompts.append(prompt)
+            continue
+        model = validate_model_request(req, registry, lambda _upload_id: None)
+        prompts.append(model.prompt or "")
+        for item in model.errors:
+            if item.field in _MODEL_FIELDS or item.field is None:
+                key = (item.code, item.field)
+                if key not in seen_model_errors:
+                    seen_model_errors.add(key)
+                    errors.append(item)
+            else:
+                errors.append(_prefixed(item, f"{field_prefix}[{index}]"))
+        if index == 0:
+            warnings += model.warnings
+        caps = caps or model.capabilities
+    plan = None
+    if caps is not None and not errors and tasks:
+        per_image = caps.runtime.estimated_runtime_seconds
+        batch_caps = caps.model_copy(
+            update={
+                "runtime": caps.runtime.model_copy(
+                    update={"estimated_runtime_seconds": per_image * len(tasks) if per_image else None}
+                )
+            }
+        )
+        req, _ = parse_create_job_request(
+            {
+                "contract_version": CONTRACT_VERSION,
+                "client_request_id": "00000000-0000-4000-8000-000000000000",
+                "pipeline_type": "text_to_2d",
+                "asset_category": asset_category,
+                "model_id": model_id,
+                "output_format": "png",
+                "compute": compute,
+            }
+        )
+        assert req is not None
+        compute_errors, compute_warnings, plan = _stage_compute(req, batch_caps, client)
+        errors += compute_errors
+        warnings += compute_warnings
+    return BatchValidation(errors, warnings, caps, plan, prompts)
+
+
+def _prefixed(item: ErrorItem, prefix: str) -> ErrorItem:
+    field_name = f"{prefix}.{item.field}" if item.field else prefix
+    return item.model_copy(update={"field": field_name})
 
 
 def validate_request(

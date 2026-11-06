@@ -1,0 +1,54 @@
+{
+  "contract_version": "1.1",
+  "expected_draft_version": 3,
+  "content": {
+    "stage_id": "s2",
+    "summary": "An adult female ice-lotus mage.",
+    "attributes": [
+      {
+        "attribute_id": "hair",
+        "group": "hair",
+        "label": "Hair",
+        "value": "Long silver-white hair with faint icy-blue undertones",
+        "lock": "locked",
+        "reference_ids": [
+          "ref_0a1b2c3d4e5f"
+        ]
+      },
+      {
+        "attribute_id": "eyes",
+        "group": "eyes",
+        "label": "Eyes",
+        "value": "Pale blue",
+        "lock": "locked",
+        "reference_ids": []
+      }
+    ],
+    "answers": [
+      {
+        "question_id": "q_name_role",
+        "status": "answered",
+        "answer": "Ice-lotus mage, ally"
+      },
+      {
+        "question_id": "q_scale",
+        "status": "unknown",
+        "answer": null
+      }
+    ],
+    "open_questions": [],
+    "rejection_criteria": [
+      "Short hair",
+      "Warm colour palette"
+    ]
+  },
+  "checklist": {
+    "items": [
+      {
+        "item_id": "locked_clear",
+        "checked": true,
+        "note": null
+      }
+    ]
+  }
+}

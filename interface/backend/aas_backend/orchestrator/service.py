@@ -19,6 +19,7 @@ from kaggle_connector.resources import run_timeout_seconds
 from models.contracts import (
     CONTRACT_VERSION,
     TERMINAL_STATUSES,
+    GenerationTask,
     RetryRequest,
     UploadRecord,
     error,
@@ -27,7 +28,7 @@ from models.contracts import (
 from models.registry import ModelRegistry, normalize_options, parse_create_job_request
 
 from ..errors import ApiError, api_error
-from ..schemas import ComputeView, Execution, StatusEntry
+from ..schemas import BatchRef, ComputeView, Execution, StatusEntry
 from ..settings import Settings
 from ..storage.files import remove_tree
 from ..storage.jobs import JobStore
@@ -36,7 +37,7 @@ from ..storage.paths import is_valid_id, safe_path
 from ..storage.uploads import MIME_EXTENSIONS, UploadStore
 from .records import InputRecord, InternalState, JobRecord, RequestRecord
 from .state_machine import apply_transition
-from .validation import ValidationOutcome, validate_request
+from .validation import BatchValidation, ValidationOutcome, validate_batch, validate_request
 from .worker import ProfileWorker
 
 log = logging.getLogger("aas_backend")
@@ -61,7 +62,7 @@ class JobService:
         self.clock = clock
         self.data_root = settings.data_dir.resolve()
         self.data_root.mkdir(parents=True, exist_ok=True)
-        self.redact = Redactor(paths=[self.data_root])
+        self.redact = Redactor(secrets=client.redaction_terms(), paths=[self.data_root])
         self.store = JobStore(self.data_root)
         self.uploads = UploadStore(self.data_root, timedelta(hours=settings.upload_ttl_hours), clock)
         self.logs = JobLogs(self.data_root / "logs", self.redact, clock)
@@ -305,12 +306,7 @@ class JobService:
             now = self.clock()
             job_id = self._new_job_id()
             inputs = self._copy_inputs(job_id, outcome, records, sources)
-            timeout = run_timeout_seconds(plan) or plan.session_limit_seconds or 0
-            deadline = (
-                plan.required_seconds * self.settings.job_deadline_factor
-                if plan.required_seconds is not None
-                else float(plan.session_limit_seconds or timeout)
-            )
+            timeout, deadline = self._time_limits(plan)
             record = JobRecord(
                 contract_version=CONTRACT_VERSION,
                 job_id=job_id,
@@ -357,6 +353,110 @@ class JobService:
         self._enqueue(record)
         return record.model_copy(deep=True), True
 
+    def _time_limits(self, plan) -> tuple[int, float]:
+        timeout = run_timeout_seconds(plan) or plan.session_limit_seconds or 0
+        deadline = (
+            plan.required_seconds * self.settings.job_deadline_factor
+            if plan.required_seconds is not None
+            else float(plan.session_limit_seconds or timeout)
+        )
+        return timeout, deadline
+
+    # --- batch jobs (§13.9) ----------------------------------------------------------------------------------
+
+    def validate_batch(
+        self, model_id: str, asset_category: str, tasks: list[tuple[str, str, dict]], compute: dict
+    ) -> BatchValidation:
+        return validate_batch(
+            model_id=model_id,
+            asset_category=asset_category,
+            tasks=tasks,
+            compute=compute,
+            registry=self.registry,
+            client=self.client,
+        )
+
+    def find_by_request(self, client_request_id: str) -> JobRecord | None:
+        with self._lock:
+            job_id = self._by_request.get(client_request_id)
+        return self.get_record(job_id) if job_id else None
+
+    def create_batch_job(
+        self,
+        *,
+        client_request_id: str,
+        model_id: str,
+        asset_category: str,
+        tasks: list[tuple[str, str, dict]],
+        compute: dict,
+        batch: BatchRef,
+    ) -> tuple[JobRecord, bool]:
+        """One ordinary job for one batch group: the model is loaded once for every task (§13.9).
+
+        ``tasks`` = ``(task_id, prompt, options)``. Idempotent on ``client_request_id``. Raises ``ApiError`` (422)
+        with every validation error; nothing is stored then.
+        """
+        with self._create_lock:
+            existing = self.find_by_request(client_request_id)
+            if existing is not None:
+                return existing, False
+            checked = self.validate_batch(model_id, asset_category, tasks, compute)
+            if checked.errors:
+                raise ApiError(422, checked.errors, checked.warnings)
+            caps, plan = checked.capabilities, checked.plan
+            assert caps is not None and plan is not None and plan.accelerator_id is not None
+            now = self.clock()
+            job_id = self._new_job_id()
+            timeout, deadline = self._time_limits(plan)
+            record = JobRecord(
+                contract_version=CONTRACT_VERSION,
+                job_id=job_id,
+                status="created",
+                status_history=[StatusEntry(status="created", at=now)],
+                request=RequestRecord(
+                    pipeline_type="text_to_2d",
+                    asset_category=asset_category,
+                    model_id=model_id,
+                    prompt=None,
+                    output_format="png",
+                    options={},
+                    inputs=[],
+                    tasks=[
+                        GenerationTask(
+                            task_id=task_id, prompt=prompt, options=normalize_options(caps, options)
+                        )
+                        for (task_id, _, options), prompt in zip(tasks, checked.prompts, strict=True)
+                    ],
+                    batch=batch,
+                ),
+                compute=ComputeView(
+                    profile_id=compute["profile_id"], accelerator_id=plan.accelerator_id, resource_plan=plan
+                ),
+                warnings=checked.warnings,
+                execution=Execution(backend=self.client.mode),
+                created_at=now,
+                updated_at=now,
+                internal=InternalState(
+                    client_request_id=client_request_id,
+                    original_request={"batch": batch.model_dump(mode="json"), "model_id": model_id},
+                    timeout_seconds=timeout,
+                    deadline_seconds=deadline,
+                    created_ns=time.time_ns(),
+                ),
+            )
+            with self._lock:
+                self._jobs[job_id] = record
+                self._by_request[client_request_id] = job_id
+                self.store.save(record)
+            self.log(
+                job_id,
+                f"Batch job created: {len(tasks)} task(s) of {batch.manifest_id}/{batch.group_id} "
+                f"(attempt {batch.attempt}) with {model_id} on {compute['profile_id']}/{plan.accelerator_id}; "
+                f"plan fit {plan.fit}.",
+            )
+        self._enqueue(record)
+        return record.model_copy(deep=True), True
+
     def retry(self, job_id: str, raw: object) -> tuple[JobRecord, bool]:
         original = self.require(job_id)
         try:
@@ -373,6 +473,14 @@ class JobService:
                     for e in exc.errors(include_url=False)
                 ],
             ) from exc
+        if original.request.batch is not None:  # OD-10: a batch retry must update its manifest
+            raise api_error(
+                409,
+                "JOB_NOT_RETRYABLE",
+                None,
+                "This job belongs to a character batch. Retry its failed tasks from the batch instead.",
+                {"reason": "use_batch_retry", "manifest_id": original.request.batch.manifest_id},
+            )
         existing = self._by_request.get(str(body.client_request_id))
         if existing and (record := self.get_record(existing)) is not None:
             return record, False

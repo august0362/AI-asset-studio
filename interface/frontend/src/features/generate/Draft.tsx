@@ -30,7 +30,7 @@ const initial: Draft = {
   prompt: "",
   options: {},
   uploads: [],
-  profileId: "default",
+  profileId: "",
   acceleratorId: null,
   jobId: null,
 };

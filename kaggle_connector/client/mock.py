@@ -401,6 +401,12 @@ class MockKaggleClient:
         dest_dir.mkdir(parents=True, exist_ok=True)
         shutil.copytree(run.sandbox / "working", dest_dir, dirs_exist_ok=True)
 
+    def release(self, remote_ref: str, *, succeeded: bool = False) -> None:
+        """Nothing remote to clean up: the sandbox stays until ``close``."""
+
+    def redaction_terms(self) -> list[str]:
+        return []
+
     def close(self) -> None:
         self._stop.set()
         if self._owns_root:

@@ -1,4 +1,5 @@
 // Hand mirror of docs/CONTRACTS.md v1.0. No backend storage paths or credentials.
+import type { CharacterApi, CharacterErrorCode } from "./characterTypes";
 export type Pipeline = "text_to_2d" | "image_to_3d" | "text_to_3d";
 export type Category = "character" | "skill_effect" | "weapon" | "companion";
 export type ImageRole =
@@ -38,6 +39,7 @@ export type Source =
   | "mock"
   | "none";
 export type ErrorCode =
+  | CharacterErrorCode
   | "CONTRACT_VERSION_UNSUPPORTED"
   | "REQUEST_FIELD_INVALID"
   | "PIPELINE_UNKNOWN"
@@ -106,7 +108,7 @@ export interface ErrorItem {
   retryable: boolean;
 }
 export interface ErrorResponse {
-  contract_version: string;
+  contract_version: "1.0" | "1.1";
   errors: ErrorItem[];
   warnings: ErrorItem[];
 }
@@ -231,7 +233,7 @@ export interface ResourcePlan {
   errors: ErrorItem[];
 }
 export interface ValidationReport {
-  contract_version: string;
+  contract_version: "1.0" | "1.1";
   valid: boolean;
   errors: ErrorItem[];
   warnings: ErrorItem[];
@@ -286,6 +288,7 @@ export interface KaggleResourceSnapshot {
   error: ErrorItem[];
 }
 export interface Artifact {
+  task_id?: string | null;
   artifact_id: string;
   kind: "image" | "model_3d" | "texture" | "preview";
   format: OutputFormat;
@@ -297,12 +300,25 @@ export interface Artifact {
   is_primary: boolean;
   content_url: string;
 }
+export interface ArtifactsResponse {
+  contract_version: string;
+  artifacts: Artifact[];
+}
+// Backend names the same public artifact shape ArtifactView.
+export type ArtifactView = Artifact;
 export interface GenerationResult {
   contract_version: string;
   job_id: string;
   status: JobStatus;
   status_history: { status: JobStatus; at: string }[];
   request: {
+    batch?: {
+      character_id: string;
+      manifest_id: string;
+      group_id: string;
+      attempt: number;
+      task_ids: string[];
+    } | null;
     pipeline_type: Pipeline;
     asset_category: Category;
     model_id: string;
@@ -374,7 +390,7 @@ export interface JobFilters {
   limit?: number;
   cursor?: string;
 }
-export interface ApiClient {
+export interface ApiClient extends CharacterApi {
   health(): Promise<{
     status: string;
     contract_version: string;
@@ -387,6 +403,7 @@ export interface ApiClient {
   ): Promise<{ models: ModelCapabilities[] }>;
   model(id: string): Promise<ModelCapabilities>;
   upload(file: File): Promise<UploadRecord>;
+  uploadRecord(id: string): Promise<UploadRecord>;
   uploadContent(id: string): Promise<Blob>;
   deleteUpload(id: string): Promise<void>;
   validate(request: CreateJobRequest): Promise<ValidationReport>;
@@ -399,7 +416,7 @@ export interface ApiClient {
   logs(id: string, offset?: number, limit?: number): Promise<JobLogs>;
   retryJob(id: string, client_request_id: string): Promise<GenerationResult>;
   deleteJob(id: string): Promise<void>;
-  artifacts(id: string): Promise<Artifact[]>;
+  artifacts(id: string): Promise<ArtifactsResponse>;
   artifactContent(id: string, artifactId: string): Promise<Blob>;
   inputContent(id: string, inputId: string): Promise<Blob>;
   profiles(): Promise<{ profiles: ComputeProfile[] }>;

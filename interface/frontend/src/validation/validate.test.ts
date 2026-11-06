@@ -179,6 +179,41 @@ describe("CONTRACTS §8.4 validation matrix", () => {
   });
 });
 describe("validation and planner boundaries", () => {
+  it("D-021: basic Text→2D on dual T4 has n/a VRAM and no unknown warning", () => {
+    const r = request("mock-t2d-basic");
+    r.compute.accelerator_id = "gpu_t4x2";
+    const result = validateRequest(r, context());
+    expect(result.valid).toBe(true);
+    expect(result.resource_plan?.fit).toBe("ok");
+    expect(result.warnings.map((w) => w.code)).not.toContain(
+      "COMPUTE_VRAM_UNKNOWN",
+    );
+    expect(
+      result.resource_plan?.candidates.map((c) => c.accelerator_id),
+    ).toEqual(["gpu_t4x2"]);
+  });
+  it.each(["cpu", "tpu_vm"])(
+    "D-021: VRAM checks do not apply to %s",
+    (selected) => {
+      const ctx = context(),
+        model = ctx.models.find((m) => m.model_id === "mock-i3d-single")!;
+      // Test only the accelerator-kind rule; leave the frozen registry fixture intact.
+      model.runtime.supported_accelerators = ["cpu", "tpu"];
+      const plan = planResources(
+        model,
+        ctx.profiles[0],
+        ctx.snapshot,
+        selected,
+      );
+      expect(plan.candidates).toHaveLength(1);
+      expect([...plan.errors, ...plan.warnings].map((e) => e.code)).not.toEqual(
+        expect.arrayContaining(["COMPUTE_VRAM_UNKNOWN"]),
+      );
+      expect(
+        [...plan.errors, ...plan.warnings].map((e) => e.code),
+      ).not.toContain("COMPUTE_VRAM_INSUFFICIENT");
+    },
+  );
   it("aggregates inputs, format, options and compute failures with no resource plan", () => {
     const r = request();
     r.inputs = [];
