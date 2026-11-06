@@ -2309,7 +2309,12 @@ td:last-child {
 }
 .workflow-node {
   padding-bottom: 26px;
+  cursor: grab;
+  user-select: none;
 }
+.workflow-node:active { cursor: grabbing; }
+.character-row-menu { margin-top: 8px; }
+.character-row-menu summary { cursor: pointer; }
 .workflow-node img {
   width: 100%;
   height: 55px;

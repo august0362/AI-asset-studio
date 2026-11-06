@@ -372,7 +372,7 @@ export function Modal({
       className="character-dialog"
       ref={ref}
       aria-label={title}
-      onCancel={onClose}
+      onCancel={(e) => { e.preventDefault(); onClose(); }}
     >
       <h2>{title}</h2>
       {children}

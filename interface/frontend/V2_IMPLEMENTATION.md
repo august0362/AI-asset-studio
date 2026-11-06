@@ -6,8 +6,8 @@ Approved scope: [D-035](../../docs/DECISIONS.md), [V2 contracts](../../docs/CONT
 
 Exactly three page templates share the existing app navigation, React Query cache, theme, i18n and v1 job/artifact APIs:
 
-- `/characters`: `CharacterLibraryPage`. Search by name/ID/tag, stage/status API filters, a style/tag filter over loaded results, grid/list cards, cover image, approved count, timestamps, create and rename.
-- `/characters/:characterId`: `CharacterWorkspacePage`. A fixed seven-node canvas, visible input/output ports, 10 dependency edges (7 hard / 3 soft), directional arrows, selected and stale edge styling, drag pan, wheel/keyboard zoom, fit view and keyboard node selection. Selection lives in `?node=`. Every inspector reads its own stage detail and history.
+- `/characters`: `CharacterLibraryPage`. Search by name/ID/tag, stage/status API filters, a style/tag filter over loaded results, grid/list cards, cover image, approved count, timestamps, create, rename and confirmed deletion from each row's actions disclosure.
+- `/characters/:characterId`: `CharacterWorkspacePage`. Seven movable nodes, visible input/output ports, 10 dependency edges (7 hard / 3 soft), directional arrows, selected and stale edge styling, drag pan, wheel/keyboard zoom, fit view, reset layout and keyboard node selection. Selection lives in `?node=`; positions persist per character in localStorage. The identity header offers confirmed deletion. Every inspector reads its own stage detail and history.
 - `/characters/:characterId/stages/:stageId`: one `StageDetailPage` shell, with input/working/approval columns in a 25/50/25 ratio and seven typed content renderers. S1 references/ideas/sketches; S2 specification and static guided questions; S3 previews, candidate comparison and linked images; S4 prompt purposes, model prompts, tasks and manifest review; S5 batch submission, results, retry and manual set approval; S6/S7 read-only planned views.
 
 Shared components: `WorkflowCanvas`, `StageContentRenderer`, `StageInputs`, `StageFacts`, `EditorialStatus`, `History`, image previews/downloads, `ManifestReview`, `BatchControls` and a native dialog. Existing `ArtifactImage`, `DownloadButton`, `Status`, `Issues` and `PlanPanel` are reused. Job Detail shows all batch image artifacts with task IDs; the log panel supports keyboard scrolling.
@@ -24,15 +24,25 @@ Inventory found no previously integrated V2 implementation, unreachable V2 route
 
 ## API and DEMO boundary
 
-`characterTypes.ts` mirrors the approved V2 schemas. `ApiClient` gains all 18 character routes; `HttpCharacterApi` implements their methods, bodies, encoding, byte responses and error propagation. The v1 job types gain optional `request.batch` and `Artifact.task_id`; job statuses are unchanged.
+`characterTypes.ts` mirrors the approved V2 schemas. `ApiClient` gains all 19 character routes; `HttpCharacterApi` implements their methods, bodies, encoding, byte responses and error propagation. The v1 job types gain optional `request.batch` and `Artifact.task_id`; job statuses are unchanged.
 
 `MockCharacterApi` is separate from the HTTP transport and selected through the existing `VITE_API_MODE=mock`. The UI clearly labels it DEMO. It stores character drafts, references, revisions, history and frozen PNGs in `aas.characters.demo.v1` in browser localStorage, with guarded reads/writes and an in-memory fallback. V1 mock jobs/uploads still reset on reload; an expired demo job is reported missing, while previously frozen image bytes remain available.
 
 Demo batches use the existing mock job lifecycle, one job for the model group. Task results reference those jobs/artifacts. Successful results survive retries; only failed/not-run tasks are retried. Approval is explicit and frozen images are checksum-checked. None of this is presented as production inference or measured hardware activity. The production backend remains responsible for authoritative workflow rules, atomic storage, concurrency and batch execution.
 
+### Character deletion and movable nodes (D-038)
+
+`deleteCharacter(id)` sends route 19's DELETE without a request body and accepts 204 without attempting JSON parsing. The shared confirmation dialog names the character and explains permanent removal of references, revisions, approved images and history while Kaggle jobs remain in Jobs. Success invalidates the library, removes workspace/stage cache entries and `aas.canvas.<character_id>`, and navigates to `/characters`. A 409 preserves the dialog and layout and uses the existing VI/EN `BATCH_ATTEMPT_RUNNING` translations.
+
+The mock rejects deletion when any manifest has a pending result with an attempt, returning all matching `details.manifest_ids` in a v1.1 envelope. Ready batches with no attempt do not block deletion. Deletion removes stored character data and request-index entries, retains v1 jobs, and records fixture deletions so bundled examples cannot reappear after reload. Previously open clients discard deleted records before saving another character. Storage accesses are guarded; in-memory deletion remains available when storage throws.
+
+Node dragging uses pointer capture, converts viewport deltas by the current zoom, and suppresses selection only after actual movement. Background dragging pans independently; clicks and arrow-key selection remain available. Saved layouts validate all seven finite coordinate pairs; missing/corrupt/blocked storage uses the default. Reset layout restores defaults and fits the graph. Each SVG edge starts at the earlier stage's output and ends at the later stage's input; backward-facing layouts route around the nodes and approach the input from the left, including S5 → S6 → S7.
+
+Changed for D-038: `src/api/{characterTypes,HttpCharacterApi,MockCharacterApi,CharacterApi.test,CharacterDeletion.test}.ts`; `src/features/characters/{CharacterLibraryPage,CharacterWorkspacePage,WorkflowCanvas,shared,DeleteCharacterDialog,DeleteCharacterDialog.test}.tsx`; `src/features/characters/{canvasLayout,canvasLayout.test}.ts`; `src/i18n/characters.{en,vi}.ts`; `src/styles/app.css`; `tests/e2e/d038.spec.ts`; this report. No backend, contracts, canonical docs or shared fixtures were edited.
+
 ### Backend v1.1 alignment (D-037)
 
-The backend now implements the 18 routes under CONTRACTS §13. Error envelopes accept `"1.0" | "1.1"`. Optional nullable `GenerationResult.request.batch` and `Artifact.task_id` remain supported; `ArtifactView` names the same artifact schema. Job Detail renders every batch image with its task ID. Both dictionaries already contain all 25 §13.7 codes; their coverage test now parses the canonical merged contract.
+The D-037 alignment covered routes 1–18 under CONTRACTS §13; D-038 adds route 19 above. Error envelopes accept `"1.0" | "1.1"`. Optional nullable `GenerationResult.request.batch` and `Artifact.task_id` remain supported; `ArtifactView` names the same artifact schema. Job Detail renders every batch image with its task ID. Both dictionaries already contain all 25 §13.7 codes; their coverage test now parses the canonical merged contract.
 
 The shared pack grew from 31 to **32 JSON files** while Claude added `batch_jobs.json` (`list[GenerationResult]`) and matching PNG bytes. All 32 were copied unchanged, alongside the previously mapped `stage-configs.json`. No new fixture name or Python mapping was introduced by this frontend task. `src/api/characterFixtures.ts` provides typed cloned snapshots for every file, including request/error examples and batch-state variants. `MockCharacterApi` serves shared lists, workflows, stages, history, outputs, revisions and selectable batch scenarios; locally created characters retain the interactive demo engine. The complete shared character can also be edited after hydration. `MockApiClient` serves every shared attempt job. Twelve indexed content URLs resolve to the copied PNGs, bundled by Vite, with byte/size/SHA-256 parity tests and an exact inventory check that rejects orphan files. Every indexed URL is exercised through the appropriate mock content method, and all batch attempt `/status` responses are checked. Missing index entries or missing indexed binaries return 404 `ARTIFACT_NOT_FOUND`, without a placeholder fetch. Indexed responses use the MIME type recorded in the index. Locally created demo references and frozen assets retain their actual bytes.
 
@@ -52,17 +62,18 @@ Baseline: 332 Vitest tests in 10 files, TypeScript/build and ESLint passed.
 |---|---|
 | `npm run typecheck` | Pass, 0 TypeScript errors |
 | `npm run lint` | Pass, 0 errors / 0 warnings |
-| `npm test` | Pass, 437 tests / 13 files (63 shared-fixture tests) |
-| `npm run build` | Pass, 1738 transformed modules; 627.25 kB main and 519.39 kB Three.js chunks trigger Vite size warnings |
-| `npm run test:e2e -- --workers=2 --fully-parallel --output test-results/v2-contract-alignment` | Pass, 38 tests / 4.6 min (24 existing + 14 V2), before the strict missing-binary follow-up |
+| `npm test` | Pass, 466 tests / 16 files (63 shared-fixture tests); includes VI/EN parity, deletion/storage conflicts and layout/edge tests |
+| `npm run build` | Pass, 1740 transformed modules; 632.33 kB main and 519.39 kB Three.js chunks trigger Vite size warnings |
+| `npm run test:e2e -- --workers=2 --output test-results/d038-regression` | Pass, 49 tests / 4.8 min (38 existing + 11 D-038), including all four themes and both locales |
+| `npm run test:e2e -- tests/e2e/d038.spec.ts --grep 'library row deletion\|workspace identity deletion' --output test-results/d038-deletion-followup` | Pass, 2 tests after the additional cross-tab mock deletion cleanup |
 | `npm test -- src/i18n/i18n.test.ts` | Pass, 8 tests / 1 file |
 | `.venv/Scripts/python -m pytest tests/contract/test_contract_v2.py -q` (read-only, mock) | Pass, 72 tests |
 | `npm run test:e2e -- tests/e2e/characters.spec.ts --grep 'shared backend\|production batch' --workers=2 --output test-results/v2-binary-fixtures` | Pass, 2 tests / 30.8 s after the strict missing-binary follow-up |
 | Normalized `git diff --check` for frontend | Pass |
 
-Unit tests include all 18 HTTP routes, API conflicts, draft persistence, two-tab versions, URL references without fetching, seven stages, planned write rejection, S1–S5 approvals/freezing/staleness, batch idempotency, task-only retry, dictionary/config checks and editor preservation. Existing validation/theme/language/profile tests remain enabled.
+Unit tests include all 19 HTTP routes, body-free 204 handling, deletion conflicts with manifest IDs, retained batch jobs, deleted fixture and cross-tab persistence, API conflicts, draft persistence, two-tab versions, URL references without fetching, seven stages, planned write rejection, S1–S5 approvals/freezing/staleness, batch idempotency, task-only retry, dictionary/config checks and editor preservation. Existing validation/theme/language/profile tests remain enabled.
 
-The browser suite includes the original 24 tests plus 14 V2 tests. V2 visual checks cover 9 views × 4 themes × 2 locales × 2 widths = 144 screenshot/axe/overflow combinations. Paths:
+The browser suite includes the original 24 tests plus 14 V2 and 11 D-038 tests. V2 visual checks cover 9 views × 4 themes × 2 locales × 2 widths = 144 screenshot/axe/overflow combinations. D-038 adds dragging without pan, persistence/reset/corrupt layout recovery, edge endpoints/direction, both delete entry points, cancellation, refresh/reload and dialog/error/workspace axe checks in all four themes and both locales. Paths:
 
 - `test-results/v2/{latte|mint|caffe|matcha}/{en|vi}/{library|workspace|stage-s1|…|stage-s7}-{1024|1440}.png`
 - `test-results/v2/acceptance/s5-approved.png`
@@ -70,6 +81,9 @@ The browser suite includes the original 24 tests plus 14 V2 tests. V2 visual che
 - `test-results/v2/shared-fixtures/batch-job.png`
 - `test-results/v2-contract-alignment/.last-run.json`
 - `test-results/v2-binary-fixtures/.last-run.json`
+- `test-results/d038/delete-{latte|mint|caffe|matcha}-{en|vi}.png` (8 dialog/error screenshots)
+- `test-results/d038-regression/.last-run.json`
+- `test-results/d038-deletion-followup/.last-run.json`
 
 The frozen v1 `models.json` remains SHA-256 `8DB10EDBA07BC9CA5BAAE8191E3E9B70100AC24DBBA280A70D27B96E86D7F18F`.
 

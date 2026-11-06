@@ -28,7 +28,7 @@ const cid = "chr_012345abcdef",
   bid = "bat_012345abcdef";
 beforeEach(() => localStorage.clear());
 afterEach(() => vi.unstubAllGlobals());
-describe("V2 HTTP transport uses the approved 18 routes", () => {
+describe("V2 HTTP transport uses the approved 19 routes", () => {
   const save = {
     contract_version: "1.1",
     expected_draft_version: 0,
@@ -70,6 +70,7 @@ describe("V2 HTTP transport uses the approved 18 routes", () => {
       },
     ],
     ["GET", `/characters/${cid}`, (a) => a.character(cid)],
+    ["DELETE", `/characters/${cid}`, (a) => a.deleteCharacter(cid)],
     [
       "PATCH",
       `/characters/${cid}`,

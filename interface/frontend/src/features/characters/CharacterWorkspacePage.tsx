@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../api/client";
 import { Badge, Failure, Loading, Panel } from "../../components/ui";
 import { WorkflowCanvas } from "./WorkflowCanvas";
+import { DeleteCharacterDialog } from "./DeleteCharacterDialog";
 import {
   CharacterMode,
   EditorialStatus,
@@ -29,6 +30,7 @@ export function CharacterWorkspacePage() {
   });
   const [rename, setRename] = useState(false),
     [name, setName] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const update = useMutation({
     mutationFn: () =>
       api.updateCharacter(characterId, {
@@ -84,6 +86,7 @@ export function CharacterWorkspacePage() {
             >
               {t("char.rename")}
             </button>
+            <button onClick={() => setDeleting(true)}>{t("char.delete")}</button>
             <Link className="button" to="/generate/text-to-2d">
               {t("copy.generateStudio")}
             </Link>
@@ -98,6 +101,7 @@ export function CharacterWorkspacePage() {
       </div>
       <div className="character-workspace">
         <WorkflowCanvas
+          key={characterId}
           characterId={characterId}
           outputs={query.data.approved_outputs}
           stages={stages}
@@ -110,6 +114,7 @@ export function CharacterWorkspacePage() {
         />
         <FlowInspector id={characterId} stage={selected} />
       </div>
+      {deleting && <DeleteCharacterDialog character={character} onClose={() => setDeleting(false)} />}
       {rename && (
         <Modal title={t("char.rename")} onClose={() => setRename(false)}>
           <form

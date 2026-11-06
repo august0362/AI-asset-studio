@@ -40,6 +40,15 @@ const configs = configsJson as StageConfig[];
 const clone = <T>(v: T): T => structuredClone(v);
 const stamp = () => new Date().toISOString();
 const key = "aas.characters.demo.v1";
+const deletedKey = "aas.characters.deleted.v1";
+function deletedCharacters(): Set<string> {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(deletedKey) ?? "[]");
+    return new Set(Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : []);
+  } catch {
+    return new Set();
+  }
+}
 const id = (prefix: string) =>
   `${prefix}_${crypto.randomUUID().replaceAll("-", "").slice(0, 12)}`;
 function fail(
@@ -177,6 +186,7 @@ export abstract class MockCharacterApi implements CharacterApi {
     this.fixtureBatchStatus = status;
   }
   private fixtureWorkflow(cid: string): CharacterWorkflow | undefined {
+    this.assertNotDeleted(cid);
     if (this.characterRecords[cid]?.sharedFixture === false) return undefined;
     return [
       sharedCharacterFixture("character_workflow"),
@@ -236,6 +246,12 @@ export abstract class MockCharacterApi implements CharacterApi {
     };
   }
   private characterRecords = load();
+  private deletedCharacters = deletedCharacters();
+  private assertNotDeleted(cid: string) {
+    for (const id of deletedCharacters()) this.deletedCharacters.add(id);
+    if (this.deletedCharacters.has(cid))
+      fail("CHARACTER_NOT_FOUND", "Character not found.", 404);
+  }
   private createRequests: Record<string, string> = {};
   protected abstract characterJobs(): CharacterJobApi;
   protected abstract enqueueCharacterTasks(
@@ -252,6 +268,7 @@ export abstract class MockCharacterApi implements CharacterApi {
     }
   }
   private getCharacter(id: string) {
+    this.assertNotDeleted(id);
     this.sync();
     this.hydrateFixture(id);
     if (!/^chr_[0-9a-f]{12}$/.test(id))
@@ -262,8 +279,13 @@ export abstract class MockCharacterApi implements CharacterApi {
     );
   }
   private sync() {
+    for (const id of deletedCharacters()) this.deletedCharacters.add(id);
+    for (const id of this.deletedCharacters) delete this.characterRecords[id];
+    for (const [request, id] of Object.entries(this.createRequests))
+      if (this.deletedCharacters.has(id)) delete this.createRequests[request];
     const stored = load();
     for (const [id, value] of Object.entries(stored)) {
+      if (this.deletedCharacters.has(id)) continue;
       const local = this.characterRecords[id];
       if (!local || value.history.length > local.history.length)
         this.characterRecords[id] = value;
@@ -460,13 +482,14 @@ export abstract class MockCharacterApi implements CharacterApi {
       "character_list",
     ).characters.filter(
       (c) =>
-        !this.characterRecords[c.character_id] ||
-        this.characterRecords[c.character_id].sharedFixture,
+        !this.deletedCharacters.has(c.character_id) &&
+        (!this.characterRecords[c.character_id] ||
+        this.characterRecords[c.character_id].sharedFixture),
     );
     const rows = [
       ...fixtureRows,
       ...Object.values(this.characterRecords)
-        .filter((r) => !r.sharedFixture)
+        .filter((r) => !r.sharedFixture && !this.deletedCharacters.has(r.character.character_id))
         .map((r) => this.summary(r)),
     ]
       .filter(
@@ -570,6 +593,33 @@ export abstract class MockCharacterApi implements CharacterApi {
         (c) => this.approved(r, c.stage_id)?.frozen_assets ?? [],
       ),
     });
+  }
+  async deleteCharacter(cid: string): Promise<void> {
+    await this.character(cid);
+    const fixture = this.fixtureWorkflow(cid);
+    const manifests = fixture
+      ? cid === sharedCharacterFixture("character").character_id
+        ? configs.flatMap((c) => sharedCharacterFixture(`stage_detail_${c.stage_id}`).batches)
+        : sharedCharacterFixture("stage_detail_s4_in_review").batches
+      : this.getCharacter(cid).batches;
+    const current = fixture ? await Promise.all(
+      [...new Set(manifests.map((b) => b.manifest_id))].map((bid) => this.characterBatch(cid, bid)),
+    ) : manifests;
+    const running = current.filter((b) => b.results.some((r) => r.status === "pending" && r.attempt !== null));
+    if (running.length)
+      fail("BATCH_ATTEMPT_RUNNING", "Wait for the running attempt to finish.", 409, {
+        manifest_ids: running.map((b) => b.manifest_id),
+      });
+    this.deletedCharacters.add(cid);
+    delete this.characterRecords[cid];
+    for (const [request, id] of Object.entries(this.createRequests))
+      if (id === cid) delete this.createRequests[request];
+    this.persist();
+    try {
+      localStorage.setItem(deletedKey, JSON.stringify([...this.deletedCharacters]));
+    } catch {
+      /* Deletion remains effective in memory without storage. */
+    }
   }
   async updateCharacter(cid: string, req: UpdateCharacterRequest) {
     const r = this.getCharacter(cid);
@@ -1058,6 +1108,7 @@ export abstract class MockCharacterApi implements CharacterApi {
     return clone(ref);
   }
   async referenceContent(cid: string, rid: string) {
+    this.assertNotDeleted(cid);
     const local = this.characterRecords[cid]?.blobs[rid];
     if (local) return fromDataUrl(local);
     return sharedCharacterContent(
@@ -1091,6 +1142,7 @@ export abstract class MockCharacterApi implements CharacterApi {
     };
   }
   async assetContent(cid: string, aid: string) {
+    this.assertNotDeleted(cid);
     const local = this.characterRecords[cid]?.blobs[aid];
     if (local) return fromDataUrl(local);
     return sharedCharacterContent(
@@ -1243,6 +1295,7 @@ export abstract class MockCharacterApi implements CharacterApi {
     return clone(manifest);
   }
   async characterBatch(cid: string, bid: string) {
+    this.assertNotDeleted(cid);
     if (bid === "bat_000000000000")
       fail("BATCH_NOT_FOUND", "Manifest previews are not stored.", 404);
     if (this.fixtureWorkflow(cid)) {

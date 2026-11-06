@@ -10,6 +10,7 @@ import { api } from "../../api/client";
 import type { EditorialStatus, StageId } from "../../api/characterTypes";
 import { useI18n } from "../../i18n";
 import { Empty, Failure, Loading } from "../../components/ui";
+import { DeleteCharacterDialog } from "./DeleteCharacterDialog";
 import {
   CharacterMode,
   FrozenThumbnail,
@@ -30,6 +31,7 @@ export function CharacterLibraryPage() {
     [tags, setTags] = useState(""),
     [summary, setSummary] = useState(""),
     [list, setList] = useState(false);
+  const [deleting, setDeleting] = useState<{ character_id: string; name: string } | null>(null);
   const data = useInfiniteQuery({
     queryKey: ["characters", q, stage, status],
     initialPageParam: undefined as string | undefined,
@@ -202,6 +204,10 @@ export function CharacterLibraryPage() {
                 <Link className="button" to={`/characters/${c.character_id}`}>
                   {t("char.open")}
                 </Link>
+                <details className="character-row-menu">
+                  <summary>{t("char.actions")}</summary>
+                  <button onClick={() => setDeleting(c)}>{t("char.delete")}</button>
+                </details>
               </div>
             </article>
           ))}
@@ -215,6 +221,7 @@ export function CharacterLibraryPage() {
           {t("char.more")}
         </button>
       )}
+      {deleting && <DeleteCharacterDialog character={deleting} onClose={() => setDeleting(null)} />}
       {creating && (
         <Modal title={t("char.create")} onClose={() => setCreating(false)}>
           <form

@@ -5,15 +5,7 @@ import type {
   ArtifactReference,
 } from "../../api/characterTypes";
 import { useCharacterText, EditorialStatus, FrozenThumbnail } from "./shared";
-const layout = [
-  [32, 60],
-  [266, 60],
-  [500, 60],
-  [734, 60],
-  [734, 340],
-  [500, 340],
-  [266, 340],
-];
+import { defaultLayout, readLayout, saveLayout, edgePath, type CanvasLayout } from "./canvasLayout";
 export function WorkflowCanvas({
   stages,
   selected,
@@ -29,14 +21,24 @@ export function WorkflowCanvas({
 }) {
   const { t, text } = useCharacterText(),
     ref = useRef<HTMLDivElement>(null),
-    drag = useRef<{ x: number; y: number; px: number; py: number } | null>(
+    drag = useRef<{ x: number; y: number; px: number; py: number; node?: StageId; moved: boolean } | null>(
       null,
-    );
+    ),
+    suppressClick = useRef(false);
+  const [positions, setPositions] = useState(() => readLayout(characterId));
   const [view, setView] = useState({ x: 0, y: 0, scale: 1 });
-  const fit = () => {
+  const fit = (layout: CanvasLayout = positions) => {
     const width = ref.current?.clientWidth ?? 960;
-    setView({ x: 12, y: 12, scale: Math.min(1, (width - 24) / 976) });
+    const height = ref.current?.clientHeight || 620;
+    const points = Object.values(layout),
+      left = Math.min(...points.map(([x]) => x)) - 32,
+      top = Math.min(...points.map(([, y]) => y)) - 40,
+      right = Math.max(...points.map(([x]) => x)) + 234,
+      bottom = Math.max(...points.map(([, y]) => y)) + 260,
+      scale = Math.min(1, (width - 24) / (right - left), (height - 24) / (bottom - top));
+    setView({ x: 12 - left * scale, y: 12 - top * scale, scale });
   };
+  useEffect(() => saveLayout(characterId, positions), [characterId, positions]);
   useEffect(() => {
     const element = ref.current!;
     const observer =
@@ -80,7 +82,11 @@ export function WorkflowCanvas({
           <button onClick={() => zoom(1 / 1.2)} aria-label={t("char.zoomOut")}>
             −
           </button>
-          <button onClick={fit}>{t("char.fit")}</button>
+          <button onClick={() => fit()}>{t("char.fit")}</button>
+          <button onClick={() => {
+            setPositions(structuredClone(defaultLayout));
+            fit(defaultLayout);
+          }}>{t("char.resetLayout")}</button>
           <span>{t("char.pan")}</span>
         </div>
       </div>
@@ -119,16 +125,25 @@ export function WorkflowCanvas({
         }}
         onPointerDown={(e) => {
           if ((e.target as Element).closest("button")) return;
-          drag.current = { x: e.clientX, y: e.clientY, px: view.x, py: view.y };
+          if (e.button !== 0) return;
+          drag.current = { x: e.clientX, y: e.clientY, px: view.x, py: view.y, moved: false };
           e.currentTarget.setPointerCapture(e.pointerId);
         }}
         onPointerMove={(e) => {
           const start = drag.current;
-          if (start)
+          if (!start) return;
+          const dx = e.clientX - start.x, dy = e.clientY - start.y;
+          if (!start.moved && Math.hypot(dx, dy) < 4) return;
+          start.moved = true;
+          if (start.node) {
+            const node = start.node;
+            suppressClick.current = true;
+            setPositions((p) => ({ ...p, [node]: [start.px + dx / view.scale, start.py + dy / view.scale] }));
+          } else
             setView((v) => ({
               ...v,
-              x: start.px + e.clientX - start.x,
-              y: start.py + e.clientY - start.y,
+              x: start.px + dx,
+              y: start.py + dy,
             }));
         }}
         onPointerUp={() => {
@@ -136,6 +151,7 @@ export function WorkflowCanvas({
         }}
         onPointerCancel={() => {
           drag.current = null;
+          suppressClick.current = false;
         }}
       >
         <div
@@ -162,14 +178,12 @@ export function WorkflowCanvas({
                 <path d="M0,0 L6,3 L0,6" />
               </marker>
             </defs>
-            {stages.flatMap((to, i) =>
+            {stages.flatMap((to) =>
               to.config.dependencies.map((dep) => {
                 const j = stages.findIndex(
                   (s) => s.config.stage_id === dep.stage_id,
                 );
                 if (j < 0) return null;
-                const [x1, y1] = layout[j],
-                  [x2, y2] = layout[i];
                 const connected =
                     selected === dep.stage_id ||
                     selected === to.config.stage_id,
@@ -186,22 +200,33 @@ export function WorkflowCanvas({
                     data-stale={stale}
                     className="workflow-edge"
                     markerEnd="url(#flow-arrow)"
-                    d={`M${x1 + 202},${y1 + 88} C${x1 + 250},${y1 + 88} ${x2 - 52},${y2 + 88} ${x2},${y2 + 88}`}
+                    d={edgePath(positions[dep.stage_id], positions[to.config.stage_id])}
                   />
                 );
               }),
             )}
           </svg>
-          {stages.map((s, i) => (
+          {stages.map((s) => (
             <button
               type="button"
               key={s.config.stage_id}
               data-node={s.config.stage_id}
               data-testid={`node-${s.config.stage_id}`}
               className="workflow-node"
-              style={{ left: layout[i][0], top: layout[i][1] }}
+              style={{ left: positions[s.config.stage_id][0], top: positions[s.config.stage_id][1] }}
               aria-pressed={selected === s.config.stage_id}
-              onClick={() => onSelect(s.config.stage_id)}
+              onPointerDown={(e) => {
+                if (e.button !== 0) return;
+                e.stopPropagation();
+                const node = s.config.stage_id;
+                suppressClick.current = false;
+                drag.current = { x: e.clientX, y: e.clientY, px: positions[node][0], py: positions[node][1], node, moved: false };
+                e.currentTarget.setPointerCapture(e.pointerId);
+              }}
+              onClick={(e) => {
+                if (!suppressClick.current || e.detail === 0) onSelect(s.config.stage_id);
+                suppressClick.current = false;
+              }}
             >
               <span className="workflow-node-number">
                 {s.config.stage_id.toUpperCase()}
