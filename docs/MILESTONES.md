@@ -1,6 +1,6 @@
 # Milestones
 
-The order is fixed: **M0 → M1 → M2 → M3 → M4 → M5 → M6**. Each milestone starts only after its prerequisites are done.
+The order is fixed: **M0 → M1 → M2 → M3 → M4 → M5 → M6**. Character Production (**V2-0 … V2-6**, §V2) runs alongside and does not depend on M5/M6. Each milestone starts only after its prerequisites are done.
 Related: [CONTRACTS.md](CONTRACTS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [DECISIONS.md](DECISIONS.md)
 
 **Definition of done:**
@@ -10,188 +10,62 @@ Related: [CONTRACTS.md](CONTRACTS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [
 - DECISIONS and the status table are updated.
 - The owner signs off.
 
-**Task markers:** `[x]` done and verified · `[ ]` not done. A note in *italics* says how a task was verified or what is still missing.
-
-| Milestone | Status | Tasks done |
-|---|---|---|
-| M0 Architecture & Documentation | **Done** (owner approved 2026-11-06) | 6 / 6 |
-| M1 Mock Frontend | **Done** (owner approved 2026-11-06, including color themes and Vietnamese, D-023, D-024) | 32 / 32 |
-| M2 Model Contracts & Mock Adapters | **Done** (owner approved 2026-11-06) | 31 / 31 |
-| M3 Kaggle Integration | **Done** (owner approved 2026-11-06; profile `SUNNY`, D-025) | 19 / 19 |
-| M4 Text-to-2D Models | **Done** (owner approved 2026-11-06; Animagine XL 4.0, FLUX.2 [klein] 4B, MOSS-Image-SFT for `character`, D-034, D-036, D-037) | 11 / 11 |
-| M5 Image-to-3D Models | Not started | 0 / 10 |
-| M6 Text-to-3D Models | Not started | 0 / 6 |
-
-> **V2 Character Production** has its own milestones in [v2/MILESTONES.md](v2/MILESTONES.md): V2-0, V2-1 and V2-2 done (D-037, D-038); V2-3 to V2-5 (frontend) with Codex.
-
-> M1 and M2 were built in parallel (Codex: frontend, Claude Code: backend) by owner instruction, instead of strictly one after the other (D-019).
+| Milestone | Status |
+|---|---|
+| M0 Architecture & Documentation | **Done** (owner approved 2026-11-06) |
+| M1 Mock Frontend | **Done** (2026-11-06, including color themes and Vietnamese, D-023, D-024) |
+| M2 Model Contracts & Mock Adapters | **Done** (2026-11-06) |
+| M3 Kaggle Integration | **Done** (2026-11-06; profile `SUNNY`, D-025) |
+| M4 Text-to-2D Models | **Done** (2026-11-06; Animagine XL 4.0, FLUX.2 [klein] 4B, MOSS-Image-SFT for `character`, D-034, D-036, D-037) |
+| V2-0 … V2-2 Character Production: contracts, backend, batches | **Done** (2026-11-06, D-037, D-038) |
+| V2-3 … V2-5 Character Production: frontend | In progress (Codex) |
+| V2-6 Character Production: integration and sign-off | Not started |
+| M5 Image-to-3D Models | Not started |
+| M6 Text-to-3D Models | Not started |
 
 ---
 
-## M0 — Architecture & Documentation
+## Done milestones (summary)
 
-- **Scope:** spec, architecture, contracts v1.0, milestones, decisions and agent context.
-- **Prerequisites:** none.
-- **Out of scope:** code, dependency installs, Kaggle calls.
+Every task of M0–M4 was checked off and signed off by the owner on 2026-11-06. The full checklists are in the git history.
 
-**Tasks**
-- [x] Write README, `docs/*` (5 files), CLAUDE.md, AGENTS.md, `.env.example`, `.gitignore` and the directory skeleton.
-- [x] Exactly 3 modules (Interface, Models, Kaggle).
-- [x] Pipeline, category, state and error names are consistent across all documents (cross-document name check).
-- [x] Every link resolves.
-- [x] Owner approval. *Given 2026-11-06.*
-- [x] `git init` (DF-13). *Done 2026-11-06: branch `main`, pushed to `github.com/august0362/AI-asset-studio`. The branch/PR workflow is still open (DF-13).*
+**M0 — Architecture & Documentation.** Spec, architecture, contracts v1.0, milestones, decisions and agent context; exactly three modules; cross-document name check; every link resolves; `git init` (`main`, pushed to `github.com/august0362/AI-asset-studio`; the branch/PR workflow is still open, DF-13).
 
-## M1 — Mock Frontend
+**M1 — Mock Frontend** (Codex; built in parallel with M2 by owner instruction, D-019).
+- The full UI on `MockApiClient`: three pipeline screens, four categories, model-driven forms, multi-image upload with roles, client-side validation (CONTRACTS §8 stages 2–7 and the §7.2 planner), profile/accelerator selection with a ResourcePlan panel, jobs, logs, PNG preview, GLB viewer, downloads and the mock Resources view with its seven scenarios.
+- Color themes (D-023, UI.md §1–§4) and Vietnamese/English (D-024, UI.md §5–§9), with WCAG contrast, persistence before first paint and every §8.2 error code localized.
+- Verified 2026-11-06: typecheck, ESLint, Vitest (V-01…V-20), `vite build`, Playwright with axe in all four themes and both languages. `mock.{png,glb}` live in `interface/frontend/tests/fixtures/`.
 
-- **Scope:** the full UI running on `MockApiClient`: three pipeline screens and four categories, model selector and model-driven forms, multi-image upload with roles, prompts, client-side validation, profile and accelerator selection with a ResourcePlan panel, job history and detail, simulated status, logs, PNG preview, GLB viewer, downloads, the **mock Kaggle Resources view**, **light/dark mode with four color themes** and a **Vietnamese/English UI** ([UI.md](UI.md)).
-- **Prerequisites:** M0 approved; git initialized.
-- **Out of scope:** backend, Python, Kaggle.
+**M2 — Model Contracts & Mock Adapters** (Claude Code).
+- `models/contracts` (Pydantic + JSON Schema), the registry with the five §2.2 mocks (values CONTRACTS is silent on are marked `# gap`, A-07), mock Text→2D PNG and Image→3D GLB adapters (D-016), `MockKaggleClient`, and every §5 endpoint with the worker, state machine, reconciliation, storage and sweeps.
+- Accepted: Text→2D and Image→3D through the HTTP API and the UI in http mode; V-xx through the API; restart mid-job; `PATH_INVALID` on traversal.
+- Owner decisions: D-020 (contract clarifications), D-021 (VRAM not applicable), D-022 (streamed upload limit).
 
-*M1 results come from Codex's reports (2026-11-06; summarized in [interface/frontend/README.md](../interface/frontend/README.md)). Claude Code re-ran every frontend check on 2026-11-06: typecheck, ESLint, vitest (300 passed), `vite build` and Playwright (24 passed, all four themes in both languages, with axe).*
+**M3 — Kaggle Integration** (one authorized profile, D-008, D-025).
+- Spike results: quota mapping D-026, accelerators D-027/D-031, live telemetry D-028, one dataset per job D-029; client design D-030.
+- `KaggleCliClient` with subprocess-env auth, packaging, dataset upload, status mapping, logs, download, quota and telemetry. The mock adapters double as the smoke adapter.
+- Accepted on Kaggle and checked in the UI by the owner: a full lifecycle on T4×2, a deliberate `KAGGLE_KERNEL_ERROR` (D-031 test switch), real auth and quota, GPU0/GPU1 telemetry, no secret leaks. Tests: recorded CLI output, secret-leak test, opt-in `pytest -m kaggle`. Run log in DECISIONS.
 
-**Tasks: deliverables**
-- [x] `interface/frontend/` app (Vite + React + TS strict).
-- [x] `src/api/types.ts`, `MockApiClient` serving the contract fixtures.
-- [x] `src/validation/` (CONTRACTS §8 stages 2–7, including the §7.2 planner on mock data).
-- [x] Dev-menu resource scenarios: `fresh`, `no_session`, `quota_missing`, `telemetry_stale`, `telemetry_unavailable`, `gpu_split`, `quota_low`.
-- [x] `mock.{png,glb}` generated by `generate_fixtures.py` (standard library only). *Location is `interface/frontend/tests/fixtures/`, not the repo-root `tests/fixtures/` that was planned (see M2 open items).*
+**M4 — Text-to-2D Models** (`character`).
+- Selection benchmark outside the app (D-033): five candidates × the nine cases of the [Prompt Book](sources/M4_Text_to_2D_Prompt_Book_v1.md); gallery `M4_Text2D_Gallery.html` (repository root, not committed). The owner kept three models (D-034).
+- Per model (D-036): research note, full `ModelCapabilities` (`models/registry/real.py`), one adapter `models/adapters/diffusers_text_to_2d/`, measured runtimes 25 / 9 / 354 s, unit tests and the V-matrix, and one live smoke run each (MOSS after an out-of-memory fix).
 
-**Tasks: acceptance**
-- [x] All three screens render. Text→3D is disabled with the `PIPELINE_NOT_AVAILABLE` message.
-- [x] Models are filtered by pipeline and category; the form shows only the inputs the model declares.
-- [x] A model switch keeps uploads and flags incompatible fields (V-19).
-- [x] Errors disable Generate; warnings are visible.
-- [x] The Resources view shows auth, quota and reset time (or "unknown"), session, CPU/RAM, **separate GPU0/GPU1**, and freshness per group. Stale or unavailable data is never shown as live.
-- [x] The GLB fixture orbits and zooms; downloads work.
+## V2 — Character Production
 
-**Tasks: tests**
-- [x] Vitest V-01…V-20 (V-08 and V-10 as component tests).
-- [x] Component tests for the dynamic form, model switch, plan panel and resource scenarios.
-- [x] `tsc --noEmit` passes.
-- [x] ESLint passes (zero warnings).
-- [x] `vite build` passes.
-- [x] Playwright e2e (10 tests) and axe checks. *Extra, beyond the plan.*
+Scope and acceptance criteria: [PRODUCT_SPEC.md §8](PRODUCT_SPEC.md#8-character-production-v2). Tests: [v2/TEST_PLAN.md](v2/TEST_PLAN.md). Decisions OD-01…OD-14: [DECISIONS.md](DECISIONS.md#v2-open-decisions-od).
 
-**Tasks: color themes** *(added by the owner on 2026-11-06, D-023; spec in [UI.md](UI.md) §1–§4)*
-- [x] All colors come from the semantic tokens in UI.md §2. No hex values remain in components or CSS rules outside the theme blocks, the GLB viewer included.
-- [x] Four themes `latte`, `mint`, `caffe` and `matcha` on `<html data-theme>`, with the matching `color-scheme`.
-- [x] Header switcher: mode (Light / Dark / System) and family (Coffee / Green). It is keyboard accessible and has accessible names.
-- [x] `system` follows `prefers-color-scheme` live. The choice persists in `localStorage` (`aas.theme`, wrapped in try/catch) and is applied before the first paint, with no flash.
-- [x] The GLB viewer updates its background and grid on a theme change without reloading the model.
-- [x] Graphic design rules in UI.md §3 are respected on every screen (60-30-10, one filled primary action per view, status always with text or an icon).
-- [x] Tests: a vitest that recomputes WCAG contrast for every token pair in UI.md; vitest for the switcher and persistence (including storage that throws); Playwright screenshots of every route in all 4 themes; axe passes in all 4 themes.
+| Milestone | Owner of the work | Scope | Completion gate | Status |
+|---|---|---|---|---|
+| **V2-0 Contract freeze** | Claude Code (docs), owner | Docs; the OD decisions answered | Owner approval | **Done**: D-035; CONTRACTS v1.1 merged as §13 (D-037); fixtures in `tests/fixtures/contracts/v2/` |
+| **V2-1 Backend core** | Claude Code | `characters/` package: IDs, store (atomic, exclusive-create revisions, history), StageConfig, routes 1–14 and 19, approval rules, staleness, freezing | TEST_PLAN §2 and §3 pass in mock mode; all v1 tests pass | **Done** (D-038; route 19 *delete character* added) |
+| **V2-2 Batch execution** | Claude Code | `GenerationRequest.tasks`, `request.batch`, `Artifact.task_id`, `BATCH_PARTIAL`; batch support in the adapter and remote entry (one load per job, per-task results, deadline); routes 15–18; reconciliation | TEST_PLAN §4 passes with the mock adapter | **Done** (D-038): B-01…B-12 pass; the owner accepted it without the live run B-13, which stays an optional check (owner approves the GPU use) before real batch use |
+| **V2-3 Library + Workspace** | Codex | `characterTypes.ts`, ApiClient methods, mock fixtures, `CharacterLibraryPage` (with delete), `CharacterWorkspacePage` (identity header, canvas with movable nodes, inspector) | TEST_PLAN §5.1–5.3 pass; axe and themes clean; VI/EN parity | In progress |
+| **V2-4 Stage Detail S1–S4** | Codex | Shared layout + S1, S2, S3 (preview batch UI), S4 (task list, manifest review) | TEST_PLAN §5.4–5.6 pass | In progress |
+| **V2-5 S5 + planned S6/S7** | Codex | S5 batch submit/status/results/retry/approval; S6/S7 read-only; optional Studio prefill | TEST_PLAN §5.7–5.8 pass | In progress |
+| **V2-6 Integration & sign-off** | Both, owner | End-to-end in HTTP mode against the mock backend, then one real character to S5 on Kaggle (owner-approved GPU use) | TEST_PLAN §6 passes; PRODUCT_SPEC §8.5 demonstrated; owner sign-off | Not started |
 
-**Tasks: Vietnamese language** *(added by the owner on 2026-11-06, D-024; spec in [UI.md](UI.md) §5–§9)*
-- [x] All UI text, including `aria-label`s, comes from typed `vi` and `en` dictionaries with identical keys. No hard-coded user-facing strings remain in components.
-- [x] Header language switcher ("Tiếng Việt" / "English"). First-visit detection from `navigator.languages`; persisted in `localStorage` (`aas.locale`, wrapped in try/catch); applied before the first paint; `<html lang>` follows it.
-- [x] Every error code in CONTRACTS §8.2 has a Vietnamese message filled from `details`, falling back to the backend message. Terms follow the UI.md §8 glossary.
-- [x] Dates and numbers are formatted with the selected locale. Vietnamese diacritics render in Inter. No overflow at 1024 px and 1440 px.
-- [x] Tests: dictionary key parity; every §8.2 code covered; fallback when a key or placeholder is missing; switcher and persistence (including storage that throws); Playwright screenshots of every route in Vietnamese; axe passes in both languages.
-
-**Tasks: closing**
-- [x] Shared fixtures validate on the backend. *pytest validates catalog, the 5 model records, profile and snapshot against Pydantic, and checks that the 5 records equal the backend registry. `artifact-metadata.json` describes the binary fixtures and is not a contract payload.*
-- [x] Prerequisite `git init` (see M0).
-- [x] Owner sign-off. *Given 2026-11-06.*
-
-## M2 — Model Contracts & Mock Adapters
-
-- **Scope:** backend and Models working end-to-end in `mock` compute mode.
-- **Prerequisites:** M1 done. *Built in parallel with M1 (see note above).*
-- **Out of scope:** real Kaggle, real CLI, real weights.
-
-**Tasks: deliverables**
-- [x] `pyproject.toml` (pinned dependencies, pytest and Ruff config).
-- [x] `models/contracts` (Pydantic + JSON Schema export, 22 schemas).
-- [x] `models/registry`: the 5 mocks in CONTRACTS §2.2, plus validation stages 2–6. *Values missing from §2.2 are filled in and marked `# gap` in `models/registry/mocks.py`; they need owner approval.*
-- [x] Adapter `mock_text_to_2d`: a real PNG, deterministic per seed, labelled "MOCK".
-- [x] Adapter `mock_image_to_3d`: a real GLB with an embedded texture, plus a preview PNG (D-016). *Khronos glTF validator: 0 errors, 0 warnings.*
-- [x] `kaggle_connector`: `MockKaggleClient` (7 scenarios, 8 controlled failures), `jobs` (mock path), `resources` (planner, snapshot, telemetry parser) and `runtime`.
-- [x] `aas_backend`: every §5 endpoint, the worker, state machine, reconciliation, storage and sweeps.
-- [x] Frontend `HttpApiClient` (`VITE_API_MODE=http`). *Written by Codex.*
-
-**Tasks: acceptance**
-- [x] Text→2D produces a PNG through the HTTP API. *Live demo on 127.0.0.1, 1024×1024 PNG.*
-- [x] Image→3D (front/side/back) produces a valid GLB through the HTTP API. *Live demo, GLB + preview.*
-- [x] Both are previewed and downloaded **from the UI in http mode**. *Codex's Playwright `http.spec.ts` tests a) Text→2D and b) multiview passed against the live backend (run by Claude Code, 2026-11-06). Test d) is order-dependent and assigned to Codex; it is not a backend fault.*
-- [x] All V-xx cases behave as specified through the API; a rejected request creates no job and makes no remote call.
-- [x] A backend restart mid-job reconciles correctly.
-- [x] Path traversal returns `PATH_INVALID`.
-
-**Tasks: tests (pytest: 277 passed, 1 skipped; Ruff clean)**
-- [x] CONTRACTS.md examples validate against Pydantic.
-- [x] Shared fixtures validate in the pytest suite. *Reads `tests/fixtures/contracts/` and `interface/frontend/tests/fixtures/contracts/`, where the frontend keeps them.*
-- [x] Registry rule from CONTRACTS §2.1 (no unlisted `null` requirements).
-- [x] V-01…V-20 through `/validate` and `/jobs`.
-- [x] Every allowed and every disallowed state transition.
-- [x] Retry rules.
-- [x] Storage: atomic writes, expiry sweep, traversal (symlink and Windows junction).
-- [x] Every branch of the §7.2 planner.
-- [x] Telemetry parser: valid, malformed, 2 GPUs, stale.
-- [x] One full mock job per pipeline.
-- [x] Import-boundary test.
-- [x] No secrets in `data/`, logs or responses. *Checked after the demo.*
-
-**Tasks: closing**
-- [x] Owner decides on the contract mismatches reported on 2026-11-06, and CONTRACTS/DECISIONS are updated. *Approved: D-020 (clarifications), A-07 (placeholder values).*
-- [x] No `COMPUTE_VRAM_UNKNOWN` warning when VRAM is not applicable (D-021).
-- [x] Oversized uploads are cut off while streaming (D-022).
-- [x] Frontend aligned with D-020/D-021 (`artifacts()` wrapper type). *`HttpApiClient.artifacts()` returns `ArtifactsResponse` (checked 2026-11-06).*
-- [x] Owner sign-off. *Given 2026-11-06.*
-
-## M3 — Kaggle Integration
-
-- **Scope:** one **authorized** profile (D-008): auth, quota, a smoke-notebook run, status, logs, artifact download, and a best-effort telemetry proof of concept, all wired into the UI.
-- **Prerequisites:** M2 done; the owner puts one profile in `.env` with `authorization_confirmed=true`; the spike below is finished.
-- **Out of scope:** real models, multiple enabled profiles (DF-04), cancellation, TPU telemetry.
-
-**Tasks: spike (first; results go into DECISIONS)**
-- [x] Decide on token regeneration, then choose the one profile for M3. *Owner, 2026-11-06: no regeneration (the tokens were never committed; git history checked). M3 profile: `SUNNY` (D-025).*
-- [x] Capture real `kaggle quota --format json` output (DF-05). *→ D-026.*
-- [x] Verify the `--accelerator` values, VRAM and session limits (DF-06). *→ D-027, D-031: CPU and T4×2 verified; P100 and TPU dropped (owner); session limits still provisional.*
-- [x] Measure `logs -f` latency for `AAS_TELEMETRY` on a ~10-minute T4×2 run (DF-07). *→ D-028: median 1.1 s, measured on a 4-minute CPU run. The 8-minute T4×2 run verified the GPU0/GPU1 readings.*
-- [x] Choose the dataset strategy (DF-08). *→ D-029: one private dataset per job, deleted when the job ends.*
-
-**Tasks: deliverables**
-- [x] `KaggleCliClient`: subprocess-env auth with an isolated config dir. *(D-030)*
-- [x] Packaging (`kernel-metadata.json`, `runner.py`), dataset upload, status mapping, logs (stream + full) and download.
-- [x] Quota and telemetry in snapshots.
-- [x] Smoke adapter that writes a small PNG and GLB on Kaggle, with no AI. *The existing mock adapters fill this role: their entrypoints (standard library + Pillow) run unchanged on Kaggle (verified on CPU, 2026-11-06).*
-
-**Tasks: acceptance**
-- [x] A UI-launched smoke job goes `created → uploading → queued → running → downloading → completed`, and its artifacts preview locally. *2026-11-06: full lifecycle on T4×2 through the REST API, then checked in the UI by the owner.*
-- [x] A deliberately failing notebook ends with `KAGGLE_KERNEL_ERROR` and readable logs. *2026-11-06, CPU, with `AAS_KAGGLE_TEST_FAILURE=kernel_error` (D-031; run log).*
-- [x] Resources shows real auth and quota (or `unknown` with a reason) and the session status. *Checked in the UI by the owner, 2026-11-06, after the profile-selection fix (the UI had assumed a `default` profile).*
-- [x] Telemetry shows correct freshness, GPU0/GPU1 separate on T4×2. *The snapshot during the T4×2 run had `fresh` telemetry with GPU0 and GPU1 separate; checked in the UI by the owner.* If DF-07 misses its target, samples are shown after the run, and telemetry is `unavailable` during it.
-- [x] No secret leaks anywhere. *Automated test plus a scan after the live runs (run log).*
-
-**Tasks: tests**
-- [x] Unit tests on recorded, redacted CLI output: status mapping, quota parsing (including missing quota and an old CLI), log and telemetry parsing, redaction.
-- [x] Secret-leak test (CONTRACTS §10).
-- [x] Opt-in `pytest -m kaggle` live tests.
-- [x] Manual acceptance run logged in DECISIONS. *DECISIONS § M3 run log.*
-- [x] Owner sign-off. *Given 2026-11-06.*
-
-## M4 — Text-to-2D Models
-
-- **Scope:** real models, added **one category at a time**, starting with `character` unless the owner reprioritizes.
-- **Prerequisites:** M3 done; DF-12 decided for the first model.
-- **Out of scope:** Image→3D, Text→3D, fine-tuning.
-
-**Selection benchmark (D-033)**
-- [x] Five candidates × 9 Prompt Book cases on Kaggle 2×T4; gallery with results and report in `M4_Text2D_Gallery.html` (repository root). *Done 2026-11-06: 42 of 45 images; Z-Image-Turbo needed fp32 compute and has 6 of 9; 1.59 h of GPU quota.*
-- [x] Owner reviews the gallery and picks the model(s) for the tasks below. *2026-11-06 (D-034): Animagine XL 4.0, FLUX.2 [klein] 4B, MOSS-Image-SFT; SDXL Base and Z-Image-Turbo dropped.*
-
-**Tasks (repeat per model)** *(Animagine XL 4.0, FLUX.2 [klein] 4B, MOSS-Image-SFT; D-036)*
-- [x] Research note in DECISIONS: license, VRAM, runtime, Kaggle fit. *D-036.*
-- [x] Full `ModelCapabilities` record, with no guessed values. *`models/registry/real.py`.*
-- [x] Adapter and remote entrypoint. *`models/adapters/diffusers_text_to_2d/` (one adapter, one recipe per model).*
-- [x] Measured `estimated_runtime_seconds`. *25 / 9 / 354 s (D-034).*
-- [x] A fixed prompt set per category produces PNGs on Kaggle within the planned resources. *Done for all three (D-036).*
-- [x] Adapter unit tests and the V-matrix against the new record. *`tests/unit/test_real_text_to_2d.py`, real-model cases in `tests/integration/test_kaggle_client.py`.*
-- [x] One live smoke run per model. *Animagine ✔, klein ✔, MOSS ✔ (rerun after the out-of-memory fix).*
-- [x] All earlier tests still pass. *361 passed.*
-- [x] Owner accepts the quality and signs off. *Given 2026-11-06 (D-037).*
+- Codex builds against the fixtures, as in M1/M2. S5 needs a `text_to_2d` model; the mocks are enough for tests.
+- **Ownership:** Claude Code owns the docs, `characters/`, `api/characters.py`, the job-service batch entry point, `models/` changes, Python tests and `tests/fixtures/contracts/v2/`. Codex owns `interface/frontend/` and `design/stitch/v2/` (a layout reference only).
 
 ## M5 — Image-to-3D Models
 
@@ -203,7 +77,7 @@ Related: [CONTRACTS.md](CONTRACTS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [
 - [ ] Build the fixed private benchmark set: several full-body characters, each with front, side and back views.
 - [ ] Run the benchmark. It measures **multiview fidelity** (silhouette, face, hair, outfit, colors), **geometry** (manifoldness, floating parts, triangle count), **texture** (resolution, seams, color accuracy), **Kaggle fit** (VRAM, runtime vs. session limit, quota cost) and **failure rate**. Scoring uses a human rubric plus automatic metrics where feasible.
 - [ ] Benchmark report in `docs/`.
-- [ ] Selection recorded in DECISIONS (DF-02). The selected model wins on the rubric.
+- [ ] The owner picks the model(s) (D-032); the choice is recorded in DECISIONS (DF-02).
 - [ ] Adapters whose capability records declare the supported views.
 - [ ] The UI states that unseen regions are approximated.
 - [ ] Tests as in M4.
@@ -218,7 +92,7 @@ Related: [CONTRACTS.md](CONTRACTS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [
 - **Out of scope:** rigging, animation, engine integration.
 
 **Tasks**
-- [ ] Research note and capability records.
+- [ ] Research note and capability records; the owner picks the model(s) (D-032).
 - [ ] Adapters.
 - [ ] Availability change (a MINOR bump only if the schema changes).
 - [ ] A GLB is produced for each fixed prompt per category.

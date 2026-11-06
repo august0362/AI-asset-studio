@@ -89,7 +89,7 @@ def test_backend_never_runs_the_kaggle_cli_directly():
 
 
 def test_character_production_imports_neither_kaggle_connector_nor_the_frontend():
-    """docs/v2/ARCHITECTURE.md §2: characters/ is a backend feature; it reaches compute only through the job service."""
+    """docs/ARCHITECTURE.md §8.2: characters/ is a backend feature; it reaches compute only through the job service."""
     package = ROOT / "interface" / "backend" / "aas_backend" / "characters"
     paths = [
         *sorted(package.rglob("*.py")),

@@ -211,7 +211,7 @@ def test_b09_preview_and_production_models_may_differ(harness_factory):
     assert concept["source"]["model_id"] == "mock-t2d-basic"
 
 
-def test_b10_an_image_to_3d_model_cannot_be_the_production_model(harness, driver):
+def test_b10_an_image_to_3d_model_cannot_be_the_production_model(driver):
     cid = driver.create()
     driver.through_s4(cid)
     content = s4("mock-i3d-single")

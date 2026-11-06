@@ -1,4 +1,4 @@
-"""Character files under ``data/characters/<character_id>/`` (docs/v2/ARCHITECTURE.md §4).
+"""Character files under ``data/characters/<character_id>/`` (docs/ARCHITECTURE.md §8.4).
 
 Every path is built from validated IDs and fixed names (``safe_path``). JSON files are written atomically; revision
 files are created exclusively (a second write of the same revision fails); ``history.jsonl`` is append-only and a

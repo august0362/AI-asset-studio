@@ -10,6 +10,8 @@ from typing import Annotated, Literal
 from pydantic import UUID4, Field, StrictBool, StrictFloat, StrictInt, StrictStr, StringConstraints
 
 from models.contracts import ContractModel, ErrorItem, JobStatus, UtcDatetime
+from models.contracts.common import ARTIFACT_ID_PATTERN, JOB_ID_PATTERN
+from models.contracts.requests import TASK_ID_PATTERN
 
 from ..schemas import ArtifactView, ResourcePlan  # re-exported: characters/ never imports kaggle_connector
 
@@ -23,14 +25,11 @@ STAGE_ID_PATTERN = r"^s[1-7]$"
 REFERENCE_ID_PATTERN = r"^ref_[0-9a-f]{12}$"
 ASSET_ID_PATTERN = r"^ast_[0-9a-f]{12}$"
 MANIFEST_ID_PATTERN = r"^bat_[0-9a-f]{12}$"
-TASK_ID_PATTERN = r"^[a-z0-9][a-z0-9_-]{1,39}$"
 GROUP_ID_PATTERN = r"^g[0-9]{2}$"
 CANDIDATE_ID_PATTERN = r"^cand_[0-9]{2}$"
 ITEM_ID_PATTERN = r"^item_[0-9]{3}$"
 SLUG_ID_PATTERN = r"^[a-z0-9_]{2,40}$"  # attribute_id and checklist item_id
 QUESTION_ID_PATTERN = r"^q_[a-z0-9_]{2,40}$"
-JOB_REF_PATTERN = r"^job_\d{8}T\d{6}Z_[0-9a-f]{6}$"
-ARTIFACT_REF_PATTERN = r"^art_\d{2}$"
 
 STAGE_IDS = ("s1", "s2", "s3", "s4", "s5", "s6", "s7")
 
@@ -63,8 +62,8 @@ def _text(max_length: int, min_length: int = 0):
     ]
 
 
-JobId = Annotated[str, StringConstraints(pattern=JOB_REF_PATTERN)]
-ArtifactId = Annotated[str, StringConstraints(pattern=ARTIFACT_REF_PATTERN)]
+JobId = Annotated[str, StringConstraints(pattern=JOB_ID_PATTERN)]
+ArtifactId = Annotated[str, StringConstraints(pattern=ARTIFACT_ID_PATTERN)]
 ReferenceId = Annotated[str, StringConstraints(pattern=REFERENCE_ID_PATTERN)]
 AssetOrReferenceId = Annotated[str, StringConstraints(pattern=r"^(ast|ref)_[0-9a-f]{12}$")]
 ManifestId = Annotated[str, StringConstraints(pattern=MANIFEST_ID_PATTERN)]

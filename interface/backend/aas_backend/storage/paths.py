@@ -13,17 +13,25 @@ from models.contracts.common import (
     UPLOAD_ID_PATTERN,
 )
 
+from ..characters.contracts import (
+    ASSET_ID_PATTERN,
+    CHARACTER_ID_PATTERN,
+    MANIFEST_ID_PATTERN,
+    REFERENCE_ID_PATTERN,
+    STAGE_ID_PATTERN,
+)
+
 ID_PATTERNS = {
     "job_id": re.compile(JOB_ID_PATTERN),
     "upload_id": re.compile(UPLOAD_ID_PATTERN),
     "input_id": re.compile(INPUT_ID_PATTERN),
     "artifact_id": re.compile(ARTIFACT_ID_PATTERN),
     # Character Production (§13.2)
-    "character_id": re.compile(r"^chr_[0-9a-f]{12}$"),
-    "stage_id": re.compile(r"^s[1-7]$"),
-    "reference_id": re.compile(r"^ref_[0-9a-f]{12}$"),
-    "asset_id": re.compile(r"^ast_[0-9a-f]{12}$"),
-    "manifest_id": re.compile(r"^bat_[0-9a-f]{12}$"),
+    "character_id": re.compile(CHARACTER_ID_PATTERN),
+    "stage_id": re.compile(STAGE_ID_PATTERN),
+    "reference_id": re.compile(REFERENCE_ID_PATTERN),
+    "asset_id": re.compile(ASSET_ID_PATTERN),
+    "manifest_id": re.compile(MANIFEST_ID_PATTERN),
 }
 _DRIVE = re.compile(r"^[A-Za-z]:")
 

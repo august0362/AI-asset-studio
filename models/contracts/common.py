@@ -67,7 +67,6 @@ INPUT_ID_PATTERN = r"^in_\d{2}$"
 ARTIFACT_ID_PATTERN = r"^art_\d{2}$"
 MODEL_ID_PATTERN = r"^[a-z0-9][a-z0-9-]{1,63}$"
 PROFILE_ID_PATTERN = r"^[a-z0-9][a-z0-9-]{1,31}$"
-ACCELERATOR_ID_PATTERN = r"^[a-z0-9_]{2,32}$"
 
 # --- Global limits (§1.3) --------------------------------------------------------------------------------
 

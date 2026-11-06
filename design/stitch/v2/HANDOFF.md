@@ -1,7 +1,7 @@
 # Stitch V2 handoff — Character Production
 
 > **Status: APPROVED by the owner on 2026-11-06 (D-035).** These exports are **design references, not source code**.
-> Behaviour and data follow [docs/v2/CONTRACTS.md](../../../docs/v2/CONTRACTS.md); colours and wording follow
+> Behaviour and data follow [docs/CONTRACTS.md §13](../../../docs/CONTRACTS.md#13-character-production-v11); colours and wording follow
 > [docs/UI.md](../../../docs/UI.md).
 
 The exports were extracted unchanged from `interface/frontend/AI_Asset_Studio_V2_Stitch_11_Exports_Handoff.zip`. All

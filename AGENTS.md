@@ -17,8 +17,9 @@ This file is the single set of rules for both agents. Claude Code loads it throu
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Modules, dependency rules, directory layout, data flow |
 | [docs/MILESTONES.md](docs/MILESTONES.md) | What to build now, its acceptance criteria and required tests |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Fixed decisions (D-xx), assumptions (A-xx) and open ones (DF-xx). Do not decide a DF-xx item yourself |
-| [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) | Requirements (FR-/NFR- IDs) |
+| [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) | Requirements (FR-/NFR- IDs; §8 Character Production) |
 | [docs/UI.md](docs/UI.md) | Color tokens, the four themes, graphic design rules, Vietnamese/English rules and the glossary (use its terms exactly) |
+| [docs/v2/CHARACTER_WORKFLOW.md](docs/v2/CHARACTER_WORKFLOW.md), [docs/v2/TEST_PLAN.md](docs/v2/TEST_PLAN.md) | Character Production: the seven stages, their gates and content rules; its test plan |
 
 Do not restate their content elsewhere; link to them. If a contract is ambiguous or missing something, stop and raise it rather than guessing.
 

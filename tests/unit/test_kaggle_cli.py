@@ -181,7 +181,7 @@ def test_redactor_removes_token_patterns_and_account_name():
     assert "real-user" in redact.secrets_only(text).lower()
 
 
-def test_cli_subprocess_gets_only_its_own_credentials(monkeypatch, tmp_path: Path):
+def test_cli_subprocess_gets_only_its_own_credentials(monkeypatch):
     monkeypatch.setenv("KAGGLE_KEY", "inherited-key")
     monkeypatch.setenv("KAGGLE_USERNAME", "inherited-user")
     monkeypatch.setenv("AAS_PROFILE_OTHER_KAGGLE_API_TOKEN", "KGAT_other_profile_token")

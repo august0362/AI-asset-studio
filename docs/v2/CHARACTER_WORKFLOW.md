@@ -1,11 +1,12 @@
 # V2 Character Workflow — S1 to S7
 
-> **Status: APPROVED by the owner on 2026-11-06 (D-035).** Nothing here is implemented yet. V1 documents in `docs/` stay
-> canonical for everything that already exists.
+> **Status: APPROVED by the owner on 2026-11-06 (D-035).** Backend implemented (V2-1, V2-2); frontend with Codex
+> (V2-3…V2-5). Requirements: [PRODUCT_SPEC §8](../PRODUCT_SPEC.md#8-character-production-v2); architecture:
+> [ARCHITECTURE §8](../ARCHITECTURE.md#8-character-production-v2).
 
 This document defines the seven stages of Character Production, their approval gates, how revisions work and how a
 change upstream affects downstream stages. Types and endpoints are in [CONTRACTS.md §13](../CONTRACTS.md#13-character-production-v11); the source
-material is the owner's [CHARACTER_PRODUCTION_WORKFLOW.md](../../CHARACTER_PRODUCTION_WORKFLOW.md) (v1.0).
+material is the owner's [CHARACTER_PRODUCTION_WORKFLOW.md](../sources/CHARACTER_PRODUCTION_WORKFLOW.md) (v1.0).
 
 **Principle:** the owner decides; the app records, validates and shows evidence. A stage passes only when the owner
 approves it. A generation job that completed is a candidate, never an approval.

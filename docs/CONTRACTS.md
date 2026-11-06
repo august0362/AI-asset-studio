@@ -639,7 +639,8 @@ Path safety: every path is `data_root / <validated relative path>`, resolved and
 
 Added in v1.1 (approved 2026-11-06, D-035; merged D-037). Everything in §1–§12 is unchanged; this section is
 additive. Workflow semantics (stages S1–S7, gates, staleness) are in [v2/CHARACTER_WORKFLOW.md](v2/CHARACTER_WORKFLOW.md);
-storage and components are in [v2/ARCHITECTURE.md](v2/ARCHITECTURE.md).
+storage and components are in [ARCHITECTURE.md §8](ARCHITECTURE.md#8-character-production-v2). Fixtures:
+`tests/fixtures/contracts/v2/*.json`.
 
 ### 13.1 Compatibility with v1.0
 
@@ -652,9 +653,7 @@ storage and components are in [v2/ARCHITECTURE.md](v2/ARCHITECTURE.md).
 - **Two optional fields are added to v1 models**, used only by batch jobs (§13.9): `GenerationResult.request.batch` and
   `Artifact.task_id`. One warning code is added: `BATCH_PARTIAL`. Clients that ignore unknown fields are unaffected.
   The frontend v1 types must add both fields as optional.
-- **Change process (§12):** approved on 2026-11-06 (D-035) and merged here as v1.1 (OD-01, D-037). Workflow
-  semantics stay in [v2/CHARACTER_WORKFLOW.md](v2/CHARACTER_WORKFLOW.md) and storage in
-  [v2/ARCHITECTURE.md](v2/ARCHITECTURE.md). Fixtures: `tests/fixtures/contracts/v2/*.json`.
+- **Change process (§12):** approved on 2026-11-06 (D-035) and merged here as v1.1 (OD-01, D-037).
 
 ### 13.2 Identifiers
 
@@ -709,7 +708,7 @@ itself.
 
 ### 13.4 Schemas
 
-Pydantic v2 models (in `aas_backend/characters/contracts.py`, [v2/ARCHITECTURE.md §3](v2/ARCHITECTURE.md#3-components-and-integration)) extend the v1 `ContractModel`:
+Pydantic v2 models (in `aas_backend/characters/contracts.py`, [ARCHITECTURE.md §8.3](ARCHITECTURE.md#83-components-and-integration)) extend the v1 `ContractModel`:
 `extra = "forbid"`, so an unknown field is `REQUEST_FIELD_INVALID`. TypeScript interfaces mirror them by hand in
 `src/api/characterTypes.ts` (§13.8). No field is typed `Any`/`any`. Option values use the v1 `OptionValue` type.
 
@@ -1704,7 +1703,7 @@ ones ([UI.md §7](UI.md)).
 - **Honesty:** values shown come only from these payloads or v1 payloads. No progress, VRAM, GPU or similarity number
   is computed or invented in the frontend.
 
-Component responsibilities are in [ARCHITECTURE.md §6](v2/ARCHITECTURE.md#6-frontend-components).
+Component responsibilities are in [ARCHITECTURE.md §8.6](ARCHITECTURE.md#86-frontend-components).
 
 ### 13.9 Batch jobs inside the v1 job system
 

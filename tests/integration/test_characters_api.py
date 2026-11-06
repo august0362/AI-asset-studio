@@ -365,7 +365,7 @@ def test_i07_reapproving_s2_flags_downstream_stages_without_touching_them(harnes
 
 
 @pytest.mark.parametrize("stage", ["s6", "s7"])
-def test_i08_planned_stages_are_read_only(harness, driver, stage):
+def test_i08_planned_stages_are_read_only(driver, stage):
     cid = driver.create()
     detail = driver.detail(cid, stage)
     assert detail["state"]["availability"] == "planned" and detail["config"]["availability"] == "planned"
@@ -458,7 +458,7 @@ def test_concurrent_saves_are_serialized_by_the_character_lock(harness, driver):
 # --- status derivation and approval gates (§13.5.2, §13.5.3) ----------------------------------------------------
 
 
-def test_editorial_status_follows_the_derivation_order(harness, driver):
+def test_editorial_status_follows_the_derivation_order(driver):
     cid = driver.create()
     assert status(driver, cid, "s1") == "not_started" and status(driver, cid, "s2") == "blocked"
     driver.save(cid, "s2", s2())
@@ -485,7 +485,7 @@ def test_editorial_status_follows_the_derivation_order(harness, driver):
     assert driver.detail(cid, "s2")["state"]["blockers"] == []
 
 
-def test_each_approval_condition_alone_blocks_approval_and_changes_nothing(harness, driver):
+def test_each_approval_condition_alone_blocks_approval_and_changes_nothing(driver):
     cid = driver.create()
     driver.save(cid, "s2", s2())
     driver.decide(cid, "s2", "submit")
@@ -526,7 +526,7 @@ def test_each_approval_condition_alone_blocks_approval_and_changes_nothing(harne
     assert driver.detail(cid, "s2")["state"]["editorial_status"] == "in_review"
 
 
-def test_content_rules_of_s1_s3_s4_s5(harness, driver):
+def test_content_rules_of_s1_s3_s4_s5(driver):
     cid = driver.create()
     driver.save(cid, "s1", {"stage_id": "s1"})
     rules = {e["details"]["rule"] for e in driver.detail(cid, "s1")["state"]["blockers"]}
@@ -550,7 +550,7 @@ def test_content_rules_of_s1_s3_s4_s5(harness, driver):
     assert {e["details"]["purpose"] for e in s5_blockers[2:]} == {"full_body", "front", "side", "back"}
 
 
-def test_s4_detail_shows_the_manifest_preview_and_resource_plan(harness, driver):
+def test_s4_detail_shows_the_manifest_preview_and_resource_plan(driver):
     cid = driver.create()
     driver.through_s4(cid)
     detail = driver.detail(cid, "s4")
@@ -565,7 +565,7 @@ def test_s4_detail_shows_the_manifest_preview_and_resource_plan(harness, driver)
     assert s5["inputs"][0]["revision"] == 1 and s5["inputs"][1]["content"]["stage_id"] == "s2"
 
 
-def test_draft_saves_check_models_options_and_linked_ids(harness, driver):
+def test_draft_saves_check_models_options_and_linked_ids(driver):
     cid = driver.create()
     bad_model = driver.save(
         cid,
@@ -691,7 +691,7 @@ def test_i11_delete_is_refused_while_a_batch_attempt_runs(harness, driver):
     assert harness.client.delete(f"{API}/characters/{cid}").status_code == 204
 
 
-def test_i11_a_new_create_after_delete_reuses_nothing(harness, driver):
+def test_i11_a_new_create_after_delete_reuses_nothing(harness):
     request_id = rid()
     body = {"contract_version": V, "client_request_id": request_id, "name": "Ice Lotus Mage", "tags": []}
     first = harness.client.post(f"{API}/characters", json=body).json()["character_id"]

@@ -15,6 +15,7 @@ from models.contracts import ErrorItem, error
 from ..errors import ApiError
 from ..schemas import BatchRef
 from .contracts import (
+    V2_CONTRACT_VERSION,
     BatchAttempt,
     BatchTask,
     ComputeSelection,
@@ -119,7 +120,7 @@ class BatchService:
         ]
         now = self.svc.clock()
         manifest = StoredManifest(
-            contract_version="1.1",
+            contract_version=V2_CONTRACT_VERSION,
             manifest_id=manifest_id or new_manifest_id(),
             character_id=character_id,
             kind=kind,

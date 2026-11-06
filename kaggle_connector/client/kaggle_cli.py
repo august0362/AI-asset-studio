@@ -295,7 +295,7 @@ class KaggleCliClient:
 
     # --- runs ----------------------------------------------------------------------------------------------------
 
-    def _require_owner(self, acct: _Account, failure_code: str) -> str:
+    def _require_owner(self, acct: _Account) -> str:
         if acct.owner is None:
             self.refresh(acct.config.profile_id, force=True)
         if acct.owner is None or acct.monitor.auth_status != "authenticated":
@@ -322,7 +322,7 @@ class KaggleCliClient:
         if not spec.input_files:
             return
         acct = self._acct(spec.profile_id)
-        owner = self._require_owner(acct, "KAGGLE_UPLOAD_FAILED")
+        owner = self._require_owner(acct)
         slug = dataset_slug_for(spec.job_id)
         ref = f"{owner}/{slug}"
         folder = self._root / spec.job_id / "dataset"
@@ -370,7 +370,7 @@ class KaggleCliClient:
 
     def submit(self, spec: KaggleJobSpec) -> str:
         acct = self._acct(spec.profile_id)
-        owner = self._require_owner(acct, "KAGGLE_SUBMIT_FAILED")
+        owner = self._require_owner(acct)
         if spec.accelerator_id not in KAGGLE_MACHINE_SHAPES:
             raise ComputeError(
                 "KAGGLE_SUBMIT_FAILED",
@@ -445,7 +445,7 @@ class KaggleCliClient:
         return acct, run
 
     def _kernel(self, acct: _Account, run: _Run) -> str:
-        owner = acct.owner or self._require_owner(acct, "KAGGLE_NETWORK_ERROR")
+        owner = acct.owner or self._require_owner(acct)
         return f"{owner}/{run.slug}"
 
     def status(self, remote_ref: str) -> RemoteStatus:

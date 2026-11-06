@@ -1,6 +1,6 @@
 # V2 Test Plan — Character Production
 
-> **Status: APPROVED by the owner on 2026-11-06 (D-035).**
+> **Status: APPROVED by the owner on 2026-11-06 (D-035).** Milestone gates: [MILESTONES.md § V2](../MILESTONES.md#v2--character-production).
 
 Default tests run in mock mode (`AAS_COMPUTE_MODE=mock`, `VITE_API_MODE=mock`). Live Kaggle tests are opt-in
 (`-m kaggle`), and each one needs the owner's approval before it uses GPU quota.

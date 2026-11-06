@@ -16,10 +16,11 @@ from pathlib import Path
 from dotenv import dotenv_values
 
 from kaggle_connector.client import KaggleProfileConfig
+from models.contracts.common import PROFILE_ID_PATTERN
 
 from .settings import Settings
 
-PROFILE_ID = re.compile(r"^[a-z0-9][a-z0-9-]{1,31}$")
+PROFILE_ID = re.compile(PROFILE_ID_PATTERN)
 
 
 class ProfileConfigError(ValueError):

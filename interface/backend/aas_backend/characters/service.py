@@ -29,6 +29,7 @@ from . import config
 from .batches import BatchService, compute_dict
 from .contracts import (
     STAGE_IDS,
+    V2_CONTRACT_VERSION,
     ArtifactReference,
     AssetSource,
     Character,
@@ -271,7 +272,7 @@ class CharacterService:
             rows = rows[ids.index(cursor) + 1 :]
         page = rows[:limit]
         return CharacterList(
-            contract_version="1.1",
+            contract_version=V2_CONTRACT_VERSION,
             characters=page,
             next_cursor=page[-1].character_id if len(rows) > limit else None,
         )
@@ -289,7 +290,7 @@ class CharacterService:
                 break
         now = self.clock()
         character = Character(
-            contract_version="1.1",
+            contract_version=V2_CONTRACT_VERSION,
             character_id=character_id,
             name=req.name,
             summary=req.summary,
@@ -310,7 +311,7 @@ class CharacterService:
         with self.store.lock(character_id):
             view = self._view(character_id)
             return CharacterWorkflow(
-                contract_version="1.1",
+                contract_version=V2_CONTRACT_VERSION,
                 character=view.character,
                 stages=[WorkflowStage(config=view.config(s), state=view.state(s)) for s in STAGE_IDS],
                 approved_outputs=self._approved_outputs(view),
@@ -387,7 +388,7 @@ class CharacterService:
         req = parse(SaveDraftRequest, raw)
         with self.store.lock(character_id):
             view = self._view(character_id)
-            self._require_available(view, stage_id)
+            self._require_available(stage_id)
             draft = view.draft(stage_id)
             if req.expected_draft_version != draft.draft_version:
                 raise api_error(
@@ -407,7 +408,7 @@ class CharacterService:
             )
             view.set_draft(
                 StageDraft(
-                    contract_version="1.1",
+                    contract_version=V2_CONTRACT_VERSION,
                     character_id=character_id,
                     stage_id=stage_id,
                     draft_version=draft.draft_version + 1,
@@ -425,7 +426,7 @@ class CharacterService:
         req = parse(StageDecisionRequest, raw)
         with self.store.lock(character_id):
             view = self._view(character_id)
-            self._require_available(view, stage_id)
+            self._require_available(stage_id)
             draft = view.draft(stage_id)
             if req.expected_draft_version != draft.draft_version:
                 raise api_error(
@@ -463,12 +464,12 @@ class CharacterService:
             events = [e for e in events if e.seq < int(cursor)]
         page = events[:limit]
         return HistoryPage(
-            contract_version="1.1",
+            contract_version=V2_CONTRACT_VERSION,
             events=page,
             next_cursor=str(page[-1].seq) if len(events) > limit else None,
         )
 
-    def _require_available(self, view: CharacterView, stage_id: str) -> None:
+    def _require_available(self, stage_id: str) -> None:
         state, reason = config.availability(stage_id, self.registry)
         if state != "available":
             raise api_error(
@@ -495,7 +496,7 @@ class CharacterService:
             raise self._transition_invalid("Nothing changed since the approved revision.")
         number = (record.latest_revision or 0) + 1
         revision = StageRevision(
-            contract_version="1.1",
+            contract_version=V2_CONTRACT_VERSION,
             character_id=view.cid,
             stage_id=stage_id,
             revision=number,
@@ -1010,7 +1011,7 @@ class CharacterService:
         else:
             plans = []
         return StageDetail(
-            contract_version="1.1",
+            contract_version=V2_CONTRACT_VERSION,
             character=view.summary(),
             character_version=view.character.version,
             config=view.config(stage_id),
@@ -1178,7 +1179,7 @@ class CharacterService:
     def outputs(self, character_id: str) -> OutputList:
         with self.store.lock(character_id):
             return OutputList(
-                contract_version="1.1", outputs=self._approved_outputs(self._view(character_id))
+                contract_version=V2_CONTRACT_VERSION, outputs=self._approved_outputs(self._view(character_id))
             )
 
     def asset_content(self, character_id: str, asset_id: str) -> tuple[str, str]:
