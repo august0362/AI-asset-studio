@@ -1,0 +1,30 @@
+[
+  {
+    "archive": "stitch_ai_asset_studio.zip",
+    "screen": "generate-studio",
+    "archive_sha256": "961b81a462957625ba6f7d81685518ee8f1bdc1b67e7be749908a39b29486e42",
+    "html_sha256": "c37e2c33234be5d929556a26a730371a5566829666ce7cac692c8ca9424e8811",
+    "screenshot_sha256": "7d3566b4f0a2254f5d6d0f83aa595cb0148915401c2aacb65e3087ccd9f49775"
+  },
+  {
+    "archive": "stitch_ai_asset_studio (1).zip",
+    "screen": "jobs-logs",
+    "archive_sha256": "2beb02506cfca8c8782cf17a2490a639c022b798553bfc9e541ebcd38be0a69c",
+    "html_sha256": "843743b2162f165876cea6c7b9edcedacb05a21d1cfb297b72e48d887cbbe46f",
+    "screenshot_sha256": "24ac094233f96eba61ff2c677f0045ef7336b7263f7615c5758691e094f8c98c"
+  },
+  {
+    "archive": "stitch_ai_asset_studio (2).zip",
+    "screen": "kaggle-resources",
+    "archive_sha256": "57fddbf4416bdb8a73a5f2a381196a56eef0a3e00fb991e7a1428c4efdab8a10",
+    "html_sha256": "5eaa78c923228d5d8282e20c97bd96471b67d064ea96966064c5d24db00d41d8",
+    "screenshot_sha256": "17abe384ac42df9697cf204a50f24f18f12b7d1d5f0237c530955fbf812f5d64"
+  },
+  {
+    "archive": "stitch_ai_asset_studio (3).zip",
+    "screen": "asset-library",
+    "archive_sha256": "cb1fe96903d7ed5a7f808a9de249dfb0887d442c7db9843a2bbeed5e0f3b8a70",
+    "html_sha256": "cf2f16e130c635f80266ae163fc3e13e4a6f478c49f08679f325296aeee5684d",
+    "screenshot_sha256": "baf57287625483b68eb21f2c13d3cc8e69342ea6e049ce96b3d6eb6d16fc82e9"
+  }
+]

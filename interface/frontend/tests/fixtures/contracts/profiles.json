@@ -1,0 +1,43 @@
+{
+  "profiles": [
+    {
+      "contract_version": "1.0",
+      "profile_id": "default",
+      "display_name": "Owner Kaggle",
+      "owner_label": "project-owner",
+      "mode": "mock",
+      "enabled": true,
+      "authorization_confirmed": true,
+      "accelerators": [
+        {
+          "accelerator_id": "cpu",
+          "kind": "cpu",
+          "device_count": 0,
+          "vram_bytes_per_device": null,
+          "max_session_seconds": 43200
+        },
+        {
+          "accelerator_id": "gpu_p100",
+          "kind": "gpu_cuda",
+          "device_count": 1,
+          "vram_bytes_per_device": 17179869184,
+          "max_session_seconds": 43200
+        },
+        {
+          "accelerator_id": "gpu_t4x2",
+          "kind": "gpu_cuda",
+          "device_count": 2,
+          "vram_bytes_per_device": 16106127360,
+          "max_session_seconds": 43200
+        },
+        {
+          "accelerator_id": "tpu_vm",
+          "kind": "tpu",
+          "device_count": 1,
+          "vram_bytes_per_device": null,
+          "max_session_seconds": 32400
+        }
+      ]
+    }
+  ]
+}

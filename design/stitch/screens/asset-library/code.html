@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+
+<html class="light" data-theme="pure-light-studio" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"outline-variant":"#cbd5e1","on-tertiary-fixed":"#002113","on-surface":"#0f172a","surface-container-high":"#e2e8f0","on-surface-variant":"#475569","tertiary-container":"#dcfce7","on-secondary-fixed-variant":"#2f2ebe","error-container":"#fee2e2","secondary":"#6366f1","surface-bright":"#ffffff","on-secondary-fixed":"#07006c","primary":"#0284c7","surface-tint":"#0284c7","secondary-fixed":"#e0e7ff","inverse-surface":"#0f172a","primary-fixed-dim":"#38bdf8","tertiary-fixed":"#bbf7d0","surface-container-low":"#f8fafc","surface-container":"#f1f5f9","error":"#ef4444","on-primary-fixed-variant":"#0369a1","on-tertiary-fixed-variant":"#15803d","background":"#f8fafc","on-error":"#ffffff","on-primary-container":"#0369a1","secondary-container":"#e0e7ff","on-primary":"#ffffff","inverse-on-surface":"#f8fafc","tertiary-fixed-dim":"#4ade80","primary-fixed":"#e0f2fe","surface-dim":"#f1f5f9","primary-container":"#e0f2fe","secondary-fixed-dim":"#c7d2fe","inverse-primary":"#38bdf8","on-error-container":"#991b1b","on-secondary":"#ffffff","tertiary":"#10b981","surface-variant":"#e2e8f0","on-primary-fixed":"#082f49","surface":"#ffffff","on-secondary-container":"#3730a3","on-background":"#0f172a","on-tertiary":"#ffffff","outline":"#64748b","surface-container-highest":"#cbd5e1","on-tertiary-container":"#166534","surface-container-lowest":"#ffffff"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"gutter-md":"0.75rem","gutter":"0.5rem","space-xs":"0.25rem","space-lg":"1rem","space-sm":"0.5rem","margin":"0.75rem","space-xl":"1.5rem","margin-mobile":"0.5rem","space-md":"0.75rem","gutter-lg":"1rem"},"fontFamily":{"label-sm":["Inter"],"mono-code":["Inter"],"body-lg":["Inter"],"headline-md":["Inter"],"headline-lg":["Inter"],"body-md":["Inter"],"mono-metric":["Inter"],"label-md":["Inter"],"body-sm":["Inter"],"headline-xl":["Inter"],"headline-sm":["Inter"]},"fontSize":{"label-sm":["10px",{"lineHeight":"12px","letterSpacing":"0.05em","fontWeight":"600"}],"mono-code":["11px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}],"body-lg":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"headline-md":["15px",{"lineHeight":"20px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-md":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"mono-metric":["12px",{"lineHeight":"16px","letterSpacing":"-0.01em","fontWeight":"500"}],"label-md":["11px",{"lineHeight":"14px","letterSpacing":"0.03em","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}],"headline-xl":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"600"}],"headline-sm":["13px",{"lineHeight":"18px","letterSpacing":"-0.005em","fontWeight":"600"}]}}}};</script></head><body class="light-theme bg-[#f8fafc] text-slate-900 antialiased select-none relative overflow-x-hidden transition-colors duration-700"><style id="studio-theme-styles">:root{--theme-primary:#0284c7;--theme-primary-container:#0ea5e9;--theme-glow:rgba(2,132,199,0.20);--theme-border:rgba(2,132,199,0.30);--theme-bg-gradient-1:rgba(14,165,233,0.12);--theme-bg-gradient-2:rgba(56,189,248,0.10);--theme-bg-gradient-3:rgba(186,230,253,0.25);--theme-canvas-glow:rgba(2,132,199,0.12);--theme-canvas-bg:#eef2f6;--theme-grid-dot:#0284c7;--theme-grid-sub:#cbd5e1;}[data-theme="pure-light-studio"]{--theme-primary:#0284c7;--theme-primary-container:#0ea5e9;--theme-glow:rgba(2,132,199,0.22);--theme-border:rgba(2,132,199,0.30);--theme-bg-gradient-1:rgba(14,165,233,0.14);--theme-bg-gradient-2:rgba(56,189,248,0.10);--theme-bg-gradient-3:rgba(186,230,253,0.28);--theme-canvas-glow:rgba(2,132,199,0.12);--theme-canvas-bg:#edf2f7;--theme-grid-dot:#0284c7;--theme-grid-sub:#cbd5e1;}[data-theme="warm-pearl-light"]{--theme-primary:#d97706;--theme-primary-container:#f59e0b;--theme-glow:rgba(217,119,6,0.20);--theme-border:rgba(217,119,6,0.32);--theme-bg-gradient-1:rgba(245,158,11,0.14);--theme-bg-gradient-2:rgba(251,191,36,0.12);--theme-bg-gradient-3:rgba(254,243,199,0.35);--theme-canvas-glow:rgba(245,158,11,0.10);--theme-canvas-bg:#f5f0e8;--theme-grid-dot:#d97706;--theme-grid-sub:#e5dec9;}[data-theme="obsidian-cyan"]{--theme-primary:#4cd7f6;--theme-primary-container:#06b6d4;--theme-glow:rgba(76,215,246,0.32);--theme-border:rgba(76,215,246,0.4);--theme-bg-gradient-1:rgba(6,182,212,0.18);--theme-bg-gradient-2:rgba(14,116,144,0.14);--theme-bg-gradient-3:rgba(76,215,246,0.08);--theme-canvas-glow:rgba(76,215,246,0.22);--theme-canvas-bg:#0a0e16;--theme-grid-dot:#4cd7f6;--theme-grid-sub:#262a33;}[data-theme="celestial-sapphire"]{--theme-primary:#38bdf8;--theme-primary-container:#2563eb;--theme-glow:rgba(56,189,248,0.35);--theme-border:rgba(56,189,248,0.45);--theme-bg-gradient-1:rgba(37,99,235,0.22);--theme-bg-gradient-2:rgba(79,70,229,0.18);--theme-bg-gradient-3:rgba(56,189,248,0.12);--theme-canvas-glow:rgba(56,189,248,0.28);--theme-canvas-bg:#080e1a;--theme-grid-dot:#38bdf8;--theme-grid-sub:#1e293b;}[data-theme="crimson-ruby"]{--theme-primary:#f43f5e;--theme-primary-container:#e11d48;--theme-glow:rgba(244,63,94,0.35);--theme-border:rgba(244,63,94,0.45);--theme-bg-gradient-1:rgba(225,29,72,0.22);--theme-bg-gradient-2:rgba(159,18,57,0.18);--theme-bg-gradient-3:rgba(251,113,133,0.10);--theme-canvas-glow:rgba(244,63,94,0.28);--theme-canvas-bg:#120a10;--theme-grid-dot:#f43f5e;--theme-grid-sub:#271420;}[data-theme="sakura-ethereal"]{--theme-primary:#f472b6;--theme-primary-container:#db2777;--theme-glow:rgba(244,114,182,0.32);--theme-border:rgba(244,114,182,0.42);--theme-bg-gradient-1:rgba(219,39,119,0.2);--theme-bg-gradient-2:rgba(253,164,175,0.16);--theme-bg-gradient-3:rgba(244,114,182,0.1);--theme-canvas-glow:rgba(244,114,182,0.26);--theme-canvas-bg:#130b14;--theme-grid-dot:#f472b6;--theme-grid-sub:#2b182b;}[data-theme="jade-ochre"]{--theme-primary:#2dd4bf;--theme-primary-container:#0d9488;--theme-glow:rgba(45,212,191,0.32);--theme-border:rgba(45,212,191,0.42);--theme-bg-gradient-1:rgba(13,148,136,0.22);--theme-bg-gradient-2:rgba(245,158,11,0.14);--theme-bg-gradient-3:rgba(45,212,191,0.10);--theme-canvas-glow:rgba(45,212,191,0.26);--theme-canvas-bg:#081312;--theme-grid-dot:#2dd4bf;--theme-grid-sub:#132824;}html.light,body.light-theme{background-color:#f8fafc!important;color:#0f172a!important;}</style><!-- Dynamic Ambient Animated Background Mesh Canvas Container --><div aria-hidden="true" class="fixed inset-0 pointer-events-none z-0 overflow-hidden" id="dynamic-ambient-bg"><div class="absolute -top-[10%] left-[15%] w-[720px] h-[720px] rounded-full blur-[90px] opacity-25" style="background: radial-gradient(circle, rgba(14,165,233,0.14) 0%, rgba(241,245,249,0) 70%);"></div><div class="absolute top-[30%] -right-[10%] w-[720px] h-[720px] rounded-full blur-[90px] opacity-20" style="background: radial-gradient(circle, rgba(56,189,248,0.12) 0%, rgba(241,245,249,0) 70%);"></div><div class="absolute inset-0 opacity-40 pointer-events-none" style="background-image: radial-gradient(#0284c7 1px, transparent 1px), radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 32px 32px, 8px 8px; background-position: 0 0, 16px 16px;"></div><div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/90 pointer-events-none transition-all duration-700" id="ambient-overlay"></div></div><header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm"><div class="h-16 w-full px-gutter-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm"><img alt="AI Asset Studio Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnPmtwPg0OjO6rtapenKn-LiBU3JmN3whBzkXx5R2kCIdNTo8zUVJhU2UBeJxLgIfWizId4G2YK9ZJmczrhwg0wI-y1n9ZMPo3fiTKqibT7FxxWCb4dbObBO-kfKfsQ2lu2vvmNs1-x9m74K0p-4z5T3lR_tF1MIOXW7jPGPiIDHJS8nt2_tkZkwzsm_SgDNYP7rfiA7__RJZjI0jEWYrzxId9wk6iQR3iovgrFaw"/><span class="font-headline-md text-headline-md text-slate-900 tracking-tight font-bold">AI Asset Studio</span><span class="px-space-xs py-0.5 rounded bg-sky-100 text-sky-800 font-label-sm text-label-sm uppercase font-semibold">Light Studio</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded bg-slate-100 border border-slate-200/80"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-mono-metric text-mono-metric text-slate-600">Kaggle Cluster: P100/T4 Online</span></div></div><nav class="hidden lg:flex items-center gap-space-xs bg-slate-100/80 p-1 rounded-lg border border-slate-200/60" data-active-classes="bg-white text-sky-600 font-headline-sm shadow-sm"><a class="px-space-md py-1.5 rounded text-slate-600 hover:bg-white hover:text-slate-900 font-headline-sm text-headline-sm transition-colors" data-path="generate-studio" href="#">Generate Studio</a><a aria-current="page" class="px-space-md py-1.5 rounded transition-colors bg-white text-sky-600 font-headline-sm shadow-sm" data-path="asset-library" href="#">Asset Library</a><a class="relative px-space-md py-1.5 rounded text-slate-600 hover:bg-white hover:text-slate-900 font-headline-sm text-headline-sm transition-colors flex items-center gap-space-xs" data-path="jobs-and-logs" href="#"><span>Jobs &amp; Logs</span><span class="px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700 font-label-sm text-label-sm font-semibold">2 Active</span></a><a class="px-space-md py-1.5 rounded text-slate-600 hover:bg-white hover:text-slate-900 font-headline-sm text-headline-sm transition-colors flex items-center gap-space-xs" data-path="kaggle-resources" href="#"><span>Kaggle Resources</span><span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 font-label-sm text-label-sm font-semibold">68% VRAM</span></a></nav><div class="flex items-center gap-space-md"><div class="hidden 2xl:flex items-center gap-space-md px-space-sm py-1 rounded bg-slate-100 border border-slate-200/80"><div class="flex flex-col text-right"><span class="font-label-sm text-label-sm text-slate-500">REGION PROFILE</span><span class="font-mono-metric text-mono-metric text-slate-900 font-semibold">Kaggle Pro - East US 01</span></div><div class="flex flex-col text-right"><span class="font-label-sm text-label-sm text-slate-500">2x GPU T4</span><span class="font-mono-metric text-mono-metric text-sky-600 font-bold">21.8 / 32 GB</span></div></div><!-- Quick Light/Dark Toggle Switcher Pill --><div class="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200" id="quick-mode-segmented"><button class="px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 bg-white text-sky-700 shadow-sm transition-all" id="btn-set-light" title="Switch to Light Theme" type="button"><span class="material-symbols-outlined text-[15px] text-amber-500">light_mode</span><span class="hidden md:inline font-semibold">Light</span></button><button class="px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 text-slate-500 hover:text-slate-800 transition-all" id="btn-set-dark" title="Switch to Dark Theme" type="button"><span class="material-symbols-outlined text-[15px]">dark_mode</span><span class="hidden md:inline">Dark</span></button></div><div class="relative" id="theme-switcher-wrapper"><button aria-expanded="false" aria-haspopup="true" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-800 flex items-center gap-1.5 transition-all text-label-sm font-label-sm border border-slate-200 shadow-sm focus:outline-none" id="theme-menu-btn" title="Studio Color Themes" type="button"><span class="material-symbols-outlined text-amber-500 text-[18px]" id="theme-indicator-icon">light_mode</span><span class="hidden sm:inline font-mono-metric text-[11px] text-slate-900 font-medium" id="current-theme-label">Pure Light Studio</span><span class="material-symbols-outlined text-[14px] text-slate-400 transition-transform duration-200" id="theme-chevron">expand_more</span></button><div class="hidden absolute right-0 top-full mt-1.5 w-72 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-lg shadow-xl p-2 z-50 flex flex-col gap-2 transition-all max-h-[85vh] overflow-y-auto" id="theme-dropdown"><div class="px-2 py-1 flex items-center justify-between border-b border-slate-100 pb-1.5 mb-0.5"><div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sky-600 text-[16px]">palette</span><span class="font-label-sm text-label-sm uppercase text-slate-600 tracking-wider font-semibold">Color Themes</span></div><div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded text-[10px] font-mono-code"><span class="px-1.5 py-0.5 rounded bg-white text-sky-700 shadow-xs font-bold" id="mode-active-pill">LIGHT</span><span class="text-slate-400">/</span><span class="px-1.5 py-0.5 rounded text-slate-500" id="mode-inactive-pill">DARK</span></div></div><div class="flex flex-col gap-1"><div class="px-2 pt-1 pb-0.5 flex items-center justify-between"><span class="font-label-sm text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-amber-500">light_mode</span>LIGHT THEMES (ACTIVE)</span><span class="px-1.5 py-0.2 rounded bg-sky-100 text-sky-800 font-mono-code text-[9px] font-bold">2 Presets</span></div><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between bg-sky-50 text-slate-900 text-left transition-colors hover:bg-sky-100/60" data-is-light="true" data-theme-val="pure-light-studio"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#0284c7] ring-2 ring-[#0284c7]/30 shadow-sm shrink-0"></span><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight font-semibold">Pure Light Studio</span><span class="px-1 py-0.2 rounded bg-sky-100 text-sky-800 font-label-sm text-[9px] font-bold">Default</span></div><span class="font-mono-code text-[10px] text-slate-500">Crisp White &amp; Azure Workstation</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check">check</span></button><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between text-slate-600 text-left transition-colors hover:bg-slate-100 hover:text-slate-900" data-is-light="true" data-theme-val="warm-pearl-light"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#d97706] ring-2 ring-[#d97706]/30 shadow-sm shrink-0"></span><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight">Warm Pearl Light</span><span class="px-1 py-0.2 rounded bg-amber-100 text-amber-800 font-label-sm text-[9px] font-bold">Cream</span></div><span class="font-mono-code text-[10px] text-slate-500">Pastel Champagne &amp; Ivory Hue</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check hidden">check</span></button></div></div></div><button class="p-space-xs rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA0tsU4KWNzt-CowIQ8yLGGjfIaAKvS7zHEbFQSs2TCv6ltbjhmviAo5EAafXjW8FgiPwlQp1kcmtpud-y4B8btztKhA632I5jbFvfBUVBmsh-L1oovPBBJJBvS-UAWRIYgJvSo2DUGKg-EEahQYIfKPucDVtUnijshWYLjFtJWoDL0iIB4JDgwaDHRaoHmxM9Bns4IafFxamU319eI24KpijowDd8YbgNffiacEY"/><div class="hidden md:flex flex-col"><span class="font-label-md text-label-md text-slate-900 font-semibold leading-tight">Technical Director</span><span class="font-label-sm text-label-sm text-sky-700">Tech Artist Guild</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-16 bg-white/95 backdrop-blur-md border-r border-slate-200 z-40 flex flex-col items-center py-space-md justify-between shadow-sm"><div class="flex flex-col items-center gap-space-sm w-full"><button class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-600 bg-sky-50 border border-sky-200 transition-colors" title="Select &amp; Transform" type="button"><span class="material-symbols-outlined text-[20px]">near_me</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Diffusion Canvas" type="button"><span class="material-symbols-outlined text-[20px]">brush</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="3D Mesh Synthesis" type="button"><span class="material-symbols-outlined text-[20px]">view_in_ar</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Texture &amp; Materials" type="button"><span class="material-symbols-outlined text-[20px]">texture</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Node Workflow" type="button"><span class="material-symbols-outlined text-[20px]">hub</span></button></div><div class="flex flex-col items-center gap-space-sm w-full"><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Inference Engine Settings" type="button"><span class="material-symbols-outlined text-[20px]">tune</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Command Palette" type="button"><span class="material-symbols-outlined text-[20px]">terminal</span></button></div></aside><div class="pl-16 relative z-10"><main class="relative w-full pt-16 bg-transparent min-h-screen"><div class="flex flex-col w-full">
+<!-- MAIN WORKSPACE CONTAINER -->
+<div class="w-full px-gutter-lg py-space-md flex flex-col gap-space-md">
+<!-- TOP CONTROL & SEARCH BAR -->
+<section class="w-full bg-white rounded-xl p-space-md shadow-sm border border-slate-200 flex flex-col gap-space-md">
+<!-- Row 1: Search & Primary Action Bar -->
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Search Input with Micro-indicator -->
+<div class="relative flex-1 group">
+<div class="absolute inset-y-0 left-0 pl-space-md flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-600 transition-colors">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</div>
+<input class="w-full h-10 pl-10 pr-24 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-sky-500 focus:bg-white shadow-xs transition-all" placeholder="Search assets by prompt, tags, model, or seed..." type="text" value="cryo OR ice mage"/>
+<div class="absolute inset-y-0 right-0 pr-space-sm flex items-center gap-space-xs pointer-events-none">
+<span class="px-1.5 py-0.5 rounded bg-slate-200/70 border border-slate-300/60 font-mono-code text-label-sm text-slate-600 font-medium">⌘K</span>
+</div>
+</div>
+<!-- Quick Batch Actions & View Switcher -->
+<div class="flex items-center flex-wrap gap-space-sm">
+<!-- Batch Action Buttons -->
+<div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/80 shadow-xs">
+<button class="px-space-md py-1.5 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white transition-colors font-headline-sm text-headline-sm flex items-center gap-space-xs font-medium" type="button">
+<span class="material-symbols-outlined text-[16px] text-sky-600">file_download</span>
+<span>Export Selected (2)</span>
+</button>
+<button class="px-space-md py-1.5 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white transition-colors font-headline-sm text-headline-sm flex items-center gap-space-xs font-medium" type="button">
+<span class="material-symbols-outlined text-[16px] text-indigo-600">compare</span>
+<span>Compare 3D</span>
+</button>
+<button class="px-space-md py-1.5 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white transition-colors font-headline-sm text-headline-sm flex items-center gap-space-xs font-medium" type="button">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">sell</span>
+<span>Batch Tag</span>
+</button>
+</div>
+<!-- View Mode Toggle -->
+<div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/80">
+<button class="px-2 py-1.5 rounded-md bg-white text-sky-600 font-headline-sm shadow-xs flex items-center font-semibold" title="Grid View" type="button">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+</button>
+<button class="px-2 py-1.5 rounded-md text-slate-500 hover:text-slate-900 transition-colors flex items-center" title="Table List View" type="button">
+<span class="material-symbols-outlined text-[18px]">view_list</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Row 2: Type Pills, Category Filter, and Sort -->
+<div class="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md pt-space-xs border-t border-slate-100">
+<!-- Asset Type Pills -->
+<div class="flex items-center flex-wrap gap-space-xs">
+<button class="px-space-md py-1 rounded-full bg-sky-600 text-white font-label-md text-label-md shadow-xs font-semibold" type="button">
+              All Types <span class="ml-1 opacity-90 font-mono-code">48</span>
+</button>
+<button class="px-space-md py-1 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-700 hover:text-slate-900 font-label-md text-label-md transition-colors font-medium" type="button">
+              3D Meshes (.GLB) <span class="ml-1 text-slate-500 font-mono-code">18</span>
+</button>
+<button class="px-space-md py-1 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-slate-700 hover:text-slate-900 font-label-md text-label-md transition-colors font-medium" type="button">
+              2D Concept Art <span class="ml-1 text-slate-500 font-mono-code">30</span>
+</button>
+</div>
+<!-- Category Tags & Sort Controls -->
+<div class="flex items-center flex-wrap gap-space-md w-full xl:w-auto justify-between xl:justify-end">
+<!-- Categories -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 xl:pb-0">
+<button class="px-space-sm py-1 rounded-md text-sky-700 font-headline-sm text-headline-sm whitespace-nowrap bg-sky-50 border border-sky-200 font-semibold" type="button">
+                All Categories
+              </button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 font-body-sm text-body-sm whitespace-nowrap hover:bg-slate-100 transition-colors" type="button">
+                Character (22)
+              </button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 font-body-sm text-body-sm whitespace-nowrap hover:bg-slate-100 transition-colors" type="button">
+                Weapon (12)
+              </button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 font-body-sm text-body-sm whitespace-nowrap hover:bg-slate-100 transition-colors" type="button">
+                Skill / VFX (8)
+              </button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 font-body-sm text-body-sm whitespace-nowrap hover:bg-slate-100 transition-colors" type="button">
+                Companion (6)
+              </button>
+</div>
+<!-- Sort dropdown -->
+<div class="flex items-center gap-space-xs bg-slate-100 border border-slate-200 px-space-md py-1.5 rounded-lg shadow-xs">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold">SORT:</span>
+<span class="font-headline-sm text-headline-sm text-slate-800 flex items-center gap-1 cursor-pointer font-medium">
+                Newest First
+                <span class="material-symbols-outlined text-[16px] text-slate-500">expand_more</span>
+</span>
+</div>
+</div>
+</div>
+</section>
+<!-- MAIN WORKSPACE: BENTO GALLERY + RIGHT DOCKED INSPECTOR -->
+<div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- ASSET GALLERY GRID (8 COLUMNS ON LARGE SCREENS) -->
+<section class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- Metadata Status Bar -->
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-md text-headline-md text-slate-900 font-bold">Repository Items</span>
+<span class="font-mono-metric text-mono-metric text-slate-600 px-space-xs py-0.5 rounded bg-slate-200/70 border border-slate-300/60 font-medium">Showing 6 of 48 assets</span>
+</div>
+<div class="flex items-center gap-space-sm font-label-sm text-label-sm text-slate-600">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Kaggle T4 Cache Active (Synced 14s ago)</span>
+</div>
+</div>
+<!-- Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- CARD 1: Silver-Haired Ice Mage (ACTIVE / INSPECTED ITEM) -->
+<div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col ring-2 ring-sky-500 border border-sky-300">
+<!-- Card Top Image / Viewport Preview -->
+<div class="relative w-full h-56 bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-200">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Photorealistic 3D game character turn-around render of an ethereal silver-haired cryo mage wearing crystalline layered flowing robes, floating in dynamic casting pose. Volumetric frost mist, deep obsidian background, rim lit in vivid cyan and soft violet glow, cinematic Unreal Engine 5 mesh render." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaPk2MJHkJfGYpxeSDKJnz_Ww160WG7SbWEVWe1dqWp0xLTsYTa5kaOpd0mfQQ9AJcXIIX1T7v0Ie_ZMBA_mieFdRXTCz0Sv4C-TRtyM6Upg4gh0rQVCyK4_csnKZLK17lOCNEhqQ4uvz0ow2249Gsl4sbfr4RqT09z94hxN0VcClI3c9HryTxsrAhYCA-GtYwi9D__6y9HuRPMJYDjZ5HsBr1WRHc8Xxi6-XLOnY"/>
+<!-- Format Badges & Floating Stats -->
+<div class="absolute top-2 left-2 flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-sky-600 text-white font-label-sm text-label-sm uppercase font-bold tracking-wider shadow-xs">
+                    3D Mesh (.GLB)
+                  </span>
+<span class="px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-800 font-label-sm text-label-sm border border-slate-200/80 font-semibold shadow-xs">
+                    Character
+                  </span>
+</div>
+<div class="absolute top-2 right-2 flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded flex items-center justify-center bg-white/90 backdrop-blur-md text-sky-600 shadow-xs border border-slate-200/80" title="Actively Selected for Inspector">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</span>
+</div>
+<!-- 3D Turntable Gizmo Overlay Badge -->
+<div class="absolute bottom-2 right-2 px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-800 border border-slate-200/80 flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[14px] text-sky-600">360</span>
+<span class="font-mono-code text-label-sm font-semibold">Interactive View</span>
+</div>
+<!-- Tri / Mesh Metric Pill -->
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-700 border border-slate-200/80 font-mono-metric text-mono-metric font-semibold shadow-xs">
+                  48.2k Tris • 4K PBR
+                </div>
+</div>
+<!-- Card Body Info -->
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-sm bg-white">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-slate-900 group-hover:text-sky-600 transition-colors font-bold">Silver-Haired Ice Mage</h3>
+<span class="font-label-sm text-label-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Ready
+                    </span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-2 leading-relaxed">
+                    Ethereal high-fantasy cryo mage with ornate crystalline robe, silver braids, casting posture
+                  </p>
+</div>
+<!-- Technical Footer Tags -->
+<div class="flex items-center justify-between pt-space-xs bg-slate-50 border border-slate-200/80 p-space-xs rounded-lg">
+<span class="font-mono-code text-label-sm text-slate-600 truncate font-medium">TripoSR-Pro v2.4 • T4</span>
+<span class="font-label-sm text-label-sm text-slate-400">Today, 14:22</span>
+</div>
+<!-- Quick Action Button Row -->
+<div class="grid grid-cols-3 gap-space-xs pt-space-xs">
+<button class="py-1 px-space-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-headline-sm text-headline-sm flex items-center justify-center gap-1 shadow-xs transition-colors font-semibold" type="button">
+<span class="material-symbols-outlined text-[15px]">view_in_ar</span>
+<span>Inspect</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[15px]">download</span>
+<span>.GLB</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" title="Send to Viewport" type="button">
+<span class="material-symbols-outlined text-[15px]">arrow_outward</span>
+<span>Viewport</span>
+</button>
+</div>
+</div>
+</div>
+<!-- CARD 2: Frostbite Ornate Longsword -->
+<div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-slate-200">
+<!-- Thumbnail -->
+<div class="relative w-full h-56 bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-200">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Detailed 3D model render of an ancient runic broadsword forged from glowing glacier ice crystals. Intricate steel crossguard with frost runes etched deeply, cyan arcane reflections along the cutting edge, dark studio lighting with frosty rim highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvzDpTmxxoEdG1KafatnTW4_TasBS3mFismNpucLJZ-UuTvyAsf_KOZBHBK-UMYyeSJf64IZNjlrp0FrBLbecu4ZK5IGyaDETbMhRGZnphjvLNrpq8i_TDn-I3q-AkouTGQrrLdTkhK8ZYi917UcoZ_EqEYRpcjGjZ6BA2hA5aSbjUv6fAMQ_R72FS9S36ixOIDBQCvNEt95NLUlzDg8GoTO6BrFp6FlOQ4gg-14M"/>
+<div class="absolute top-2 left-2 flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-sky-600 text-white font-label-sm text-label-sm uppercase font-bold shadow-xs">
+                    3D Mesh (.GLB)
+                  </span>
+<span class="px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-800 font-label-sm text-label-sm border border-slate-200/80 font-semibold shadow-xs">
+                    Weapon
+                  </span>
+</div>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-700 border border-slate-200/80 font-mono-metric text-mono-metric font-semibold shadow-xs">
+                  14.8k Tris • 2K PBR
+                </div>
+</div>
+<!-- Body Info -->
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-sm bg-white">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-slate-900 group-hover:text-sky-600 transition-colors font-bold">Frostbite Ornate Longsword</h3>
+<span class="font-label-sm text-label-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-semibold">Ready</span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-2 leading-relaxed">
+                    Ancient runic ice broadsword forged from glacier heart, glowing cyan pommel
+                  </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-slate-50 border border-slate-200/80 p-space-xs rounded-lg">
+<span class="font-mono-code text-label-sm text-slate-600 font-medium">InstantMesh-v3</span>
+<span class="font-label-sm text-label-sm text-slate-400">Today, 11:05</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xs">
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[15px]">view_in_ar</span>
+<span>3D Inspect</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-semibold" type="button">
+<span class="material-symbols-outlined text-[15px]">download</span>
+<span>Download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- CARD 3: Glacial Bloom Cryo Burst (2D VFX Concept) -->
+<div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-slate-200">
+<!-- Thumbnail -->
+<div class="relative w-full h-56 bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-200">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Overhead orthographic concept art of a high fantasy tier-IV glacial magic blast circle. Intricate sacred geometry ice runes, hexagonal fractal crystal spikes bursting radially outwards, swirling vortex of diamond dust in cerulean and electric neon cyan, dark slate background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsVQsJNb8OP4QbuWqcQs-e7YOB3wfytuY63QoHus1qxElqi7mN33i-DCvwPW5lCRUU55sVYlFalPpM67n01Ylsh6ZDATaq45ls4sRTsD7HdbFVFdeIuRIfDvwiHj4zMyNCgVj7FzxRdPsv2ylOj8_5Uq4z51krFhhhpEQXV4MiLQrUW2u_Z6J3h_VZ2pAwAqaXFslsiO9ExTvEyjgzqfjn66RMrprAd-GcjMRgKRU"/>
+<div class="absolute top-2 left-2 flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-indigo-100 border border-indigo-200 text-indigo-700 font-label-sm text-label-sm uppercase font-bold shadow-xs">
+                    2D Concept (PNG)
+                  </span>
+<span class="px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-800 font-label-sm text-label-sm border border-slate-200/80 font-semibold shadow-xs">
+                    Skill / VFX
+                  </span>
+</div>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-700 border border-slate-200/80 font-mono-metric text-mono-metric font-semibold shadow-xs">
+                  4096 × 4096 • RGBA
+                </div>
+</div>
+<!-- Body Info -->
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-sm bg-white">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-slate-900 group-hover:text-sky-600 transition-colors font-bold">Glacial Bloom Cryo Burst</h3>
+<span class="font-label-sm text-label-sm text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded font-semibold">2D Source</span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-2 leading-relaxed">
+                    Tier IV AoE ultimate freeze explosion, geometric sacred frost sigils, high impact
+                  </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-slate-50 border border-slate-200/80 p-space-xs rounded-lg">
+<span class="font-mono-code text-label-sm text-slate-600 font-medium">SDXL GameTech LoRA</span>
+<span class="font-label-sm text-label-sm text-slate-400">Yesterday</span>
+</div>
+<div class="grid grid-cols-3 gap-space-xs pt-space-xs">
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[15px] text-indigo-600">auto_fix_high</span>
+<span>8K</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-semibold" type="button">
+<span class="material-symbols-outlined text-[15px]">view_in_ar</span>
+<span>To 3D</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[15px]">download</span>
+<span>PNG</span>
+</button>
+</div>
+</div>
+</div>
+<!-- CARD 4: Crystalline Ice Drake -->
+<div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-slate-200">
+<!-- Thumbnail -->
+<div class="relative w-full h-56 bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-200">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="3D stylized low-poly to mid-poly model showcase of a juvenile ice dragon familiar. Wings shaped from sharp crystalline ice shards, arctic blue scale textures, glowing cyan interior glow, turn-table pose on dark neutral ground plane." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBom9AMTpYVFt-xKAs9BD1h7VfB97iLJAG-iwopk40Zkw06fQb1sJ-g94MTMvttnFGT0eLUUmPKPoxgjifb0zVM_oRWwATw6OVnkBTL1g9N_80tt3zwJjy4YBM07aBr7HLlbX9eMyJJtqrHVEmOYmG14WuAuQ6AMcGg7fPwQ1oDuOV8onHJHITRvHCSICHKVMAPy1IsQXdX661VEnRCe_pdxlsbVp9oin6gjXlUYQI"/>
+<div class="absolute top-2 left-2 flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-sky-600 text-white font-label-sm text-label-sm uppercase font-bold shadow-xs">
+                    3D Mesh (.GLB)
+                  </span>
+<span class="px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-800 font-label-sm text-label-sm border border-slate-200/80 font-semibold shadow-xs">
+                    Companion
+                  </span>
+</div>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-700 border border-slate-200/80 font-mono-metric text-mono-metric font-semibold shadow-xs">
+                  36.4k Tris • 4K PBR
+                </div>
+</div>
+<!-- Body Info -->
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-sm bg-white">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-slate-900 group-hover:text-sky-600 transition-colors font-bold">Crystalline Ice Drake</h3>
+<span class="font-label-sm text-label-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-semibold">Ready</span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-2 leading-relaxed">
+                    Winged juvenile dragon crafted from translucent ice shards and arctic scales
+                  </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-slate-50 border border-slate-200/80 p-space-xs rounded-lg">
+<span class="font-mono-code text-label-sm text-slate-600 font-medium">TripoSR-Pro v2.4</span>
+<span class="font-label-sm text-label-sm text-slate-400">Oct 24</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xs">
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[15px]">view_in_ar</span>
+<span>3D Inspect</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-semibold" type="button">
+<span class="material-symbols-outlined text-[15px]">download</span>
+<span>Download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- CARD 5: Cerulean Silk Folding Fan -->
+<div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-slate-200">
+<div class="relative w-full h-56 bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-200">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="High precision digital concept artwork of an ornate East-Asian folding battle fan with ice blade tips. Deep cerulean silk decorated with silver frost patterns, ivory frame, sharp obsidian rim reflections, clean studio lighting on dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWJdo7lKp4pDtiQrosVkfznL_1jqhuI7sireDFDivFMHrh6boEvX4GVj50nGqrcvA_SLF9si35Yog7sSqD6hKsK2QAIIvNq-AcLHnn2l_YehWOhWQev61p995VamiEEe-GdpEPxuuDsUfJdnE8NJLiuaQJm8wn6025pPo4rGdIqfuoin_IzcAXa5fD4ZK0YXvnEX0dhotNKmyh8vrsCdDDqB5JSfV5Q31PKN7ZVqU"/>
+<div class="absolute top-2 left-2 flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-indigo-100 border border-indigo-200 text-indigo-700 font-label-sm text-label-sm uppercase font-bold shadow-xs">
+                    2D Concept (PNG)
+                  </span>
+<span class="px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-800 font-label-sm text-label-sm border border-slate-200/80 font-semibold shadow-xs">
+                    Weapon
+                  </span>
+</div>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-700 border border-slate-200/80 font-mono-metric text-mono-metric font-semibold shadow-xs">
+                  3072 × 3072 • Clean Alpha
+                </div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-sm bg-white">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-slate-900 group-hover:text-sky-600 transition-colors font-bold">Cerulean Silk Folding Fan</h3>
+<span class="font-label-sm text-label-sm text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded font-semibold">Concept</span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-2 leading-relaxed">
+                    Traditional battle fan with razor-sharp ice blades, ornate crest
+                  </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-slate-50 border border-slate-200/80 p-space-xs rounded-lg">
+<span class="font-mono-code text-label-sm text-slate-600 font-medium">Flux.1-Dev Fantasy LoRA</span>
+<span class="font-label-sm text-label-sm text-slate-400">Oct 23</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xs">
+<button class="py-1 px-space-xs rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-semibold" type="button">
+<span class="material-symbols-outlined text-[15px]">deployed_code</span>
+<span>Convert to 3D</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[15px]">download</span>
+<span>PNG</span>
+</button>
+</div>
+</div>
+</div>
+<!-- CARD 6: Frostbound Obelisk Prop -->
+<div class="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col border border-slate-200">
+<div class="relative w-full h-56 bg-slate-100 overflow-hidden flex items-center justify-center border-b border-slate-200">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Game-ready environment prop of an ancient monolithic ice pillar with glowing arcane cyan fissures. Weathered permafrost stone base, sharp glacial crystal apex, subtle cold steam atmospheric particle effect, dark studio presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-XbGBJA3da5yVw5X14Wfp27X5XRyo--49yCF_cKS2fM8SrYgGrOORjmdZGBPOWTiXTq4kPkr_x40LMjCWTpDi6FDOC8jGO5CCCdyLIUM2nRPfvA0GnUFWMRXZeH6nmdqfAiLXs1CjTVkmrhgjX69mYzo81tsgnPac-hvpvyQc7JkGmGdASgH62dconoi29FNZaVAKYvm3fvkjsb_S3hyhzdRAgMVj7X-iLfMjiLE"/>
+<div class="absolute top-2 left-2 flex items-center gap-space-xs">
+<span class="px-space-xs py-0.5 rounded bg-sky-600 text-white font-label-sm text-label-sm uppercase font-bold shadow-xs">
+                    3D Mesh (.GLB)
+                  </span>
+<span class="px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-800 font-label-sm text-label-sm border border-slate-200/80 font-semibold shadow-xs">
+                    Environment Prop
+                  </span>
+</div>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-white/90 backdrop-blur-md text-slate-700 border border-slate-200/80 font-mono-metric text-mono-metric font-semibold shadow-xs">
+                  9.2k Tris • 2K PBR
+                </div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-sm bg-white">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-slate-900 group-hover:text-sky-600 transition-colors font-bold">Frostbound Obelisk Prop</h3>
+<span class="font-label-sm text-label-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-semibold">Ready</span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-600 line-clamp-2 leading-relaxed">
+                    Ancient monolithic ice pillar with glowing arcane fissures
+                  </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-slate-50 border border-slate-200/80 p-space-xs rounded-lg">
+<span class="font-mono-code text-label-sm text-slate-600 font-medium">TripoSR-Pro v2.4</span>
+<span class="font-label-sm text-label-sm text-slate-400">Oct 21</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xs">
+<button class="py-1 px-space-xs rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[15px]">view_in_ar</span>
+<span>3D Inspect</span>
+</button>
+<button class="py-1 px-space-xs rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 font-headline-sm text-headline-sm flex items-center justify-center gap-1 transition-colors font-semibold" type="button">
+<span class="material-symbols-outlined text-[15px]">download</span>
+<span>Download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Pagination / Status Indicator -->
+<div class="flex items-center justify-between p-space-sm bg-white rounded-lg shadow-sm border border-slate-200">
+<span class="font-label-sm text-label-sm text-slate-500 font-medium">Page 1 of 8</span>
+<div class="flex items-center gap-space-xs">
+<button class="px-3 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-600 font-label-md hover:bg-slate-200 transition-colors" type="button">Previous</button>
+<button class="px-3 py-1 rounded-md bg-sky-600 text-white font-label-md font-bold shadow-xs" type="button">1</button>
+<button class="px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors font-label-md font-medium" type="button">2</button>
+<button class="px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors font-label-md font-medium" type="button">3</button>
+<button class="px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-600 font-label-md hover:bg-slate-50 transition-colors" type="button">Next</button>
+</div>
+</div>
+</section>
+<!-- RIGHT ASSET QUICK INSPECTOR DRAWER (4 COLUMNS ON LARGE SCREENS) -->
+<aside class="lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-white rounded-xl p-space-md shadow-sm border border-slate-200 flex flex-col gap-space-md sticky top-20">
+<!-- Inspector Header & Close/Dock Trigger -->
+<div class="flex items-center justify-between pb-space-xs border-b border-slate-100">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-sky-600 animate-pulse"></span>
+<span class="font-headline-md text-headline-md text-slate-900 tracking-tight font-bold">Asset Inspector</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-1.5 py-0.5 rounded bg-sky-50 border border-sky-200 font-mono-code text-label-sm text-sky-700 font-bold">#KAG-9821</span>
+<button class="p-1 rounded-md text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Pin Inspector" type="button">
+<span class="material-symbols-outlined text-[18px]">push_pin</span>
+</button>
+</div>
+</div>
+<!-- Interactive 3D Turntable Viewport HUD -->
+<div class="relative w-full h-64 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 shadow-inner group">
+<!-- Background Scene/Turntable Render -->
+<img class="w-full h-full object-cover" data-alt="High resolution front-perspective digital 3D model viewport capture of a female cryo sorceress in frosted silver attire, crystalline armor accents, floating in T-pose ready for skeletal rigging, set against a subtle dark grid gradient viewport with lighting gizmo indicators." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZlbLJURlflI9TwSKj-NOY4xshaxxr4kWL-qFy2T23R5XShmpDdf5uEFtzntWG2j882RlfcBzwDGguGBPau60ueL4CU1UXDWe_UNZrSKpsvkfjJZYHWq9XVlF6-VFPkiYFVh-n6zkMh8YJc0Usx6I2R1-2CgBlM8KvzimtIcKXdl0Vb9fpWq8IMRsure6qCwlPo-QdiJwV6lkkdn_8dg-_asAkMqh_BoiRpb7G5fs"/>
+<!-- Floating Viewport Tools HUD -->
+<div class="absolute top-2 left-2 flex items-center gap-1 bg-white/90 backdrop-blur-md px-1.5 py-1 rounded-md border border-slate-200 shadow-xs">
+<button class="p-1 rounded text-sky-600 hover:bg-slate-100 transition-colors" title="Orbit Mode" type="button">
+<span class="material-symbols-outlined text-[16px]">rotate_left</span>
+</button>
+<button class="p-1 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Wireframe Toggle" type="button">
+<span class="material-symbols-outlined text-[16px]">grid_4x4</span>
+</button>
+<button class="p-1 rounded text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Lighting Mode (Studio)" type="button">
+<span class="material-symbols-outlined text-[16px]">wb_sunny</span>
+</button>
+</div>
+<!-- Top-right Orientation Gizmo Indicator -->
+<div class="absolute top-2 right-2 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full border border-slate-200 flex items-center justify-center font-mono-code text-label-sm shadow-xs">
+<span class="text-rose-600 font-bold">X</span>
+<span class="text-emerald-600 font-bold ml-0.5">Y</span>
+<span class="text-sky-600 font-bold ml-0.5">Z</span>
+</div>
+<!-- Bottom Floating Turntable Scrubber -->
+<div class="absolute bottom-2 inset-x-2 bg-white/90 backdrop-blur-md rounded-md border border-slate-200 px-space-sm py-1 flex items-center justify-between shadow-xs">
+<button class="text-slate-600 hover:text-sky-600 flex items-center" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+</button>
+<div class="flex-1 mx-space-sm h-1.5 bg-slate-200 rounded-full overflow-hidden">
+<div class="w-2/3 h-full bg-sky-500 rounded-full"></div>
+</div>
+<span class="font-mono-metric text-label-sm text-slate-600 font-medium">240° / 360°</span>
+</div>
+</div>
+<!-- Title & Metadata Tag Strip -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-lg text-headline-lg text-slate-900 font-bold">Silver-Haired Ice Mage</h4>
+<span class="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 font-label-sm text-label-sm uppercase font-semibold">Production Ready</span>
+</div>
+<p class="font-mono-code text-label-sm text-slate-500">Seed: 839210492 • Model: TripoSR-Pro v2.4 (Fine-Tuned)</p>
+</div>
+<!-- Mesh Specifications Accordion / Spec Box -->
+<div class="bg-slate-50 border border-slate-200 rounded-lg p-space-sm flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-slate-500 uppercase tracking-wider font-semibold">Geometry &amp; Rigging</span>
+<div class="grid grid-cols-2 gap-space-xs pt-1">
+<div class="p-2 bg-white rounded-md border border-slate-200/80 shadow-2xs">
+<span class="font-label-sm text-label-sm text-slate-500 block">Polycount</span>
+<span class="font-mono-metric text-headline-sm text-sky-700 font-bold">48,240 Tris</span>
+</div>
+<div class="p-2 bg-white rounded-md border border-slate-200/80 shadow-2xs">
+<span class="font-label-sm text-label-sm text-slate-500 block">Vertices</span>
+<span class="font-mono-metric text-headline-sm text-slate-900 font-bold">24,512 Verts</span>
+</div>
+<div class="p-2 bg-white rounded-md border border-slate-200/80 shadow-2xs">
+<span class="font-label-sm text-label-sm text-slate-500 block">Skeleton Rig</span>
+<span class="font-mono-metric text-headline-sm text-indigo-700 font-bold">Static Mesh</span>
+<span class="font-label-sm text-label-sm text-slate-400 block">Auto-Rig Planned</span>
+</div>
+<div class="p-2 bg-white rounded-md border border-slate-200/80 shadow-2xs">
+<span class="font-label-sm text-label-sm text-slate-500 block">UV Coordinates</span>
+<span class="font-mono-metric text-headline-sm text-emerald-700 font-bold">UDIM (Unwrapped)</span>
+<span class="font-label-sm text-label-sm text-slate-400 block">0 Overlaps</span>
+</div>
+</div>
+</div>
+<!-- PBR Texture Maps Channel Badges -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-slate-500 uppercase tracking-wider font-semibold">PBR Texture Maps (4096 × 4096)</span>
+<div class="grid grid-cols-4 gap-space-xs text-center font-mono-code text-label-sm font-semibold">
+<div class="py-1.5 rounded-md bg-sky-50 border border-sky-200 text-sky-700 hover:bg-sky-100 transition-colors cursor-pointer">
+<span>Albedo</span>
+</div>
+<div class="py-1.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors cursor-pointer">
+<span>Normal</span>
+</div>
+<div class="py-1.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer">
+<span>Roughness</span>
+</div>
+<div class="py-1.5 rounded-md bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 transition-colors cursor-pointer">
+<span>Metallic</span>
+</div>
+</div>
+</div>
+<!-- Kaggle Provenance & Hardware Telemetry Trace -->
+<div class="bg-slate-50 border border-slate-200 rounded-lg p-space-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-slate-500 uppercase tracking-wider font-semibold">Kaggle Compute Trace</span>
+<span class="font-mono-code text-label-sm text-emerald-700 font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Verified
+                </span>
+</div>
+<div class="space-y-1 font-mono-code text-label-sm text-slate-600">
+<div class="flex justify-between">
+<span>Cluster Hardware:</span>
+<span class="text-slate-900 font-medium">Dual GPU Tesla T4 (32GB)</span>
+</div>
+<div class="flex justify-between">
+<span>Inference Walltime:</span>
+<span class="text-slate-900 font-medium">3m 42s</span>
+</div>
+<div class="flex justify-between">
+<span>Session Pipeline:</span>
+<span class="text-slate-900 font-medium">Diffusion → Tripo-Pro → QuadRemesh</span>
+</div>
+</div>
+</div>
+<!-- Direct Export Download Buttons -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<button class="w-full h-9 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-headline-sm text-headline-sm flex items-center justify-center gap-space-xs shadow-xs hover:shadow transition-all font-semibold active:scale-[0.99]" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Download .GLB (32 MB)</span>
+</button>
+<button class="w-full h-8 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-headline-sm text-headline-sm flex items-center justify-center gap-space-xs transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[16px] text-indigo-600">folder_zip</span>
+<span>.FBX with Textures (45 MB)</span>
+</button>
+<button class="w-full h-8 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors font-medium shadow-2xs" type="button">
+<span class="material-symbols-outlined text-[16px] text-slate-500">package_2</span>
+<span>Full Asset Package (.ZIP)</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</div></main></div><script id="theme-switcher-script">(()=>{
+  const themeBtn=document.getElementById('theme-menu-btn');
+  const themeDropdown=document.getElementById('theme-dropdown');
+  const themeChevron=document.getElementById('theme-chevron');
+  const themeItems=document.querySelectorAll('.theme-item-btn');
+  const currentThemeLabel=document.getElementById('current-theme-label');
+  const themeIndicatorIcon=document.getElementById('theme-indicator-icon');
+  const modeActivePill=document.getElementById('mode-active-pill');
+  const modeInactivePill=document.getElementById('mode-inactive-pill');
+  const ambientOverlay=document.getElementById('ambient-overlay');
+  const btnSetLight=document.getElementById('btn-set-light');
+  const btnSetDark=document.getElementById('btn-set-dark');
+
+  const applyThemeMode = (isLight, themeName = null) => {
+    if (isLight) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      document.body.classList.remove('dark');
+      document.body.classList.add('light-theme');
+      const val = themeName || 'pure-light-studio';
+      document.documentElement.setAttribute('data-theme', val);
+      document.body.setAttribute('data-theme', val);
+
+      if (themeIndicatorIcon) themeIndicatorIcon.textContent = 'light_mode';
+      if (currentThemeLabel) currentThemeLabel.textContent = val === 'warm-pearl-light' ? 'Warm Pearl Light' : 'Pure Light Studio';
+      if (modeActivePill && modeInactivePill) {
+        modeActivePill.textContent = 'LIGHT';
+        modeInactivePill.textContent = 'DARK';
+      }
+      if (btnSetLight && btnSetDark) {
+        btnSetLight.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 bg-white text-sky-700 shadow-sm transition-all";
+        btnSetDark.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 text-slate-500 hover:text-slate-800 transition-all";
+      }
+      if (ambientOverlay) {
+        ambientOverlay.className = 'absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/90 pointer-events-none transition-all duration-700';
+      }
+    } else {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+      document.body.classList.remove('light-theme');
+      document.body.classList.add('dark');
+      const val = themeName || 'obsidian-cyan';
+      document.documentElement.setAttribute('data-theme', val);
+      document.body.setAttribute('data-theme', val);
+
+      if (themeIndicatorIcon) themeIndicatorIcon.textContent = 'dark_mode';
+      if (currentThemeLabel) currentThemeLabel.textContent = 'Obsidian Cyan';
+      if (modeActivePill && modeInactivePill) {
+        modeActivePill.textContent = 'DARK';
+        modeInactivePill.textContent = 'LIGHT';
+      }
+      if (btnSetLight && btnSetDark) {
+        btnSetDark.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 bg-slate-700 text-cyan-300 shadow-sm transition-all";
+        btnSetLight.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-all";
+      }
+      if (ambientOverlay) {
+        ambientOverlay.className = 'absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background/80 pointer-events-none transition-all duration-700';
+      }
+    }
+  };
+
+  if (btnSetLight) {
+    btnSetLight.addEventListener('click', () => applyThemeMode(true, 'pure-light-studio'));
+  }
+  if (btnSetDark) {
+    btnSetDark.addEventListener('click', () => applyThemeMode(false, 'obsidian-cyan'));
+  }
+
+  if(!themeBtn||!themeDropdown)return;
+
+  const toggleDropdown=(show)=>{
+    const willOpen = typeof show === 'boolean' ? show : themeDropdown.classList.contains('hidden');
+    if(willOpen){
+      themeDropdown.classList.remove('hidden');
+      themeBtn.setAttribute('aria-expanded','true');
+      if(themeChevron) themeChevron.classList.add('rotate-180');
+    } else {
+      themeDropdown.classList.add('hidden');
+      themeBtn.setAttribute('aria-expanded','false');
+      if(themeChevron) themeChevron.classList.remove('rotate-180');
+    }
+  };
+
+  themeBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  document.addEventListener('click',e=>{
+    if(!themeDropdown.contains(e.target)&&!themeBtn.contains(e.target)){
+      toggleDropdown(false);
+    }
+  });
+
+  themeItems.forEach(item=>{
+    item.addEventListener('click',()=>{
+      const val=item.getAttribute('data-theme-val');
+      const isLight=item.getAttribute('data-is-light') === 'true';
+
+      applyThemeMode(isLight, val);
+
+      themeItems.forEach(btn=>{
+        btn.classList.remove('bg-sky-50','text-slate-900');
+        btn.classList.add('text-slate-600');
+        const chk=btn.querySelector('.theme-check');
+        if(chk)chk.classList.add('hidden');
+      });
+
+      item.classList.add('bg-sky-50','text-slate-900');
+      item.classList.remove('text-slate-600');
+      const activeChk=item.querySelector('.theme-check');
+      if(activeChk)activeChk.classList.remove('hidden');
+      toggleDropdown(false);
+    });
+  });
+})();</script></body></html>

@@ -1,0 +1,14 @@
+{
+  "png": {
+    "size_bytes": 42102,
+    "sha256": "8e80a25a9ee87f14e11e7506710e5948c652a2a4c4e4dff9989582209b16336e",
+    "width": 768,
+    "height": 768
+  },
+  "glb": {
+    "size_bytes": 2044,
+    "sha256": "5fb263445c73a02bb0cd77f6a192f2efa40543b4166085ab15325fa9b86461ed",
+    "width": null,
+    "height": null
+  }
+}

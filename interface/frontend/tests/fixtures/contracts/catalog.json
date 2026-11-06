@@ -1,0 +1,53 @@
+{
+  "contract_version": "1.0",
+  "pipelines": [
+    {
+      "pipeline_type": "text_to_2d",
+      "display_name": "Text \u2192 2D",
+      "availability": "available",
+      "output_formats": [
+        "png"
+      ]
+    },
+    {
+      "pipeline_type": "image_to_3d",
+      "display_name": "Image \u2192 3D",
+      "availability": "available",
+      "output_formats": [
+        "glb"
+      ]
+    },
+    {
+      "pipeline_type": "text_to_3d",
+      "display_name": "Text \u2192 3D",
+      "availability": "planned",
+      "output_formats": [
+        "glb"
+      ]
+    }
+  ],
+  "asset_categories": [
+    "character",
+    "skill_effect",
+    "weapon",
+    "companion"
+  ],
+  "image_roles": [
+    "front",
+    "side",
+    "back",
+    "three_quarter",
+    "detail",
+    "style_reference"
+  ],
+  "limits": {
+    "max_upload_bytes": 52428800,
+    "max_images_per_request": 8,
+    "prompt_max_length": 4000,
+    "supported_upload_mime_types": [
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ]
+  }
+}

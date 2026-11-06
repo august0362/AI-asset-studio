@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+
+<html class="light" data-theme="pure-light-studio" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"outline-variant":"#cbd5e1","on-tertiary-fixed":"#002113","on-surface":"#0f172a","surface-container-high":"#e2e8f0","on-surface-variant":"#475569","tertiary-container":"#dcfce7","on-secondary-fixed-variant":"#2f2ebe","error-container":"#fee2e2","secondary":"#6366f1","surface-bright":"#ffffff","on-secondary-fixed":"#07006c","primary":"#0284c7","surface-tint":"#0284c7","secondary-fixed":"#e0e7ff","inverse-surface":"#0f172a","primary-fixed-dim":"#38bdf8","tertiary-fixed":"#bbf7d0","surface-container-low":"#f8fafc","surface-container":"#f1f5f9","error":"#ef4444","on-primary-fixed-variant":"#0369a1","on-tertiary-fixed-variant":"#15803d","background":"#f8fafc","on-error":"#ffffff","on-primary-container":"#0369a1","secondary-container":"#e0e7ff","on-primary":"#ffffff","inverse-on-surface":"#f8fafc","tertiary-fixed-dim":"#4ade80","primary-fixed":"#e0f2fe","surface-dim":"#f1f5f9","primary-container":"#e0f2fe","secondary-fixed-dim":"#c7d2fe","inverse-primary":"#38bdf8","on-error-container":"#991b1b","on-secondary":"#ffffff","tertiary":"#10b981","surface-variant":"#e2e8f0","on-primary-fixed":"#082f49","surface":"#ffffff","on-secondary-container":"#3730a3","on-background":"#0f172a","on-tertiary":"#ffffff","outline":"#64748b","surface-container-highest":"#cbd5e1","on-tertiary-container":"#166534","surface-container-lowest":"#ffffff"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"gutter-md":"0.75rem","gutter":"0.5rem","space-xs":"0.25rem","space-lg":"1rem","space-sm":"0.5rem","margin":"0.75rem","space-xl":"1.5rem","margin-mobile":"0.5rem","space-md":"0.75rem","gutter-lg":"1rem"},"fontFamily":{"label-sm":["Inter"],"mono-code":["Inter"],"body-lg":["Inter"],"headline-md":["Inter"],"headline-lg":["Inter"],"body-md":["Inter"],"mono-metric":["Inter"],"label-md":["Inter"],"body-sm":["Inter"],"headline-xl":["Inter"],"headline-sm":["Inter"]},"fontSize":{"label-sm":["10px",{"lineHeight":"12px","letterSpacing":"0.05em","fontWeight":"600"}],"mono-code":["11px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}],"body-lg":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"headline-md":["15px",{"lineHeight":"20px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-lg":["18px",{"lineHeight":"24px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-md":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"mono-metric":["12px",{"lineHeight":"16px","letterSpacing":"-0.01em","fontWeight":"500"}],"label-md":["11px",{"lineHeight":"14px","letterSpacing":"0.03em","fontWeight":"500"}],"body-sm":["12px",{"lineHeight":"16px","letterSpacing":"0em","fontWeight":"400"}],"headline-xl":["24px",{"lineHeight":"32px","letterSpacing":"-0.02em","fontWeight":"600"}],"headline-sm":["13px",{"lineHeight":"18px","letterSpacing":"-0.005em","fontWeight":"600"}]}}}};</script></head><body class="light-theme bg-[#f8fafc] text-slate-900 antialiased select-none relative overflow-x-hidden transition-colors duration-700"><style id="studio-theme-styles">:root{--theme-primary:#0284c7;--theme-primary-container:#0ea5e9;--theme-glow:rgba(2,132,199,0.20);--theme-border:rgba(2,132,199,0.30);--theme-bg-gradient-1:rgba(14,165,233,0.12);--theme-bg-gradient-2:rgba(56,189,248,0.10);--theme-bg-gradient-3:rgba(186,230,253,0.25);--theme-canvas-glow:rgba(2,132,199,0.12);--theme-canvas-bg:#eef2f6;--theme-grid-dot:#0284c7;--theme-grid-sub:#cbd5e1;}[data-theme="pure-light-studio"]{--theme-primary:#0284c7;--theme-primary-container:#0ea5e9;--theme-glow:rgba(2,132,199,0.22);--theme-border:rgba(2,132,199,0.30);--theme-bg-gradient-1:rgba(14,165,233,0.14);--theme-bg-gradient-2:rgba(56,189,248,0.10);--theme-bg-gradient-3:rgba(186,230,253,0.28);--theme-canvas-glow:rgba(2,132,199,0.12);--theme-canvas-bg:#edf2f7;--theme-grid-dot:#0284c7;--theme-grid-sub:#cbd5e1;}[data-theme="warm-pearl-light"]{--theme-primary:#d97706;--theme-primary-container:#f59e0b;--theme-glow:rgba(217,119,6,0.20);--theme-border:rgba(217,119,6,0.32);--theme-bg-gradient-1:rgba(245,158,11,0.14);--theme-bg-gradient-2:rgba(251,191,36,0.12);--theme-bg-gradient-3:rgba(254,243,199,0.35);--theme-canvas-glow:rgba(245,158,11,0.10);--theme-canvas-bg:#f5f0e8;--theme-grid-dot:#d97706;--theme-grid-sub:#e5dec9;}[data-theme="obsidian-cyan"]{--theme-primary:#4cd7f6;--theme-primary-container:#06b6d4;--theme-glow:rgba(76,215,246,0.32);--theme-border:rgba(76,215,246,0.4);--theme-bg-gradient-1:rgba(6,182,212,0.18);--theme-bg-gradient-2:rgba(14,116,144,0.14);--theme-bg-gradient-3:rgba(76,215,246,0.08);--theme-canvas-glow:rgba(76,215,246,0.22);--theme-canvas-bg:#0a0e16;--theme-grid-dot:#4cd7f6;--theme-grid-sub:#262a33;}[data-theme="celestial-sapphire"]{--theme-primary:#38bdf8;--theme-primary-container:#2563eb;--theme-glow:rgba(56,189,248,0.35);--theme-border:rgba(56,189,248,0.45);--theme-bg-gradient-1:rgba(37,99,235,0.22);--theme-bg-gradient-2:rgba(79,70,229,0.18);--theme-bg-gradient-3:rgba(56,189,248,0.12);--theme-canvas-glow:rgba(56,189,248,0.28);--theme-canvas-bg:#080e1a;--theme-grid-dot:#38bdf8;--theme-grid-sub:#1e293b;}[data-theme="crimson-ruby"]{--theme-primary:#f43f5e;--theme-primary-container:#e11d48;--theme-glow:rgba(244,63,94,0.35);--theme-border:rgba(244,63,94,0.45);--theme-bg-gradient-1:rgba(225,29,72,0.22);--theme-bg-gradient-2:rgba(159,18,57,0.18);--theme-bg-gradient-3:rgba(251,113,133,0.10);--theme-canvas-glow:rgba(244,63,94,0.28);--theme-canvas-bg:#120a10;--theme-grid-dot:#f43f5e;--theme-grid-sub:#271420;}[data-theme="sakura-ethereal"]{--theme-primary:#f472b6;--theme-primary-container:#db2777;--theme-glow:rgba(244,114,182,0.32);--theme-border:rgba(244,114,182,0.42);--theme-bg-gradient-1:rgba(219,39,119,0.2);--theme-bg-gradient-2:rgba(253,164,175,0.16);--theme-bg-gradient-3:rgba(244,114,182,0.1);--theme-canvas-glow:rgba(244,114,182,0.26);--theme-canvas-bg:#130b14;--theme-grid-dot:#f472b6;--theme-grid-sub:#2b182b;}[data-theme="jade-ochre"]{--theme-primary:#2dd4bf;--theme-primary-container:#0d9488;--theme-glow:rgba(45,212,191,0.32);--theme-border:rgba(45,212,191,0.42);--theme-bg-gradient-1:rgba(13,148,136,0.22);--theme-bg-gradient-2:rgba(245,158,11,0.14);--theme-bg-gradient-3:rgba(45,212,191,0.10);--theme-canvas-glow:rgba(45,212,191,0.26);--theme-canvas-bg:#081312;--theme-grid-dot:#2dd4bf;--theme-grid-sub:#132824;}/* Light Theme Core */html.light,body.light-theme{background-color:#f8fafc!important;color:#0f172a!important;}html.light [data-theme="warm-pearl-light"],body.light-theme[data-theme="warm-pearl-light"]{background-color:#faf7f2!important;}html.light .bg-surface,body.light-theme .bg-surface{background-color:#ffffff!important;}html.light .text-on-surface,body.light-theme .text-on-surface{color:#0f172a!important;}html.light .text-on-surface-variant,body.light-theme .text-on-surface-variant{color:#475569!important;}html.light .text-outline,body.light-theme .text-outline{color:#64748b!important;}html.light .text-outline-variant,body.light-theme .text-outline-variant{color:#94a3b8!important;}html.light .bg-surface-container-lowest,body.light-theme .bg-surface-container-lowest{background-color:#ffffff!important;}html.light .bg-surface-container-low,body.light-theme .bg-surface-container-low{background-color:#ffffff!important;}html.light .bg-surface-container,body.light-theme .bg-surface-container{background-color:#f1f5f9!important;}html.light .bg-surface-container-high,body.light-theme .bg-surface-container-high{background-color:#e2e8f0!important;}html.light .bg-surface-container-highest,body.light-theme .bg-surface-container-highest{background-color:#cbd5e1!important;}html.light .bg-surface-bright,body.light-theme .bg-surface-bright{background-color:#ffffff!important;}html.light .border-outline-variant\/20,body.light-theme .border-outline-variant\/20{border-color:#e2e8f0!important;}html.light .border-outline-variant\/40,body.light-theme .border-outline-variant\/40{border-color:#cbd5e1!important;}html.light .border-outline-variant\/10,body.light-theme .border-outline-variant\/10{border-color:#f1f5f9!important;}html.light .border-outline-variant\/30,body.light-theme .border-outline-variant\/30{border-color:#e2e8f0!important;}html.light .shadow-sm,body.light-theme .shadow-sm{box-shadow:0 1px 3px 0 rgba(15,23,42,0.06), 0 1px 2px -1px rgba(15,23,42,0.06)!important;}html.light .shadow-md,body.light-theme .shadow-md{box-shadow:0 4px 6px -1px rgba(15,23,42,0.06), 0 2px 4px -2px rgba(15,23,42,0.06)!important;}html.light .shadow-lg,body.light-theme .shadow-lg{box-shadow:0 10px 15px -3px rgba(15,23,42,0.06), 0 4px 6px -4px rgba(15,23,42,0.06)!important;}html.light .shadow-xl,body.light-theme .shadow-xl{box-shadow:0 16px 28px -6px rgba(15,23,42,0.08)!important;}html.light [data-theme] .bg-primary,html.light [data-theme] #reconstruct-btn{color:#ffffff!important;}#reconstruct-btn{background-color:var(--theme-primary)!important;box-shadow:0 10px 25px -5px var(--theme-glow)!important;}[data-theme] .text-primary{color:var(--theme-primary)!important;}[data-theme] .border-primary\/30{border-color:var(--theme-border)!important;}[data-theme] .accent-primary{accent-color:var(--theme-primary)!important;}/* Dynamic Ambient Background */#dynamic-ambient-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;transition:all 0.8s cubic-bezier(0.16,1,0.3,1);}.ambient-orb{position:absolute;border-radius:9999px;filter:blur(90px);mix-blend-mode:multiply;opacity:0.35;will-change:transform,background,opacity;transition:background 0.8s cubic-bezier(0.16,1,0.3,1),opacity 0.8s cubic-bezier(0.16,1,0.3,1);}.orb-1{top:-10%;left:15%;width:720px;height:720px;background:radial-gradient(circle,var(--theme-bg-gradient-1) 0%,rgba(241,245,249,0) 70%);animation:floatOrb1 18s ease-in-out infinite alternate;}.orb-2{top:30%;right:-10%;width:720px;height:720px;background:radial-gradient(circle,var(--theme-bg-gradient-2) 0%,rgba(241,245,249,0) 70%);animation:floatOrb2 22s ease-in-out infinite alternate;}.orb-3{bottom:-15%;left:25%;width:750px;height:650px;background:radial-gradient(circle,var(--theme-bg-gradient-3) 0%,rgba(241,245,249,0) 70%);animation:floatOrb3 20s ease-in-out infinite alternate;}@keyframes floatOrb1{0%{transform:translate(0px,0px) scale(1);}50%{transform:translate(60px,40px) scale(1.08);}100%{transform:translate(-40px,70px) scale(0.95);}}@keyframes floatOrb2{0%{transform:translate(0px,0px) scale(1);}50%{transform:translate(-70px,-50px) scale(1.12);}100%{transform:translate(-30px,40px) scale(0.92);}}@keyframes floatOrb3{0%{transform:translate(0px,0px) scale(1);}50%{transform:translate(50px,-60px) scale(1.06);}100%{transform:translate(-60px,-20px) scale(0.96);}}#viewport-ambient-glow{background:radial-gradient(circle at center,var(--theme-canvas-glow) 0%,transparent 70%);transition:background 0.8s cubic-bezier(0.16,1,0.3,1);}#viewport-canvas-container{background-color:var(--theme-canvas-bg);transition:background-color 0.8s cubic-bezier(0.16,1,0.3,1);}section,header,aside,nav{transition:background-color 0.8s cubic-bezier(0.16,1,0.3,1),border-color 0.8s cubic-bezier(0.16,1,0.3,1),box-shadow 0.8s cubic-bezier(0.16,1,0.3,1);}</style><!-- Dynamic Ambient Animated Background Mesh Canvas Container --><div aria-hidden="true" id="dynamic-ambient-bg"><div class="ambient-orb orb-1"></div><div class="ambient-orb orb-2"></div><div class="ambient-orb orb-3"></div><div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/90 pointer-events-none transition-all duration-700" id="ambient-overlay"></div></div><header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm"><div class="h-16 w-full px-gutter-lg flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm"><img alt="AI Asset Studio Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnPmtwPg0OjO6rtapenKn-LiBU3JmN3whBzkXx5R2kCIdNTo8zUVJhU2UBeJxLgIfWizId4G2YK9ZJmczrhwg0wI-y1n9ZMPo3fiTKqibT7FxxWCb4dbObBO-kfKfsQ2lu2vvmNs1-x9m74K0p-4z5T3lR_tF1MIOXW7jPGPiIDHJS8nt2_tkZkwzsm_SgDNYP7rfiA7__RJZjI0jEWYrzxId9wk6iQR3iovgrFaw"/><span class="font-headline-md text-headline-md text-slate-900 tracking-tight font-bold">AI Asset Studio</span><span class="px-space-xs py-0.5 rounded bg-sky-100 text-sky-800 font-label-sm text-label-sm uppercase font-semibold">Light Studio</span></div><div class="hidden xl:flex items-center gap-space-xs px-space-sm py-1 rounded bg-slate-100 border border-slate-200/80"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-mono-metric text-mono-metric text-slate-600">Kaggle Cluster: P100/T4 Online</span></div></div><nav class="hidden lg:flex items-center gap-space-xs bg-slate-100/80 p-1 rounded-lg border border-slate-200/60" data-active-classes="bg-white text-primary font-headline-sm shadow-sm"><a aria-current="page" class="px-space-md py-1.5 rounded transition-colors bg-white text-sky-600 font-headline-sm shadow-sm" data-path="generate-studio" href="#">Generate Studio</a><a class="px-space-md py-1.5 rounded text-slate-600 hover:bg-white hover:text-slate-900 font-headline-sm text-headline-sm transition-colors" data-path="asset-library" href="#">Asset Library</a><a class="relative px-space-md py-1.5 rounded text-slate-600 hover:bg-white hover:text-slate-900 font-headline-sm text-headline-sm transition-colors flex items-center gap-space-xs" data-path="jobs-and-logs" href="#"><span class="">Jobs &amp; Logs</span><span class="px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700 font-label-sm text-label-sm font-semibold">2 Active</span></a><a class="px-space-md py-1.5 rounded text-slate-600 hover:bg-white hover:text-slate-900 font-headline-sm text-headline-sm transition-colors flex items-center gap-space-xs" data-path="kaggle-resources" href="#"><span class="">Kaggle Resources</span><span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 font-label-sm text-label-sm font-semibold">68% VRAM</span></a></nav><div class="flex items-center gap-space-md"><div class="hidden 2xl:flex items-center gap-space-md px-space-sm py-1 rounded bg-slate-100 border border-slate-200/80"><div class="flex flex-col text-right"><span class="font-label-sm text-label-sm text-slate-500">REGION PROFILE</span><span class="font-mono-metric text-mono-metric text-slate-900 font-semibold">Kaggle Pro - East US 01</span></div><div class="flex flex-col text-right"><span class="font-label-sm text-label-sm text-slate-500">2x GPU T4</span><span class="font-mono-metric text-mono-metric text-sky-600 font-bold">21.8 / 32 GB</span></div></div><!-- Quick Light/Dark Toggle Switcher Pill --><div class="flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200" id="quick-mode-segmented"><button class="px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 bg-white text-sky-700 shadow-sm transition-all" id="btn-set-light" title="Switch to Light Theme" type="button"><span class="material-symbols-outlined text-[15px] text-amber-500">light_mode</span><span class="hidden md:inline font-semibold">Light</span></button><button class="px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 text-slate-500 hover:text-slate-800 transition-all" id="btn-set-dark" title="Switch to Dark Theme" type="button"><span class="material-symbols-outlined text-[15px]">dark_mode</span><span class="hidden md:inline">Dark</span></button></div><div class="relative" id="theme-switcher-wrapper"><button aria-expanded="false" aria-haspopup="true" class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-800 flex items-center gap-1.5 transition-all text-label-sm font-label-sm border border-slate-200 shadow-sm focus:outline-none" id="theme-menu-btn" title="Studio Color Themes" type="button"><span class="material-symbols-outlined text-amber-500 text-[18px]" id="theme-indicator-icon">light_mode</span><span class="hidden sm:inline font-mono-metric text-[11px] text-slate-900 font-medium" id="current-theme-label">Pure Light Studio</span><span class="material-symbols-outlined text-[14px] text-slate-400 transition-transform duration-200" id="theme-chevron">expand_more</span></button><div class="hidden absolute right-0 top-full mt-1.5 w-72 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-lg shadow-xl p-2 z-50 flex flex-col gap-2 transition-all max-h-[85vh] overflow-y-auto" id="theme-dropdown"><div class="px-2 py-1 flex items-center justify-between border-b border-slate-100 pb-1.5 mb-0.5"><div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-sky-600 text-[16px]">palette</span><span class="font-label-sm text-label-sm uppercase text-slate-600 tracking-wider font-semibold">Color Themes</span></div><div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded text-[10px] font-mono-code"><span class="px-1.5 py-0.5 rounded bg-white text-sky-700 shadow-xs font-bold" id="mode-active-pill">LIGHT</span><span class="text-slate-400">/</span><span class="px-1.5 py-0.5 rounded text-slate-500" id="mode-inactive-pill">DARK</span></div></div><!-- Category: Light Themes --><div class="flex flex-col gap-1"><div class="px-2 pt-1 pb-0.5 flex items-center justify-between"><span class="font-label-sm text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-amber-500">light_mode</span>LIGHT THEMES (ACTIVE)</span><span class="px-1.5 py-0.2 rounded bg-sky-100 text-sky-800 font-mono-code text-[9px] font-bold">2 Presets</span></div><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between bg-sky-50 text-slate-900 text-left transition-colors hover:bg-sky-100/60" data-is-light="true" data-theme-val="pure-light-studio"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#0284c7] ring-2 ring-[#0284c7]/30 shadow-sm shrink-0"></span><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight font-semibold">Pure Light Studio</span><span class="px-1 py-0.2 rounded bg-sky-100 text-sky-800 font-label-sm text-[9px] font-bold">Default</span></div><span class="font-mono-code text-[10px] text-slate-500">Crisp White &amp; Azure Workstation</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check">check</span></button><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between text-slate-600 text-left transition-colors hover:bg-slate-100 hover:text-slate-900" data-is-light="true" data-theme-val="warm-pearl-light"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#d97706] ring-2 ring-[#d97706]/30 shadow-sm shrink-0"></span><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight">Warm Pearl Light</span><span class="px-1 py-0.2 rounded bg-amber-100 text-amber-800 font-label-sm text-[9px] font-bold">Cream</span></div><span class="font-mono-code text-[10px] text-slate-500">Pastel Champagne &amp; Ivory Hue</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check hidden">check</span></button></div><!-- Category: Dark Themes --><div class="flex flex-col gap-1 pt-1 border-t border-slate-100"><div class="px-2 pt-1 pb-0.5 flex items-center justify-between"><span class="font-label-sm text-[10px] uppercase font-bold text-slate-400 tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">dark_mode</span>DARK THEMES</span><span class="px-1 py-0.2 rounded bg-slate-100 text-slate-500 font-mono-code text-[9px]">5 Presets</span></div><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between text-slate-600 text-left transition-colors hover:bg-slate-100 hover:text-slate-900" data-is-light="false" data-theme-val="obsidian-cyan"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#06b6d4] shadow-sm shrink-0"></span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight">Obsidian Cyan</span><span class="font-mono-code text-[10px] text-slate-500">Deep Cyan Ambient</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check hidden">check</span></button><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between text-slate-600 text-left transition-colors hover:bg-slate-100 hover:text-slate-900" data-is-light="false" data-theme-val="celestial-sapphire"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#38bdf8] shadow-sm shrink-0"></span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight">Celestial Sapphire</span><span class="font-mono-code text-[10px] text-slate-500">Midnight Sapphire Ambient</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check hidden">check</span></button><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between text-slate-600 text-left transition-colors hover:bg-slate-100 hover:text-slate-900" data-is-light="false" data-theme-val="crimson-ruby"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#f43f5e] shadow-sm shrink-0"></span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight">Crimson Ruby</span><span class="font-mono-code text-[10px] text-slate-500">Velvet Rose Ambient</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check hidden">check</span></button><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between text-slate-600 text-left transition-colors hover:bg-slate-100 hover:text-slate-900" data-is-light="false" data-theme-val="sakura-ethereal"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#f472b6] shadow-sm shrink-0"></span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight">Sakura Ethereal</span><span class="font-mono-code text-[10px] text-slate-500">Soft Blossom Pearlescent</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check hidden">check</span></button><button class="theme-item-btn w-full px-2 py-1.5 rounded flex items-center justify-between text-slate-600 text-left transition-colors hover:bg-slate-100 hover:text-slate-900" data-is-light="false" data-theme-val="jade-ochre"><div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-[#2dd4bf] shadow-sm shrink-0"></span><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-slate-900 leading-tight">Jade Mist &amp; Ochre</span><span class="font-mono-code text-[10px] text-slate-500">Deep Emerald &amp; Amber</span></div></div><span class="material-symbols-outlined text-sky-600 text-[16px] theme-check hidden">check</span></button></div></div></div><button class="p-space-xs rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-slate-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA0tsU4KWNzt-CowIQ8yLGGjfIaAKvS7zHEbFQSs2TCv6ltbjhmviAo5EAafXjW8FgiPwlQp1kcmtpud-y4B8btztKhA632I5jbFvfBUVBmsh-L1oovPBBJJBvS-UAWRIYgJvSo2DUGKg-EEahQYIfKPucDVtUnijshWYLjFtJWoDL0iIB4JDgwaDHRaoHmxM9Bns4IafFxamU319eI24KpijowDd8YbgNffiacEY"/><div class="hidden md:flex flex-col"><span class="font-label-md text-label-md text-slate-900 font-semibold leading-tight">Technical Director</span><span class="font-label-sm text-label-sm text-sky-700">Tech Artist Guild</span></div></div></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-16 bg-white/95 backdrop-blur-md border-r border-slate-200 z-40 flex flex-col items-center py-space-md justify-between shadow-sm"><div class="flex flex-col items-center gap-space-sm w-full"><button class="w-10 h-10 rounded-lg flex items-center justify-center text-sky-600 bg-sky-50 border border-sky-200 transition-colors" title="Select &amp; Transform" type="button"><span class="material-symbols-outlined text-[20px]">near_me</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Diffusion Canvas" type="button"><span class="material-symbols-outlined text-[20px]">brush</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="3D Mesh Synthesis" type="button"><span class="material-symbols-outlined text-[20px]">view_in_ar</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Texture &amp; Materials" type="button"><span class="material-symbols-outlined text-[20px]">texture</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Node Workflow" type="button"><span class="material-symbols-outlined text-[20px]">hub</span></button></div><div class="flex flex-col items-center gap-space-sm w-full"><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Inference Engine Settings" type="button"><span class="material-symbols-outlined text-[20px]">tune</span></button><button class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors" title="Command Palette" type="button"><span class="material-symbols-outlined text-[20px]">terminal</span></button></div></aside><div class="pl-16 relative z-10"><main class="relative w-full pt-16 bg-transparent min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Secondary Mode & Workflow Header -->
+<div class="w-full bg-white/90 backdrop-blur-md px-gutter-lg py-space-sm flex flex-wrap items-center justify-between gap-space-md shadow-xs border-b border-slate-200">
+<!-- Generation Mode Toggle -->
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-slate-500 uppercase tracking-wider font-semibold">PIPELINE MODE:</span>
+<div class="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200/60">
+<button class="px-space-md py-1 rounded bg-sky-600 text-white font-headline-sm text-headline-sm flex items-center gap-space-xs shadow-xs transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">view_in_ar</span>
+<span class="">Image to 3D</span>
+<span class="px-1.5 py-0.2 rounded-full bg-white/20 text-white font-label-sm text-label-sm">Active</span>
+</button>
+<button class="px-space-md py-1 rounded text-slate-600 hover:text-slate-900 hover:bg-white font-headline-sm text-headline-sm flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">palette</span>
+<span class="">Text to 2D</span>
+</button>
+<button class="px-space-md py-1 rounded text-slate-400 font-headline-sm text-headline-sm flex items-center gap-space-xs cursor-not-allowed opacity-60" type="button">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="">Text to 3D</span>
+<span class="px-1.5 py-0.2 rounded bg-slate-200 text-slate-600 font-label-sm text-label-sm">Phase 2</span>
+</button>
+</div>
+</div>
+<!-- Category Selector & Pipeline Breadcrumb -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-slate-500 uppercase font-semibold">ASSET CLASS:</span>
+<div class="relative">
+<select class="appearance-none bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-900 font-headline-sm text-headline-sm pl-space-md pr-7 py-1 rounded-md cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-500">
+<option selected="">Full-Body Character (Manifold)</option>
+<option>Skill / VFX Concept</option>
+<option>Weapon / Hard Surface</option>
+<option>Companion / Fantasy Creature</option>
+</select>
+<span class="material-symbols-outlined absolute right-1.5 top-1.5 pointer-events-none text-slate-500 text-[16px]">expand_more</span>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-space-xs bg-slate-100 border border-slate-200 px-space-sm py-1 rounded-md">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="font-mono-metric text-mono-metric text-slate-700 font-medium">Auto-Retopo: Quad-Topology 50K</span>
+</div>
+<button class="px-space-sm py-1 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 hover:text-slate-900 font-label-md text-label-md flex items-center gap-space-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span class="">History (14)</span>
+</button>
+</div>
+</div>
+<!-- Primary 3-Column Workstation Grid -->
+<div class="w-full grid grid-cols-1 xl:grid-cols-12 gap-gutter p-gutter-md">
+<!-- ========================================== -->
+<!-- LEFT PANEL: Multi-View Reference Ingestion -->
+<!-- ========================================== -->
+<section class="xl:col-span-3 flex flex-col gap-space-md bg-white p-space-md rounded-xl shadow-sm border border-slate-200">
+<!-- Panel Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sky-600 text-[18px]">photo_library</span>
+<h2 class="font-headline-md text-headline-md text-slate-900 font-bold">Multi-View Ingestion</h2>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-label-sm text-label-sm font-semibold">3/3 Validated</span>
+</div>
+<!-- Ortho Requirements Alert -->
+<div class="p-space-sm rounded-lg bg-sky-50/70 border border-sky-100 flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-sky-600 text-[18px] shrink-0 mt-0.5">info</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-headline-sm text-headline-sm text-sky-900 font-semibold">Full-Body Topology Standard</span>
+<p class="font-body-sm text-body-sm text-slate-600 leading-snug">
+            Subject requires complete feet-to-head visibility across all orthographic frames for non-manifold edge closure.
+          </p>
+</div>
+</div>
+<!-- Upload Slots Stack -->
+<div class="flex flex-col gap-space-sm">
+<!-- View 1: Front (Required - Validated) -->
+<div class="group relative rounded-lg bg-slate-50 border border-slate-200/80 p-space-xs hover:bg-slate-100/70 hover:border-sky-300 transition-all">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-14 h-14 rounded-md overflow-hidden shrink-0 bg-slate-200 border border-slate-300">
+<img class="w-full h-full object-cover" data-alt="Digital concept art front orthographic render of a full body silver haired ice mage wizard wearing deep blue and cyan illuminated robes, standing in neutral T-pose with floating crystals, studio rim lighting, black void background, hyper-detailed fantasy render" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvghaiBw4HQr836C86pn2ZHIy3ZOFzmWZzn_l0ZSnNaLgkg6TYO-tbdOS-Bni3A-Fw5tsbhTklhsaigkvdJ_fO1DmUpLGR6q3NeIkCO12n_kV4lYU3x0zC_Rb7uwP3krQpCBj6LDTxl9vUaCVb_ptMIP5Mi_eRRBJZxQFm7pqJxSL5BT1kifed2OrwsSDaVEMGJ1sxkh7GaBmbH90hm8QRJ9sA60oY8O8jdj5MrzY"/>
+<span class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-slate-900 font-semibold">Front View</span>
+<span class="font-label-sm text-label-sm text-emerald-700 font-semibold uppercase">Required</span>
+</div>
+<span class="font-mono-code text-mono-code text-slate-500 truncate">ice_mage_front_ortho_4k.png</span>
+<span class="font-label-sm text-label-sm text-slate-400">3840×3840 • Clean Alpha</span>
+</div>
+<button class="p-1 rounded text-slate-400 hover:text-sky-600 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+</div>
+</div>
+<!-- View 2: Side Profile (Required - Validated) -->
+<div class="group relative rounded-lg bg-slate-50 border border-slate-200/80 p-space-xs hover:bg-slate-100/70 hover:border-sky-300 transition-all">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-14 h-14 rounded-md overflow-hidden shrink-0 bg-slate-200 border border-slate-300">
+<img class="w-full h-full object-cover" data-alt="Digital concept art 90 degree side profile orthographic render of a silver haired ice mage wizard wearing flowing arcane frost coats, side view silhouette, full body profile pose, crystalline cyan staff, cinematic dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2XCwJni2dw_vVaL88arUQf4HULY_HGWoFNWG98yKx4D6o44R1cqJ70kFY6gtONsESW6Tqy88LwjLFl-LRI-D6XNsdOxVXS2aNqt5E0w7dV8YWjuEejuAIG7Np_EHjRsFlyfs4vC2D5GojBLnJ59FHI-Omtz7uUwUWvpo19cNSmiO4z7ogutxkI-F30h-hbWSBUOUbzYOpLnVUPR-o92RC1I9cilXY4i4i8flQgus"/>
+<span class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-slate-900 font-semibold">Side View (90°)</span>
+<span class="font-label-sm text-label-sm text-emerald-700 font-semibold uppercase">Required</span>
+</div>
+<span class="font-mono-code text-mono-code text-slate-500 truncate">ice_mage_side_ortho_4k.png</span>
+<span class="font-label-sm text-label-sm text-slate-400">3840×3840 • Clean Alpha</span>
+</div>
+<button class="p-1 rounded text-slate-400 hover:text-sky-600 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+</div>
+</div>
+<!-- View 3: Back View (Required - Validated) -->
+<div class="group relative rounded-lg bg-slate-50 border border-slate-200/80 p-space-xs hover:bg-slate-100/70 hover:border-sky-300 transition-all">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-14 h-14 rounded-md overflow-hidden shrink-0 bg-slate-200 border border-slate-300">
+<img class="w-full h-full object-cover" data-alt="Digital concept art back rear orthographic view of an ice mage wizard with braided silver hair, elaborate frosted cowl, ornate layered frost mantle, back view stance on pure dark background, technical DCC reference style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxUNgu70pMCqXU6xXJ_k5K5AfIKKo8iDW5_SkzIRP_X1jd9UqUsGWSzzQfxdXInA1QaVGAEXdTH7XFo6UiOKVh5nI3wwV82A5XpFVORSjDICirZ-bmVfNIOA0TH4reKXy0VxSMSz3-GBv087FJDb7zaEALCSfyP-VZsAU9FME7GMhHdLpau86x1a3CXNswVeeDSeAtj_bEEeWqzpVuD6Tsb-QbhKol2iDxZdvhk18"/>
+<span class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-xs">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-slate-900 font-semibold">Back View</span>
+<span class="font-label-sm text-label-sm text-emerald-700 font-semibold uppercase">Required</span>
+</div>
+<span class="font-mono-code text-mono-code text-slate-500 truncate">ice_mage_back_ortho_4k.png</span>
+<span class="font-label-sm text-label-sm text-slate-400">3840×3840 • Clean Alpha</span>
+</div>
+<button class="p-1 rounded text-slate-400 hover:text-sky-600 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+</div>
+</div>
+<!-- View 4: Detail Reference (Optional - Uploaded) -->
+<div class="group relative rounded-lg bg-slate-50 border border-slate-200/80 p-space-xs hover:bg-slate-100 transition-all">
+<div class="flex items-center gap-space-sm">
+<div class="relative w-14 h-14 rounded-md overflow-hidden shrink-0 bg-slate-200 border border-slate-300">
+<img class="w-full h-full object-cover" data-alt="Macro close up photography of a glowing crystalline glacial staff headpiece with neon cyan volumetric refraction, intricate silver filigree armature, icy particle embers, pro studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJxPEh3D3sFG_QtR6k3Is1ucT28B5bPhOYHkjrZU2fCypa_AZVwvuP2t8usN_x82tyyP7hhz6s8MK_k4u9HVWExkAP57Is3GUx5dflzgYnhJJpEFcz6etc2QFZ92ftVNiP4cP0qE9HCekkrKZn-T-f_1gWyK2lZovuJGtQcbKjNvoCDICuNXtRJIDwS_mIHAiFuli5RhLPggCUFm4Lmvq37KoMyPUQ90FQ9HVJzgI"/>
+<span class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700">
+<span class="material-symbols-outlined text-[12px]">tune</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-slate-900 font-semibold">Staff Gem Macro</span>
+<span class="font-label-sm text-label-sm text-slate-500 uppercase">Detail</span>
+</div>
+<span class="font-mono-code text-mono-code text-slate-500 truncate">gem_artifact_focus.png</span>
+<span class="font-label-sm text-label-sm text-slate-400">Macro Guidance Active</span>
+</div>
+<button class="p-1 rounded text-slate-400 hover:text-rose-600 transition-colors" title="Remove Detail" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- View 5: Style Reference (Optional - Dropzone) -->
+<div class="rounded-lg bg-slate-50/80 hover:bg-slate-100/90 border-2 border-dashed border-slate-300 hover:border-sky-400 p-space-md transition-colors text-center cursor-pointer flex flex-col items-center justify-center gap-space-xs group">
+<div class="w-8 h-8 rounded-full bg-white shadow-xs group-hover:bg-sky-600 group-hover:text-white text-slate-600 flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">add_photo_alternate</span>
+</div>
+<span class="font-label-md text-label-md text-slate-800 font-medium">PBR Material / Style Prompt</span>
+<span class="font-mono-code text-mono-code text-slate-400">Drop image or click to browse (EXR, PNG, JPG)</span>
+</div>
+</div>
+<!-- Ingestion Telemetry Footer -->
+<div class="mt-auto p-space-sm rounded-lg bg-slate-50 border border-slate-200 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-slate-500 uppercase font-semibold">Batch Alignment</span>
+<span class="font-mono-metric text-mono-metric text-sky-700 font-bold">0.998 Cosine Accuracy</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-slate-200 overflow-hidden">
+<div class="h-full bg-sky-500 transition-all duration-700" style="width: 100%;"></div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-mono-code text-mono-code text-slate-400">Alpha Isolation: Auto-Rembg</span>
+<span class="font-mono-code text-mono-code text-emerald-600 font-semibold">3D Bounding Box Locked</span>
+</div>
+</div>
+</section>
+<!-- ========================================== -->
+<!-- CENTER PANEL: Immersive 3D Viewport        -->
+<!-- ========================================== -->
+<section class="xl:col-span-6 flex flex-col gap-space-xs bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200">
+<!-- Viewport Header Toolbar -->
+<div class="bg-slate-50 px-space-md py-space-xs flex flex-wrap items-center justify-between gap-space-xs border-b border-slate-200">
+<!-- Shading Modes -->
+<div class="flex items-center gap-0.5 bg-slate-200/70 p-0.5 rounded-lg border border-slate-300/60">
+<button class="px-space-sm py-1 rounded-md bg-white text-sky-700 font-headline-sm text-headline-sm flex items-center gap-1 shadow-xs transition-all font-semibold" type="button">
+<span class="material-symbols-outlined text-[14px]">view_in_ar</span>
+<span class="">Textured PBR</span>
+</button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white font-headline-sm text-headline-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">grid_4x4</span>
+<span class="">Wireframe</span>
+</button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white font-headline-sm text-headline-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">gradient</span>
+<span class="">Normals</span>
+</button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white font-headline-sm text-headline-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">circle</span>
+<span class="">Clay Matcap</span>
+</button>
+<button class="px-space-sm py-1 rounded-md text-slate-600 hover:text-slate-900 hover:bg-white font-headline-sm text-headline-sm flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">texture</span>
+<span class="">UV Map</span>
+</button>
+</div>
+<!-- Camera Views -->
+<div class="flex items-center gap-1">
+<button class="px-2 py-0.5 rounded-md bg-white text-sky-700 border border-slate-200 font-mono-code text-mono-code font-bold shadow-xs hover:bg-slate-50" type="button">Persp [3]</button>
+<button class="px-2 py-0.5 rounded-md text-slate-600 font-mono-code text-mono-code hover:bg-slate-200/60" type="button">Front [1]</button>
+<button class="px-2 py-0.5 rounded-md text-slate-600 font-mono-code text-mono-code hover:bg-slate-200/60" type="button">Side [3]</button>
+<button class="px-2 py-0.5 rounded-md text-slate-600 font-mono-code text-mono-code hover:bg-slate-200/60" type="button">Top [7]</button>
+</div>
+</div>
+<!-- Main Interactive Viewport Canvas Box -->
+<div class="relative w-full h-[620px] bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] overflow-hidden flex items-center justify-center group" id="viewport-canvas-container">
+<!-- Synthetic Canvas Grid Surface Graphic -->
+<div class="absolute inset-0 opacity-40 pointer-events-none" style="background-image: radial-gradient(var(--theme-grid-dot, #0284c7) 1px, transparent 1px), radial-gradient(var(--theme-grid-sub, #94a3b8) 1px, transparent 1px); background-size: 40px 40px, 10px 10px; background-position: 0 0, 20px 20px;"></div>
+<!-- Dynamic Ambient Viewport Glow Backdrop -->
+<div class="absolute inset-0 pointer-events-none opacity-40" id="viewport-ambient-glow"></div>
+<!-- 3D Holographic Mesh Hero Visual -->
+<div class="relative z-10 w-full h-full flex items-center justify-center">
+<div class="relative w-full max-w-[420px] h-[540px] flex items-center justify-center">
+<img class="w-full h-full object-contain filter drop-shadow-[0_25px_35px_rgba(15,23,42,0.25)] transition-all duration-700" data-alt="Stunning Unreal Engine 5 high-poly 3D character viewport render of a full body frost mage wizard standing on dark reflective slate pedestal, glowing cyan ice crystal runes orbiting mesh, faint holographic polygon wireframe lines superimposed across character geometry, dramatic cinematic three-point studio lighting, deep navy obsidian backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBE24vie-tuKD_HVvST1JJqTXakt11S9EOYplVG18BqfRqj3Fs93hLlAcv3ja1LptFlhvOVyq6SVIaKqm1v7oeVxlKNvLzp4_Zpg1pNCTeGHs7Tmloz9ZZ9JiGxJ53k3U9R0r6EepLzfup5Ltro4naeBaL9QGXW5k7-w8xgkH76sRAcS7VIxj_IDavXtzw1YHJ89jzHjCWb91duX5L1SpkwwNkSkqePfTfQLHlgUUI"/>
+<!-- Glowing Orbit Nodes & Ground Grid Gizmo -->
+<div class="absolute bottom-6 w-72 h-14 rounded-full bg-sky-400/20 blur-xl pointer-events-none transition-all duration-700"></div>
+<div class="absolute bottom-4 w-64 h-3 border border-sky-500/40 rounded-full pointer-events-none transform rotate-x-60 transition-all duration-700"></div>
+</div>
+</div>
+<!-- Viewport Top-Left Context HUD -->
+<div class="absolute top-space-md left-space-md z-20 flex flex-col gap-space-xs pointer-events-none">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-white/90 backdrop-blur-md shadow-md border border-slate-200">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+<span class="font-headline-sm text-headline-sm text-slate-900 font-semibold">Reconstructed • Manifold Quad Mesh</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-0.5 rounded-md bg-white/80 backdrop-blur-sm border border-slate-200 shadow-xs">
+<span class="font-mono-code text-mono-code text-sky-700 font-semibold">Inference: 3m 42s</span>
+<span class="font-mono-code text-mono-code text-slate-300">|</span>
+<span class="font-mono-code text-mono-code text-slate-600">Cluster: 2x NVIDIA T4</span>
+</div>
+</div>
+<!-- Viewport Top-Right 3D Navigation Gizmo & Lighting Preset -->
+<div class="absolute top-space-md right-space-md z-20 flex flex-col items-end gap-space-sm">
+<!-- Orientation Cube Gizmo -->
+<div class="w-16 h-16 rounded-xl bg-white/90 backdrop-blur-md p-1 shadow-md flex flex-col items-center justify-center relative cursor-grab border border-slate-200">
+<svg class="w-12 h-12" fill="none" viewbox="0 0 48 48">
+<!-- Coordinate Axes Visual -->
+<circle cx="24" cy="24" r="20" stroke="#cbd5e1" stroke-width="1.5"></circle>
+<line stroke="#ef4444" stroke-linecap="round" stroke-width="2" x1="24" x2="38" y1="24" y2="24"></line>
+<text fill="#ef4444" font-family="Inter" font-size="8" font-weight="bold" x="40" y="27">X</text>
+<line stroke="#10b981" stroke-linecap="round" stroke-width="2" x1="24" x2="24" y1="24" y2="10"></line>
+<text fill="#10b981" font-family="Inter" font-size="8" font-weight="bold" x="21" y="8">Y</text>
+<line stroke="#0284c7" stroke-linecap="round" stroke-width="2" x1="24" x2="14" y1="24" y2="34"></line>
+<text fill="#0284c7" font-family="Inter" font-size="8" font-weight="bold" x="8" y="38">Z</text>
+</svg>
+</div>
+<!-- Lighting Rig Quick Select -->
+<div class="bg-white/90 backdrop-blur-md px-space-xs py-1 rounded-lg flex items-center gap-1 shadow-md border border-slate-200">
+<button class="px-2 py-0.5 rounded-md bg-sky-100 text-sky-800 font-label-sm text-label-sm font-semibold" title="Studio 3-Point Key/Fill/Rim" type="button">Studio 3-Point</button>
+<button class="px-2 py-0.5 rounded-md text-slate-600 hover:text-slate-900 font-label-sm text-label-sm" title="Cyberpunk Neon" type="button">Cyberpunk</button>
+<button class="px-2 py-0.5 rounded-md text-slate-600 hover:text-slate-900 font-label-sm text-label-sm" title="Outdoor Daylight HDRI" type="button">Outdoor</button>
+</div>
+</div>
+<!-- Viewport Bottom Floating Geometry Telemetry HUD -->
+<div class="absolute bottom-space-md left-space-md z-20 bg-white/90 backdrop-blur-md px-space-md py-space-xs rounded-lg shadow-md flex items-center gap-space-md border border-slate-200">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold">VERTS</span>
+<span class="font-mono-metric text-mono-metric text-slate-900 font-bold">48,290</span>
+</div>
+<span class="w-1 h-3 bg-slate-300"></span>
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold">FACES</span>
+<span class="font-mono-metric text-mono-metric text-slate-900 font-bold">52,140</span>
+</div>
+<span class="w-1 h-3 bg-slate-300"></span>
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold">UV ISLANDS</span>
+<span class="font-mono-metric text-mono-metric text-sky-700 font-bold">4</span>
+</div>
+<span class="w-1 h-3 bg-slate-300"></span>
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold">TEX PASSES</span>
+<span class="font-mono-metric text-mono-metric text-emerald-700 font-bold">4K Albedo/Normal/Rough/Emissive</span>
+</div>
+</div>
+<!-- Quick View Controls Floating Strip (Bottom Right) -->
+<div class="absolute bottom-space-md right-space-md z-20 flex items-center gap-1 bg-white/90 backdrop-blur-md p-1 rounded-lg shadow-md border border-slate-200">
+<button class="p-1.5 rounded-md text-slate-500 hover:text-sky-600 hover:bg-slate-100 transition-colors" title="Reset Camera View" type="button">
+<span class="material-symbols-outlined text-[18px]">videocam</span>
+</button>
+<button class="p-1.5 rounded-md text-sky-700 bg-sky-100 transition-colors" title="Toggle Grid Plane" type="button">
+<span class="material-symbols-outlined text-[18px]">grid_on</span>
+</button>
+<button class="p-1.5 rounded-md text-slate-500 hover:text-sky-600 hover:bg-slate-100 transition-colors" id="turntable-btn" title="Turntable Spin (360 Auto-Rotate)" type="button">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+</button>
+<button class="p-1.5 rounded-md text-slate-500 hover:text-sky-600 hover:bg-slate-100 transition-colors" title="Full Screen Viewport (F11)" type="button">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- Viewport Bottom Action Shelf -->
+<div class="bg-slate-50 px-space-md py-space-sm flex flex-wrap items-center justify-between gap-space-md border-t border-slate-200">
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-xs font-headline-sm text-headline-sm flex items-center gap-space-xs transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[18px] text-sky-600">auto_fix_high</span>
+<span class="">Subdivision Smooth (Level 1)</span>
+</button>
+<button class="px-space-md py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-200 shadow-xs font-headline-sm text-headline-sm flex items-center gap-space-xs transition-colors font-medium" type="button">
+<span class="material-symbols-outlined text-[18px] text-indigo-600">format_paint</span>
+<span class="">Bake Ambient Occlusion</span>
+</button>
+</div>
+<!-- Export Dropdown -->
+<div class="flex items-center gap-space-xs">
+<button class="px-space-lg py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-headline-sm text-headline-sm flex items-center gap-space-xs shadow-xs transition-colors font-semibold" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="">Export GLB / FBX</span>
+</button>
+<button class="px-space-md py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 font-headline-sm text-headline-sm shadow-xs" type="button">
+<span class="">OBJ</span>
+</button>
+<button class="px-space-md py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 font-headline-sm text-headline-sm shadow-xs" type="button">
+<span class="">USDZ</span>
+</button>
+</div>
+</div>
+</section>
+<!-- ========================================== -->
+<!-- RIGHT PANEL: AI Hyperparameters & Compute -->
+<!-- ========================================== -->
+<section class="xl:col-span-3 flex flex-col gap-space-md bg-white p-space-md rounded-xl shadow-sm border border-slate-200">
+<!-- Panel Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sky-600 text-[18px]">tune</span>
+<h2 class="font-headline-md text-headline-md text-slate-900 font-bold">Compute &amp; Generation</h2>
+</div>
+<span class="px-space-xs py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600 font-mono-code text-mono-code font-semibold">v2.4-PRO</span>
+</div>
+<!-- Inference Engine Selection -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-slate-500 uppercase tracking-wider font-semibold">NEURAL RECONSTRUCTION ENGINE</label>
+<div class="relative">
+<select class="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-900 font-headline-sm text-headline-sm px-space-md py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500 transition-colors">
+<option selected="">TripoSR-Pro v2.4 (Full-Body Optimized)</option>
+<option>LGM-Splat (Gaussian Splatting to Mesh)</option>
+<option>InstantMesh-Large (High-Poly Quad)</option>
+<option>OpenLRM-Custom (Artisan Rigging Ready)</option>
+</select>
+<span class="material-symbols-outlined absolute right-space-md top-2.5 pointer-events-none text-slate-400 text-[18px]">expand_more</span>
+</div>
+<div class="flex items-center justify-between px-space-xs pt-1">
+<span class="font-mono-code text-mono-code text-emerald-600 font-semibold">Latency: ~2.5m (Dual T4)</span>
+<span class="font-mono-code text-mono-code text-slate-500">VRAM: 14.2 GB Req</span>
+</div>
+</div>
+<!-- Context Validation Card -->
+<div class="p-space-sm rounded-lg bg-emerald-50/60 border border-emerald-100 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-emerald-800 font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+            Model Pre-Flight Checked
+          </span>
+<span class="font-mono-code text-mono-code text-emerald-700 font-bold">100% Ready</span>
+</div>
+<ul class="flex flex-col gap-1 text-slate-600 font-mono-code text-mono-code">
+<li class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-600 text-[14px]">check_small</span>
+            3/3 Orthographic perspectives matched
+          </li>
+<li class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-600 text-[14px]">check_small</span>
+            1:1 Square aspect ratio preserved
+          </li>
+<li class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-600 text-[14px]">check_small</span>
+            Alpha depth mask extracted cleanly
+          </li>
+</ul>
+</div>
+<!-- Model Parameters Stack -->
+<div class="flex flex-col gap-space-sm">
+<span class="font-label-sm text-label-sm text-slate-500 uppercase tracking-wider font-semibold">TOPOLOGY &amp; TEXTURING</span>
+<!-- Resolution Row -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-slate-800 font-medium">Texture Map Resolution</span>
+<span class="font-mono-metric text-mono-metric text-sky-700 font-bold">4096 × 4096 (4K)</span>
+</div>
+<div class="grid grid-cols-3 gap-1">
+<button class="py-1 rounded-md bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/80 font-label-sm text-label-sm text-center" type="button">1024 (1K)</button>
+<button class="py-1 rounded-md bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/80 font-label-sm text-label-sm text-center" type="button">2048 (2K)</button>
+<button class="py-1 rounded-md bg-sky-100 text-sky-800 border border-sky-300 font-label-sm text-label-sm text-center font-bold" type="button">4096 (4K)</button>
+</div>
+</div>
+<!-- Geometry Target -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-slate-800 font-medium">Target Polygon Budget</span>
+<span class="font-mono-metric text-mono-metric text-sky-700 font-bold">50,000 Tris</span>
+</div>
+<input class="w-full accent-sky-600 h-1.5 bg-slate-200 rounded cursor-pointer" max="150000" min="10000" step="5000" type="range" value="50000"/>
+<div class="flex justify-between font-mono-code text-mono-code text-slate-400">
+<span class="">Low-Poly (10k)</span>
+<span class="font-medium text-slate-600">Game Ready (50k)</span>
+<span class="">Cinematic (150k)</span>
+</div>
+</div>
+<!-- Marching Cubes Grid Density -->
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-slate-50 border border-slate-200">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-slate-900 font-semibold">Iso-Surface Grid Density</span>
+<span class="font-body-sm text-body-sm text-slate-500">Marching tetrahedra step</span>
+</div>
+<span class="font-mono-metric text-mono-metric text-sky-800 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded font-bold">256³ Voxels</span>
+</div>
+<!-- Remesh Symmetry Lock -->
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-slate-50 border border-slate-200">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-slate-900 font-semibold">Bilateral Symmetry Lock</span>
+<span class="font-body-sm text-body-sm text-slate-500">Enforce X-axis mirror rig</span>
+</div>
+<button class="w-8 h-4 rounded-full bg-sky-600 relative transition-colors" type="button">
+<span class="w-3 h-3 rounded-full bg-white absolute top-0.5 right-0.5 shadow-xs"></span>
+</button>
+</div>
+</div>
+<!-- Prompt Guidance Accordion (Secondary / Text fallback) -->
+<div class="rounded-lg bg-slate-50 border border-slate-200 p-space-xs flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-slate-700 hover:text-slate-900 cursor-pointer">
+<span class="font-headline-sm text-headline-sm font-semibold">Semantic Prompt Guidance</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-500">
+          Optional text tokens injected into the NeRF latent space to emphasize micro-displacement details:
+        </p>
+<textarea class="w-full p-2 rounded-md bg-white border border-slate-200 text-slate-900 font-body-sm text-body-sm resize-none focus:outline-none focus:ring-1 focus:ring-sky-500" placeholder="frost ice crystals, crystalline sapphire staff, intricate fabric weave, PBR albedo..." rows="2"></textarea>
+</div>
+<!-- Kaggle Cluster Telemetry Card -->
+<div class="p-space-sm rounded-lg bg-slate-50 border border-slate-200 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-label-sm text-label-sm text-slate-800 uppercase font-semibold">Kaggle Pro Profile 01</span>
+</div>
+<span class="font-mono-code text-mono-code text-indigo-600 font-semibold">28.5 hrs remaining</span>
+</div>
+<div class="flex items-center justify-between font-mono-code text-mono-code">
+<span class="text-slate-600">Worker: 2x NVIDIA Tesla T4</span>
+<span class="text-sky-700 font-medium">Est. GPU Use: ~0.08 hr</span>
+</div>
+<div class="flex items-center justify-between font-mono-code text-mono-code">
+<span class="text-slate-400">Queue Position: Ready Now</span>
+<span class="text-emerald-700 font-medium">Est. Time: 2m 45s</span>
+</div>
+</div>
+<!-- Primary Action CTA -->
+<div class="mt-auto flex flex-col gap-space-xs pt-space-xs">
+<button class="w-full py-2.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white font-headline-md text-headline-md flex items-center justify-center gap-space-sm shadow-md shadow-sky-600/20 transition-all hover:scale-[1.01] active:scale-[0.99] font-bold" id="reconstruct-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+<span class="">Reconstruct 3D Asset</span>
+<span class="px-1.5 py-0.5 rounded bg-white/20 text-white font-mono-code text-mono-code">Ctrl+↵</span>
+</button>
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-label-sm text-label-sm text-slate-400">AUTO-SAVES TO ASSET LIBRARY</span>
+<span class="font-label-sm text-label-sm text-sky-700 font-medium flex items-center gap-0.5 cursor-pointer hover:underline">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+            Advanced API Params
+          </span>
+</div>
+</div>
+</section>
+</div>
+</div>
+<script>
+  // Simple interactive turntable micro-toggle
+  const turntableBtn = document.getElementById('turntable-btn');
+  if (turntableBtn) {
+    let spinning = false;
+    turntableBtn.addEventListener('click', () => {
+      spinning = !spinning;
+      turntableBtn.classList.toggle('text-sky-700', spinning);
+      turntableBtn.classList.toggle('bg-sky-100', spinning);
+    });
+  }
+
+  // Interactive Reconstruct Action visual micro-interaction
+  const reconstructBtn = document.getElementById('reconstruct-btn');
+  if (reconstructBtn) {
+    reconstructBtn.addEventListener('click', () => {
+      const originalText = reconstructBtn.innerHTML;
+      reconstructBtn.innerHTML = `
+        <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+        <span>Dispatching to Kaggle Cluster...</span>
+      `;
+      setTimeout(() => {
+        reconstructBtn.innerHTML = originalText;
+      }, 1800);
+    });
+  }
+</script><script id="theme-switcher-script">(()=>{
+  const themeBtn=document.getElementById('theme-menu-btn');
+  const themeDropdown=document.getElementById('theme-dropdown');
+  const themeChevron=document.getElementById('theme-chevron');
+  const themeItems=document.querySelectorAll('.theme-item-btn');
+  const currentThemeLabel=document.getElementById('current-theme-label');
+  const themeIndicatorIcon=document.getElementById('theme-indicator-icon');
+  const modeActivePill=document.getElementById('mode-active-pill');
+  const modeInactivePill=document.getElementById('mode-inactive-pill');
+  const ambientOverlay=document.getElementById('ambient-overlay');
+  const btnSetLight=document.getElementById('btn-set-light');
+  const btnSetDark=document.getElementById('btn-set-dark');
+
+  const applyThemeMode = (isLight, themeName = null) => {
+    if (isLight) {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      document.body.classList.remove('dark');
+      document.body.classList.add('light-theme');
+      const val = themeName || 'pure-light-studio';
+      document.documentElement.setAttribute('data-theme', val);
+      document.body.setAttribute('data-theme', val);
+
+      if (themeIndicatorIcon) themeIndicatorIcon.textContent = 'light_mode';
+      if (currentThemeLabel) currentThemeLabel.textContent = val === 'warm-pearl-light' ? 'Warm Pearl Light' : 'Pure Light Studio';
+      if (modeActivePill && modeInactivePill) {
+        modeActivePill.textContent = 'LIGHT';
+        modeInactivePill.textContent = 'DARK';
+      }
+      if (btnSetLight && btnSetDark) {
+        btnSetLight.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 bg-white text-sky-700 shadow-sm transition-all";
+        btnSetDark.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 text-slate-500 hover:text-slate-800 transition-all";
+      }
+      if (ambientOverlay) {
+        ambientOverlay.className = 'absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white/90 pointer-events-none transition-all duration-700';
+      }
+    } else {
+      document.documentElement.classList.remove('light');
+      document.documentElement.classList.add('dark');
+      document.body.classList.remove('light-theme');
+      document.body.classList.add('dark');
+      const val = themeName || 'obsidian-cyan';
+      document.documentElement.setAttribute('data-theme', val);
+      document.body.setAttribute('data-theme', val);
+
+      if (themeIndicatorIcon) themeIndicatorIcon.textContent = 'dark_mode';
+      if (currentThemeLabel) currentThemeLabel.textContent = 'Obsidian Cyan';
+      if (modeActivePill && modeInactivePill) {
+        modeActivePill.textContent = 'DARK';
+        modeInactivePill.textContent = 'LIGHT';
+      }
+      if (btnSetLight && btnSetDark) {
+        btnSetDark.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 bg-slate-700 text-cyan-300 shadow-sm transition-all";
+        btnSetLight.className = "px-2 py-1 rounded-md text-[11px] font-headline-sm flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-all";
+      }
+      if (ambientOverlay) {
+        ambientOverlay.className = 'absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background/80 pointer-events-none transition-all duration-700';
+      }
+    }
+  };
+
+  if (btnSetLight) {
+    btnSetLight.addEventListener('click', () => applyThemeMode(true, 'pure-light-studio'));
+  }
+  if (btnSetDark) {
+    btnSetDark.addEventListener('click', () => applyThemeMode(false, 'obsidian-cyan'));
+  }
+
+  if(!themeBtn||!themeDropdown)return;
+
+  const toggleDropdown=(show)=>{
+    const willOpen = typeof show === 'boolean' ? show : themeDropdown.classList.contains('hidden');
+    if(willOpen){
+      themeDropdown.classList.remove('hidden');
+      themeBtn.setAttribute('aria-expanded','true');
+      if(themeChevron) themeChevron.classList.add('rotate-180');
+    } else {
+      themeDropdown.classList.add('hidden');
+      themeBtn.setAttribute('aria-expanded','false');
+      if(themeChevron) themeChevron.classList.remove('rotate-180');
+    }
+  };
+
+  themeBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    toggleDropdown();
+  });
+
+  document.addEventListener('click',e=>{
+    if(!themeDropdown.contains(e.target)&&!themeBtn.contains(e.target)){
+      toggleDropdown(false);
+    }
+  });
+
+  themeItems.forEach(item=>{
+    item.addEventListener('click',()=>{
+      const val=item.getAttribute('data-theme-val');
+      const isLight=item.getAttribute('data-is-light') === 'true';
+
+      applyThemeMode(isLight, val);
+
+      themeItems.forEach(btn=>{
+        btn.classList.remove('bg-sky-50','text-slate-900');
+        btn.classList.add('text-slate-600');
+        const chk=btn.querySelector('.theme-check');
+        if(chk)chk.classList.add('hidden');
+      });
+
+      item.classList.add('bg-sky-50','text-slate-900');
+      item.classList.remove('text-slate-600');
+      const activeChk=item.querySelector('.theme-check');
+      if(activeChk)activeChk.classList.remove('hidden');
+      toggleDropdown(false);
+    });
+  });
+})();</script></main></div>
+</body></html>

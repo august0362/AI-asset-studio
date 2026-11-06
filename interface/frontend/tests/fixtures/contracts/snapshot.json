@@ -1,0 +1,78 @@
+{
+  "contract_version": "1.0",
+  "compute_profile_id": "default",
+  "authentication_status": "authenticated",
+  "accelerator_type": "gpu_t4x2",
+  "accelerator_availability": [
+    {
+      "accelerator_id": "gpu_t4x2",
+      "status": "available"
+    },
+    {
+      "accelerator_id": "tpu_vm",
+      "status": "unknown"
+    }
+  ],
+  "gpu_quota_total_hours": 30.0,
+  "gpu_quota_used_hours": 11.5,
+  "gpu_quota_remaining_hours": 18.5,
+  "tpu_quota_total_hours": null,
+  "tpu_quota_used_hours": null,
+  "tpu_quota_remaining_hours": null,
+  "quota_reset_at": null,
+  "session_started_at": "2026-11-06T10:17:40Z",
+  "estimated_session_remaining_seconds": 41100,
+  "session_status": "running",
+  "cpu_utilization_percent": 63.5,
+  "ram_used_bytes": 9663676416,
+  "ram_total_bytes": 33285996544,
+  "gpu_devices": [
+    {
+      "index": 0,
+      "name": "Tesla T4",
+      "utilization_percent": 97.0,
+      "vram_used_bytes": 13421772800,
+      "vram_total_bytes": 16106127360,
+      "temperature_c": 71.0,
+      "status": "available"
+    },
+    {
+      "index": 1,
+      "name": "Tesla T4",
+      "utilization_percent": 4.0,
+      "vram_used_bytes": 524288000,
+      "vram_total_bytes": 16106127360,
+      "temperature_c": null,
+      "status": "available"
+    }
+  ],
+  "observed_at": {
+    "snapshot": "2026-11-06T10:20:05Z",
+    "quota": "2026-11-06T10:20:05Z",
+    "session": "2026-11-06T10:20:05Z",
+    "host": "2026-11-06T10:20:05Z",
+    "gpu": "2026-11-06T10:20:05Z"
+  },
+  "source": {
+    "quota": "mock",
+    "session": "mock",
+    "host": "mock",
+    "gpu": "mock"
+  },
+  "freshness_status": {
+    "quota": "fresh",
+    "session": "fresh",
+    "host": "fresh",
+    "gpu": "fresh"
+  },
+  "error": [
+    {
+      "code": "COMPUTE_TPU_QUOTA_UNAVAILABLE",
+      "severity": "warning",
+      "field": "tpu_quota_total_hours",
+      "message": "TPU quota is not reported in this mock scenario.",
+      "details": {},
+      "retryable": true
+    }
+  ]
+}

@@ -1,0 +1,324 @@
+{
+  "models": [
+    {
+      "contract_version": "1.0",
+      "model_id": "mock-t2d-basic",
+      "display_name": "Mock Basic Text\u21922D",
+      "adapter": "mock_text_to_2d",
+      "is_mock": true,
+      "availability": "available",
+      "supported_pipeline_types": [
+        "text_to_2d"
+      ],
+      "supported_asset_categories": [
+        "character",
+        "skill_effect",
+        "weapon",
+        "companion"
+      ],
+      "inputs": {
+        "prompt_supported": true,
+        "prompt_required": true,
+        "prompt_max_length": 1000,
+        "min_images": 0,
+        "max_images": 0,
+        "supported_image_roles": [],
+        "required_image_roles": [],
+        "supported_mime_types": null,
+        "maximum_file_size_bytes": null,
+        "min_image_width": null,
+        "min_image_height": null,
+        "max_image_width": null,
+        "max_image_height": null
+      },
+      "supported_output_formats": [
+        "png"
+      ],
+      "runtime": {
+        "supported_accelerators": [
+          "cpu",
+          "gpu_cuda"
+        ],
+        "multi_gpu": "unsupported",
+        "minimum_gpu_vram_bytes": null,
+        "estimated_runtime_seconds": 30
+      },
+      "options_schema": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295,
+          "default": null
+        },
+        "width": {
+          "type": "integer",
+          "enum": [
+            512,
+            768,
+            1024
+          ],
+          "default": 1024
+        },
+        "height": {
+          "type": "integer",
+          "enum": [
+            512,
+            768,
+            1024
+          ],
+          "default": 1024
+        },
+        "negative_prompt": {
+          "type": "string",
+          "max_length": 1000,
+          "default": null
+        }
+      },
+      "unknown_requirements": []
+    },
+    {
+      "contract_version": "1.0",
+      "model_id": "mock-t2d-styleref",
+      "display_name": "Mock Style Reference Text\u21922D",
+      "adapter": "mock_text_to_2d",
+      "is_mock": true,
+      "availability": "experimental",
+      "supported_pipeline_types": [
+        "text_to_2d"
+      ],
+      "supported_asset_categories": [
+        "character",
+        "skill_effect",
+        "weapon",
+        "companion"
+      ],
+      "inputs": {
+        "prompt_supported": true,
+        "prompt_required": true,
+        "prompt_max_length": 1000,
+        "min_images": 0,
+        "max_images": 1,
+        "supported_image_roles": [
+          "style_reference"
+        ],
+        "required_image_roles": [],
+        "supported_mime_types": [
+          "image/png",
+          "image/jpeg",
+          "image/webp"
+        ],
+        "maximum_file_size_bytes": 52428800,
+        "min_image_width": null,
+        "min_image_height": null,
+        "max_image_width": null,
+        "max_image_height": null
+      },
+      "supported_output_formats": [
+        "png"
+      ],
+      "runtime": {
+        "supported_accelerators": [
+          "gpu_cuda"
+        ],
+        "multi_gpu": "unsupported",
+        "minimum_gpu_vram_bytes": null,
+        "estimated_runtime_seconds": 60
+      },
+      "options_schema": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295,
+          "default": null
+        }
+      },
+      "unknown_requirements": [
+        "runtime.minimum_gpu_vram_bytes"
+      ]
+    },
+    {
+      "contract_version": "1.0",
+      "model_id": "mock-i3d-single",
+      "display_name": "Mock Single Image\u21923D",
+      "adapter": "mock_image_to_3d",
+      "is_mock": true,
+      "availability": "available",
+      "supported_pipeline_types": [
+        "image_to_3d"
+      ],
+      "supported_asset_categories": [
+        "character",
+        "weapon",
+        "companion"
+      ],
+      "inputs": {
+        "prompt_supported": false,
+        "prompt_required": false,
+        "prompt_max_length": null,
+        "min_images": 1,
+        "max_images": 1,
+        "supported_image_roles": [
+          "front"
+        ],
+        "required_image_roles": [
+          "front"
+        ],
+        "supported_mime_types": [
+          "image/png",
+          "image/jpeg"
+        ],
+        "maximum_file_size_bytes": 52428800,
+        "min_image_width": null,
+        "min_image_height": null,
+        "max_image_width": null,
+        "max_image_height": null
+      },
+      "supported_output_formats": [
+        "glb"
+      ],
+      "runtime": {
+        "supported_accelerators": [
+          "gpu_cuda"
+        ],
+        "multi_gpu": "unsupported",
+        "minimum_gpu_vram_bytes": null,
+        "estimated_runtime_seconds": 120
+      },
+      "options_schema": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295,
+          "default": null
+        }
+      },
+      "unknown_requirements": [
+        "runtime.minimum_gpu_vram_bytes"
+      ]
+    },
+    {
+      "contract_version": "1.0",
+      "model_id": "mock-i3d-multiview",
+      "display_name": "Mock Multiview Image\u21923D",
+      "adapter": "mock_image_to_3d",
+      "is_mock": true,
+      "availability": "available",
+      "supported_pipeline_types": [
+        "image_to_3d"
+      ],
+      "supported_asset_categories": [
+        "character",
+        "companion"
+      ],
+      "inputs": {
+        "prompt_supported": false,
+        "prompt_required": false,
+        "prompt_max_length": null,
+        "min_images": 2,
+        "max_images": 4,
+        "supported_image_roles": [
+          "front",
+          "side",
+          "back",
+          "detail"
+        ],
+        "required_image_roles": [
+          "front",
+          "side"
+        ],
+        "supported_mime_types": [
+          "image/png",
+          "image/jpeg"
+        ],
+        "maximum_file_size_bytes": 20971520,
+        "min_image_width": 512,
+        "min_image_height": 512,
+        "max_image_width": 4096,
+        "max_image_height": 4096
+      },
+      "supported_output_formats": [
+        "glb"
+      ],
+      "runtime": {
+        "supported_accelerators": [
+          "gpu_cuda"
+        ],
+        "multi_gpu": "optional",
+        "minimum_gpu_vram_bytes": 12884901888,
+        "estimated_runtime_seconds": 900
+      },
+      "options_schema": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295,
+          "default": null
+        },
+        "texture_resolution": {
+          "type": "integer",
+          "enum": [
+            1024,
+            2048
+          ],
+          "default": 1024
+        }
+      },
+      "unknown_requirements": []
+    },
+    {
+      "contract_version": "1.0",
+      "model_id": "mock-t3d-basic",
+      "display_name": "Mock Basic Text\u21923D",
+      "adapter": "mock_text_to_3d",
+      "is_mock": true,
+      "availability": "planned",
+      "supported_pipeline_types": [
+        "text_to_3d"
+      ],
+      "supported_asset_categories": [
+        "character",
+        "skill_effect",
+        "weapon",
+        "companion"
+      ],
+      "inputs": {
+        "prompt_supported": true,
+        "prompt_required": true,
+        "prompt_max_length": 1000,
+        "min_images": 0,
+        "max_images": 0,
+        "supported_image_roles": [],
+        "required_image_roles": [],
+        "supported_mime_types": null,
+        "maximum_file_size_bytes": null,
+        "min_image_width": null,
+        "min_image_height": null,
+        "max_image_width": null,
+        "max_image_height": null
+      },
+      "supported_output_formats": [
+        "glb"
+      ],
+      "runtime": {
+        "supported_accelerators": [
+          "gpu_cuda"
+        ],
+        "multi_gpu": "unsupported",
+        "minimum_gpu_vram_bytes": null,
+        "estimated_runtime_seconds": null
+      },
+      "options_schema": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295,
+          "default": null
+        }
+      },
+      "unknown_requirements": [
+        "runtime.minimum_gpu_vram_bytes",
+        "runtime.estimated_runtime_seconds"
+      ]
+    }
+  ]
+}
