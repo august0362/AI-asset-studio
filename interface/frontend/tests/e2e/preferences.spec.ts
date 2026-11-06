@@ -125,18 +125,19 @@ for (const choice of choices) {
       await expect(page.locator("html")).toHaveAttribute("lang", locale);
       if (locale === "vi") {
         const loaded = await page.evaluate(async () => {
-          const faces = await document.fonts.load(
-            '400 13px "Inter"',
-            "Tiếng Việt ếộữ",
-          );
-          return faces.some(
-            (face) =>
-              face.family.includes("Inter") &&
-              face.status === "loaded" &&
-              face.unicodeRange.toLowerCase().includes("1ea0"),
-          );
+          const check = async (font: string, family: string) =>
+            (await document.fonts.load(font, "Tiếng Việt ếộữ")).some(
+              (face) =>
+                face.family.includes(family) &&
+                face.status === "loaded" &&
+                face.unicodeRange.toLowerCase().includes("1ea0"),
+            );
+          return [
+            await check('400 14px "Be Vietnam Pro"', "Be Vietnam Pro"),
+            await check('600 16px "Plus Jakarta Sans"', "Plus Jakarta Sans"),
+          ];
         });
-        expect(loaded).toBe(true);
+        expect(loaded).toEqual([true, true]);
       }
       expect(errors).toEqual([]);
     });

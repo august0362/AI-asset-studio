@@ -147,9 +147,10 @@ describe("V2 shared stage shell", () => {
       });
       for (const name of ["Save draft", "Submit for review", "Approve"])
         expect(screen.getByRole("button", { name })).toBeDisabled();
+      // One labelled sidebar since D-039 (the icon shelf duplicate is gone).
       expect(
         screen.getAllByRole("link", { name: "Generate studio" }),
-      ).toHaveLength(2);
+      ).toHaveLength(1);
       expect(
         screen.getByRole("link", { name: "Back to workspace" }),
       ).toHaveAttribute("href", `/characters/${c.character_id}?node=${sid}`);

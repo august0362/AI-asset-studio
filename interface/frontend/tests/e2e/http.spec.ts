@@ -15,7 +15,7 @@ import type {
   UploadRecord,
 } from "../../src/api/types";
 
-const backend = "http://127.0.0.1:8000/api/v1";
+const backend = process.env.AAS_HTTP_BACKEND_URL ?? "http://127.0.0.1:8000/api/v1";
 const png = resolve("tests/fixtures/artifacts/mock.png");
 let exchanges: unknown[] = [],
   pending: Promise<void>[] = [],

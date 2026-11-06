@@ -10,6 +10,8 @@ export const vi = {
   "compute.noEnabledProfilesHelp":
     "Hãy bật một hồ sơ tính toán để sử dụng tài nguyên tính toán.",
   "upload.fileError": "{filename}: {message}",
+  "copy.coreStudio": "Công cụ chính",
+  "copy.environment": "Môi trường",
   "copy.skipToWorkspace": "Chuyển đến không gian làm việc",
   "copy.generateStudio": "Xưởng tạo",
   "copy.assetLibrary": "Thư viện tài sản",

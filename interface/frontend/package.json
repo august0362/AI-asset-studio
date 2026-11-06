@@ -16,7 +16,8 @@
     "fixtures": "python tests/fixtures/generate_fixtures.py"
   },
   "dependencies": {
-    "@fontsource/inter": "5.2.5",
+    "@fontsource/be-vietnam-pro": "5.2.8",
+    "@fontsource/plus-jakarta-sans": "5.2.8",
     "@tanstack/react-query": "5.90.5",
     "lucide-react": "0.468.0",
     "react": "18.3.1",

@@ -5,7 +5,18 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, UserRound } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Clock3,
+  FilePenLine,
+  LayoutGrid,
+  List,
+  Plus,
+  ScanEye,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
 import { api } from "../../api/client";
 import type { EditorialStatus, StageId } from "../../api/characterTypes";
 import { useI18n } from "../../i18n";
@@ -67,6 +78,7 @@ export function CharacterLibraryPage() {
     <div className="characters-feature">
       <div className="page-heading">
         <div>
+          <div className="breadcrumb">{t("char.productionTitle")}</div>
           <h1>{t("char.characters")}</h1>
           <CharacterMode />
         </div>
@@ -76,30 +88,32 @@ export function CharacterLibraryPage() {
         </button>
       </div>
       <div className="character-summary">
-        <span>
-          {t("char.characters")} <strong>{number(rows.length, 0)}</strong>
-        </span>
-        <span>
-          {label("editorial", "draft")}{" "}
-          <strong>
-            {number(
-              rows.filter((c) => c.stage_statuses[c.current_stage] === "draft")
-                .length,
-              0,
-            )}
-          </strong>
-        </span>
-        <span>
-          {label("editorial", "in_review")}{" "}
-          <strong>
-            {number(
-              rows.filter(
-                (c) => c.stage_statuses[c.current_stage] === "in_review",
-              ).length,
-              0,
-            )}
-          </strong>
-        </span>
+        {[
+          { label: t("char.characters"), value: rows.length, icon: UsersRound },
+          {
+            label: label("editorial", "draft"),
+            value: rows.filter((c) => c.stage_statuses[c.current_stage] === "draft").length,
+            icon: FilePenLine,
+          },
+          {
+            label: label("editorial", "in_review"),
+            value: rows.filter((c) => c.stage_statuses[c.current_stage] === "in_review").length,
+            icon: ScanEye,
+          },
+          {
+            label: t("char.allApproved"),
+            value: rows.filter((c) => c.approved_count === stageIds.length).length,
+            icon: CheckCircle2,
+          },
+        ].map(({ label: name, value, icon: Icon }) => (
+          <span key={name}>
+            <span>
+              {name}
+              <strong>{number(value, 0)}</strong>
+            </span>
+            <Icon size={22} aria-hidden="true" />
+          </span>
+        ))}
       </div>
       <div className="character-filters">
         <label>
@@ -149,6 +163,7 @@ export function CharacterLibraryPage() {
           </select>
         </label>
         <button aria-pressed={list} onClick={() => setList((v) => !v)}>
+          {list ? <LayoutGrid size={16} aria-hidden="true" /> : <List size={16} aria-hidden="true" />}
           {list ? t("char.grid") : t("char.list")}
         </button>
       </div>
@@ -181,29 +196,51 @@ export function CharacterLibraryPage() {
                 <span>{c.current_stage.toUpperCase()}</span>
               </Link>
               <div className="character-card-body">
-                <h2>
-                  <Link to={`/characters/${c.character_id}`}>{c.name}</Link>
-                </h2>
-                <code>{c.character_id}</code>
-                <div className="character-tags">
-                  {c.tags.map((s) => (
-                    <span key={s}>{s}</span>
-                  ))}
+                <div className="character-card-title">
+                  <h2>
+                    <Link to={`/characters/${c.character_id}`}>{c.name}</Link>
+                  </h2>
+                  <code>{c.character_id}</code>
                 </div>
-                <Status status={c.stage_statuses[c.current_stage]} />
-                <p>{t("char.approvedCount", { count: c.approved_count })}</p>
-                <div className="character-progress" aria-hidden="true">
-                  {stageIds.map((s) => (
-                    <span
-                      key={s}
-                      data-approved={c.stage_statuses[s] === "approved"}
-                    />
-                  ))}
+                {c.tags.length > 0 && (
+                  <div className="character-tags">
+                    {c.tags.map((s) => (
+                      <span key={s}>{s}</span>
+                    ))}
+                  </div>
+                )}
+                <div className="character-progress-box">
+                  <span className="character-progress-label">
+                    {t("char.workflowProgress")}
+                    <strong>{t("char.approvedCount", { count: c.approved_count })}</strong>
+                  </span>
+                  <div className="character-progress" aria-hidden="true">
+                    {stageIds.map((s) => (
+                      <span
+                        key={s}
+                        data-approved={c.stage_statuses[s] === "approved"}
+                        data-current={s === c.current_stage}
+                      />
+                    ))}
+                  </div>
+                  <span className="character-progress-stage">
+                    <span>
+                      {t("char.currentStage")}: {c.current_stage.toUpperCase()} ·{" "}
+                      {label("stage", `${c.current_stage}.title`)}
+                    </span>
+                    <Status status={c.stage_statuses[c.current_stage]} />
+                  </span>
                 </div>
-                <small>{t("char.updated", { date: date(c.updated_at) })}</small>
-                <Link className="button" to={`/characters/${c.character_id}`}>
-                  {t("char.open")}
-                </Link>
+                <div className="character-card-foot">
+                  <small>
+                    <Clock3 size={14} aria-hidden="true" />
+                    {t("char.updated", { date: date(c.updated_at) })}
+                  </small>
+                  <Link className="button" to={`/characters/${c.character_id}`}>
+                    {t("char.open")}
+                    <ArrowRight size={15} aria-hidden="true" />
+                  </Link>
+                </div>
                 <details className="character-row-menu">
                   <summary>{t("char.actions")}</summary>
                   <button onClick={() => setDeleting(c)}>{t("char.delete")}</button>
@@ -211,6 +248,17 @@ export function CharacterLibraryPage() {
               </div>
             </article>
           ))}
+          <button
+            type="button"
+            className="character-create-tile"
+            onClick={() => setCreating(true)}
+          >
+            <span className="character-create-icon">
+              <Plus size={26} aria-hidden="true" />
+            </span>
+            <strong>{t("char.create")}</strong>
+            <span>{t("char.createHelp")}</span>
+          </button>
         </div>
       )}
       {data.hasNextPage && (

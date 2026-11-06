@@ -9,6 +9,8 @@ export const en = {
   "compute.noEnabledProfilesHelp":
     "Enable a compute profile to use compute resources.",
   "upload.fileError": "{filename}: {message}",
+  "copy.coreStudio": "Core studio",
+  "copy.environment": "Environment",
   "copy.skipToWorkspace": "Skip to workspace",
   "copy.generateStudio": "Generate studio",
   "copy.assetLibrary": "Asset library",

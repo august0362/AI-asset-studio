@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../../api/client";
+import { ArrowRight, PencilLine, Sparkles, Trash2, UserRound } from "lucide-react";
 import { Badge, Failure, Loading, Panel } from "../../components/ui";
 import { WorkflowCanvas } from "./WorkflowCanvas";
 import { DeleteCharacterDialog } from "./DeleteCharacterDialog";
 import {
   CharacterMode,
   EditorialStatus,
+  FrozenThumbnail,
   History,
   ImageAsset,
   Modal,
@@ -23,7 +25,8 @@ export function CharacterWorkspacePage() {
   const { characterId = "" } = useParams(),
     [params, setParams] = useSearchParams(),
     { t, text } = useCharacterText(),
-    cache = useQueryClient();
+    cache = useQueryClient(),
+    navigate = useNavigate();
   const query = useQuery({
     queryKey: ["character", characterId],
     queryFn: () => api.character(characterId),
@@ -47,36 +50,76 @@ export function CharacterWorkspacePage() {
   if (query.error) return <Failure error={query.error} />;
   if (!query.data) return <Loading />;
   const { character, stages } = query.data;
+  const current =
+      stages.find((s) => s.state.editorial_status !== "approved")?.config
+        .stage_id ?? "s7",
+    approved = stages.filter((s) => s.state.editorial_status === "approved").length;
   const node = params.get("node"),
     selected = stageIds.includes(node as StageId)
       ? (node as StageId)
-      : (stages.find((s) => s.state.editorial_status !== "approved")?.config
-          .stage_id ?? "s1");
+      : approved === stages.length
+        ? "s1"
+        : current;
   return (
     <div className="characters-feature">
       <div className="breadcrumb">
-        <Link to="/characters">{t("char.characters")}</Link> / {character.name}
+        {t("char.productionTitle")} / <Link to="/characters">{t("char.characters")}</Link> /{" "}
+        {character.name}
       </div>
       <div className="character-identity">
-        <div>
-          <CharacterMode />
-          <h1>{character.name}</h1>
-          <code>{character.character_id}</code>
-          <p>{character.summary}</p>
-          <div className="character-tags">
-            {character.tags.map((tag) => (
-              <span key={tag}>{tag}</span>
-            ))}
+        <div className="character-identity-main">
+          <div className="character-identity-cover">
+            {character.cover_asset_id ? (
+              <FrozenThumbnail
+                characterId={characterId}
+                assetId={character.cover_asset_id}
+                alt={character.name}
+              />
+            ) : (
+              <UserRound size={40} aria-hidden="true" />
+            )}
+          </div>
+          <div>
+            <CharacterMode />
+            <h1>{character.name}</h1>
+            <code>{character.character_id}</code>
+            {character.summary && <p>{character.summary}</p>}
+            {character.tags.length > 0 && (
+              <div className="character-tags">
+                {character.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-        <div>
-          <Badge>
-            {t("char.approvedCount", {
-              count: stages.filter(
-                (s) => s.state.editorial_status === "approved",
-              ).length,
-            })}
-          </Badge>
+        <div className="character-identity-meta">
+          <div className="character-identity-stats">
+            <div>
+              <span className="nav-section">{t("char.workflowProgress")}</span>
+              <strong>{t("char.approvedCount", { count: approved })}</strong>
+              <div className="character-progress" aria-hidden="true">
+                {stages.map((s) => (
+                  <span
+                    key={s.config.stage_id}
+                    data-approved={s.state.editorial_status === "approved"}
+                    data-current={s.config.stage_id === current}
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <span className="nav-section">{t("char.currentStage")}</span>
+              <strong>
+                {current.toUpperCase()} · {text(`stage.${current}.title`)}
+              </strong>
+              <EditorialStatus
+                status={
+                  stages.find((s) => s.config.stage_id === current)!.state.editorial_status
+                }
+              />
+            </div>
+          </div>
           <div className="character-actions">
             <button
               onClick={() => {
@@ -84,10 +127,15 @@ export function CharacterWorkspacePage() {
                 setRename(true);
               }}
             >
+              <PencilLine size={15} aria-hidden="true" />
               {t("char.rename")}
             </button>
-            <button onClick={() => setDeleting(true)}>{t("char.delete")}</button>
+            <button onClick={() => setDeleting(true)}>
+              <Trash2 size={15} aria-hidden="true" />
+              {t("char.delete")}
+            </button>
             <Link className="button" to="/generate/text-to-2d">
+              <Sparkles size={15} aria-hidden="true" />
               {t("copy.generateStudio")}
             </Link>
             <Link
@@ -95,6 +143,7 @@ export function CharacterWorkspacePage() {
               to={stageUrl(characterId, selected)}
             >
               {t("char.openStage")}
+              <ArrowRight size={15} aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -111,6 +160,7 @@ export function CharacterWorkspacePage() {
             next.set("node", sid);
             setParams(next, { replace: true, preventScrollReset: true });
           }}
+          onOpen={(sid) => navigate(stageUrl(characterId, sid))}
         />
         <FlowInspector id={characterId} stage={selected} />
       </div>

@@ -20,7 +20,7 @@ Related: [CONTRACTS.md](CONTRACTS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [
 | V2-0 … V2-2 Character Production: contracts, backend, batches | **Done** (2026-11-06, D-037, D-038) |
 | V2-3 Character Production: Library + Workspace | **Done** (2026-11-06, D-038, D-039) |
 | V2-4 … V2-5 Character Production: Stage Detail | In progress (Codex) |
-| UI refresh to the V2 Stitch look, canvas follow-ups | In progress (Codex, D-039) |
+| UI refresh to the V2 Stitch look, canvas follow-ups | Implemented, awaiting owner sign-off (D-039; built by Claude Code at the owner's direction) |
 | V2-6 Character Production: integration and sign-off | Not started |
 | M5 Image-to-3D Models | Not started |
 | M6 Text-to-3D Models | Not started |

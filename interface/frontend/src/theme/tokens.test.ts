@@ -45,6 +45,7 @@ const text = [
   "--warning",
   "--error",
   "--info",
+  "--mana",
 ];
 const backgrounds = [
   "--canvas",
@@ -65,10 +66,13 @@ const pairs: [string, string, number][] = [
       (bg) => [fg, bg, 3] as [string, string, number],
     ),
   ),
+  ...["--text", "--mana"].map(
+    (fg) => [fg, "--mana-soft", 4.5] as [string, string, number],
+  ),
 ];
 describe("canonical theme tokens", () => {
-  it("mirrors all 22 documentation tokens exactly in JSON and each CSS theme block", () => {
-    expect(rows).toHaveLength(22);
+  it("mirrors all 24 documentation tokens exactly in JSON and each CSS theme block", () => {
+    expect(rows).toHaveLength(24);
     expect(tokens).toEqual(documented);
     expect(themeBlocks).toHaveLength(4);
     for (const [whole, theme, block] of themeBlocks) {
@@ -92,9 +96,10 @@ describe("canonical theme tokens", () => {
       "--primary-hover",
       "--border-control",
       "--focus-ring",
+      "--mana-soft",
     ])
       expect(check).toContain(`\`${token}\``);
-    expect(pairs).toHaveLength(48);
+    expect(pairs).toHaveLength(55);
   });
   for (const theme of themes)
     it.each(pairs)(
