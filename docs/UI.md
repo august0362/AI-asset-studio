@@ -1,6 +1,6 @@
 # UI: themes and language
 
-Canonical rules for the UI's colors (four themes, §1–§4) and its two languages, Vietnamese and English (§5–§9). Layout, typography, spacing, radius and density come from [design/stitch/DESIGN.md](../design/stitch/DESIGN.md); this document replaces that file's *Colors* section. Both topics are **frontend-only display preferences**: they are not part of the API, the contracts or job data, and the API, error codes, job data and logs stay in English ([CONTRACTS.md §5.2](CONTRACTS.md#52-errorresponse-every-non-2xx-response) already lets the frontend localize `message` by `code`). Decisions: [D-023](DECISIONS.md) (themes), [D-024](DECISIONS.md) (language). Requirements: FR-U1…FR-U9 in [PRODUCT_SPEC.md](PRODUCT_SPEC.md#5-functional-requirements).
+Canonical rules for the UI's colors (four themes, §1–§4) and its two languages, Vietnamese and English (§5–§9). Layout, typography, spacing, radius, elevation and density come from the V2 Stitch design system, [design/stitch/v2/exports/01-character-library/DESIGN.md](../design/stitch/v2/exports/01-character-library/DESIGN.md) (*Atelier Latte & Matcha*, D-039), for the whole app; this document replaces that file's *Colors* section and wins where the two differ. The v1 [design/stitch/DESIGN.md](../design/stitch/DESIGN.md) is archived. Both topics are **frontend-only display preferences**: they are not part of the API, the contracts or job data, and the API, error codes, job data and logs stay in English ([CONTRACTS.md §5.2](CONTRACTS.md#52-errorresponse-every-non-2xx-response) already lets the frontend localize `message` by `code`). Decisions: [D-023](DECISIONS.md) (themes), [D-024](DECISIONS.md) (language). Requirements: FR-U1…FR-U9 in [PRODUCT_SPEC.md](PRODUCT_SPEC.md#5-functional-requirements).
 
 The UI has **two modes (light, dark) with two color themes each**, so four themes in total.
 
@@ -10,10 +10,12 @@ Themes come in two **families**, and each family has one light and one dark memb
 
 | Family | Light theme | Dark theme |
 |---|---|---|
-| **Coffee** | `latte`: warm cream surfaces, espresso-brown accent, sage as the second accent. *Palette taken from the owner's first reference image (brown and cream).* | `caffe`: roasted-brown surfaces, caramel/crema accent, latte foam as the second accent. |
-| **Green** | `mint`: white and mint surfaces, periwinkle accent, leaf green as the second accent. *Palette taken from the owner's second reference image (mint and periwinkle).* | `matcha`: deep tea-green surfaces, matcha-powder accent, rice cream as the second accent. |
+| **Coffee** | `latte`: latte-peach surfaces, roasted-coffee accent, sage as the second accent. *From the owner's first reference image (brown and cream), retuned to the V2 Stitch palette (D-039).* | `caffe`: roasted-brown surfaces, caramel/crema accent, sage foam as the second accent. |
+| **Green** | `mint`: white and mint surfaces, periwinkle accent, leaf green as the second accent. *From the owner's second reference image (mint and periwinkle).* | `matcha`: deep tea-green surfaces, matcha-powder accent, rice cream as the second accent. |
 
-Only the **colors** come from the reference images; the images were sampled with a color quantizer. Layouts, illustrations, photos and watermarks from the images are not used.
+All four themes share **mana violet** (`--mana`), the V2 Stitch signal colour for live work (§3 rule 9).
+
+Only the **colors** come from the reference images. Layouts, illustrations, photos and watermarks from the images are not used.
 
 ## 2. Tokens
 
@@ -21,34 +23,36 @@ Every color in the UI is a CSS custom property. Each theme sets the full token l
 
 | Token | Role | `latte` | `mint` | `caffe` | `matcha` |
 |---|---|---|---|---|---|
-| `--canvas` | Page background, viewport floor | `#f6f2ef` | `#f3f8f5` | `#15100d` | `#0f1410` |
-| `--surface` | Panels, cards | `#ffffff` | `#ffffff` | `#1d1612` | `#161d17` |
-| `--surface-2` | Inputs, nested groups, table headers | `#f1ebe7` | `#e8f1ec` | `#271e19` | `#1e2820` |
-| `--surface-3` | Hover, selected rows, popovers | `#e7dfda` | `#d8e8e2` | `#322720` | `#28352a` |
-| `--border` | Structural separators (decorative) | `#e0d7d1` | `#cfe0d6` | `#3e3129` | `#314034` |
-| `--border-control` | Input, select and checkbox outlines (≥ 3:1) | `#948277` | `#6f9080` | `#806b5c` | `#62786a` |
-| `--text` | Body text, values | `#2f2520` | `#22302a` | `#f2e8df` | `#e7efe4` |
-| `--text-muted` | Labels, secondary text (≥ 4.5:1) | `#6b5d55` | `#53665c` | `#bca999` | `#a7b8a6` |
-| `--primary` | Main actions, focus, active nav, links | `#65544a` | `#4a5ea3` | `#d4a373` | `#a8cf7f` |
-| `--primary-hover` | Primary hover | `#54453c` | `#3f5191` | `#e0b689` | `#badc95` |
+| `--canvas` | Page background, viewport floor | `#fff8f6` | `#f4faf6` | `#17100c` | `#0e1410` |
+| `--surface` | Panels, cards | `#fffdfc` | `#fdfffd` | `#211814` | `#151d17` |
+| `--surface-2` | Inputs, nested groups, table headers | `#fff1ec` | `#e9f4ee` | `#2b201a` | `#1d2820` |
+| `--surface-3` | Hover, selected rows, popovers | `#ffe6dd` | `#dcece3` | `#372820` | `#27352a` |
+| `--border` | Structural separators (decorative) | `#efdcd5` | `#cde2d6` | `#4a372d` | `#33443a` |
+| `--border-control` | Input, select and checkbox outlines (≥ 3:1) | `#8a7a75` | `#5f8270` | `#8f776a` | `#698371` |
+| `--text` | Body text, values | `#2e150b` | `#14261d` | `#f7ebe4` | `#e8f1e8` |
+| `--text-muted` | Labels, secondary text (≥ 4.5:1) | `#5c4741` | `#44604f` | `#cbb4a8` | `#abbdad` |
+| `--primary` | Main actions, focus, active nav, links | `#72564c` | `#4a5ea3` | `#d9a878` | `#a8cf7f` |
+| `--primary-hover` | Primary hover | `#4e342e` | `#3a4c8c` | `#e6bc90` | `#badc95` |
 | `--on-primary` | Text and icons on `--primary` | `#ffffff` | `#ffffff` | `#1d1410` | `#142010` |
-| `--secondary` | Second accent: secondary tags, 2nd chart series, links on hover | `#56664f` | `#376d44` | `#c9ad9b` | `#d8c89c` |
-| `--accent-soft` | Fill only (never text): selected chips, highlights, progress tracks | `#e9dfd8` | `#e0efe4` | `#3a2b21` | `#2c3d26` |
-| `--accent-soft-2` | Fill only: 2nd soft fill (tags, illustrations) | `#e2e6dc` | `#dde3f3` | `#33291f` | `#3a3626` |
-| `--success` | Completed, fresh, ok | `#326a3c` | `#2a6e42` | `#93c48d` | `#7fd3a6` |
-| `--warning` | Warnings, stale, low quota | `#805508` | `#805508` | `#e6b45c` | `#e8c06a` |
-| `--error` | Errors, failed, insufficient | `#b0353a` | `#b0354a` | `#f0907f` | `#f2928a` |
-| `--info` | Neutral notices, running | `#3f6489` | `#2b6584` | `#a3bcd9` | `#9bbde2` |
-| `--focus-ring` | Keyboard focus outline (2 px) | `#65544a` | `#4a5ea3` | `#d4a373` | `#a8cf7f` |
-| `--viewer-bg` | GLB viewer background | `#ece5e0` | `#e3eee8` | `#120d0a` | `#0c110d` |
-| `--viewer-grid` | GLB viewer grid lines | `#cbbdb4` | `#b9d1c3` | `#3e3129` | `#314034` |
-| `--shadow` | Modal and popover shadow color | `#2f252026` | `#22302a1f` | `#00000099` | `#00000099` |
+| `--secondary` | Second accent: secondary tags, 2nd chart series, links on hover | `#4f6a50` | `#2f6b40` | `#c5d1b3` | `#dccb9c` |
+| `--accent-soft` | Fill only (never text): selected chips, highlights, progress tracks | `#ffe2d9` | `#dcefe3` | `#41302a` | `#2c3d26` |
+| `--accent-soft-2` | Fill only: 2nd soft fill (tags, illustrations) | `#e9f2ea` | `#e3e8f8` | `#2f2a3f` | `#2d2a42` |
+| `--mana` | Live state only (§3 rule 9): running work, data flowing on canvas edges, the selected node, the generate trigger. Text-capable | `#6b38d5` | `#6433c9` | `#c8adff` | `#c8adff` |
+| `--mana-soft` | Fill only: background of running badges and the glow base | `#efe6ff` | `#ece5ff` | `#33284d` | `#2d2748` |
+| `--success` | Completed, fresh, ok | `#13704a` | `#1e6b40` | `#86cf9f` | `#7fd3a6` |
+| `--warning` | Warnings, stale, low quota | `#7f5200` | `#7a5000` | `#efbd60` | `#e8c06a` |
+| `--error` | Errors, failed, insufficient | `#ae1a1a` | `#a8283c` | `#ffa99f` | `#f4968d` |
+| `--info` | Neutral notices | `#1d6188` | `#1f5f80` | `#94c8ee` | `#9bc0e4` |
+| `--focus-ring` | Keyboard focus outline (2 px) | `#72564c` | `#4a5ea3` | `#d9a878` | `#a8cf7f` |
+| `--viewer-bg` | Image and GLB viewer background | `#f6ebe6` | `#e6f0ea` | `#120c09` | `#0b100c` |
+| `--viewer-grid` | GLB viewer grid lines | `#d9c6bf` | `#b9d1c3` | `#4a372d` | `#314034` |
+| `--shadow` | Elevation shadow color (cards, nodes, modals; §3 rule 6) | `#4e342e24` | `#1e3a2c1f` | `#00000099` | `#00000099` |
 
 Status tints (badge backgrounds) are derived: `color-mix(in srgb, var(--success) 14%, var(--surface))`, and the same for warning, error and info. Do not add separate hex values for them.
 
 **Chart series**, in this order: `--primary`, `--secondary`, `--info`, then `--warning`. Keep a chart to at most 4 series.
 
-**Contrast check (2026-11-06).** Every text token (`--text`, `--text-muted`, `--primary`, `--secondary`, `--success`, `--warning`, `--error`, `--info`) was measured on each background (`--canvas`, `--surface`, `--surface-2`, `--surface-3`, `--accent-soft`). `--on-primary` was measured on `--primary` and `--primary-hover`. `--border-control` and `--focus-ring` were measured on `--canvas`, `--surface` and `--surface-2`. All reach WCAG AA: 4.5:1 for text and 3:1 for control outlines and the focus ring. The lowest text pair is `--error` on `--surface-3` in `latte`, at 4.67:1. Any change to a token value must be re-checked, and the frontend test in M1 checks this automatically.
+**Contrast check (2026-11-06, D-039 palette).** Every text token (`--text`, `--text-muted`, `--primary`, `--secondary`, `--mana`, `--success`, `--warning`, `--error`, `--info`) was measured on each background (`--canvas`, `--surface`, `--surface-2`, `--surface-3`, `--accent-soft`); `--text` and `--mana` also on `--mana-soft`. `--on-primary` was measured on `--primary` and `--primary-hover`. `--border-control` and `--focus-ring` were measured on `--canvas`, `--surface` and `--surface-2`. All reach WCAG AA: 4.5:1 for text and 3:1 for control outlines and the focus ring. The lowest text pair is `--secondary` on `--accent-soft` in `latte`, at 4.88:1. Any change to a token value must be re-checked, and the frontend test in M1 checks this automatically.
 
 ## 3. Graphic design rules
 
@@ -57,9 +61,11 @@ Status tints (badge backgrounds) are derived: `color-mix(in srgb, var(--success)
 3. **Accent is a signal, not decoration.** `--primary` marks what is interactive or active. Large passive areas (cards, sidebars) never use a saturated fill; they may use `--accent-soft`.
 4. **Status color always comes with text or an icon** (for example "● failed", "fresh"). Color alone never carries meaning. This matters most in `matcha`, where primary and success are both green.
 5. **Status colors keep their meaning in every theme.** Green means ok, amber means warning, red means error, blue means info. A theme may shift their shade, never their hue family.
-6. **Hierarchy by lightness, not by shadows.** Each surface level differs from its neighbour by a visible step. Dark themes use lighter surfaces for higher levels; light themes use borders and `--surface-2`. Shadows are for modals and popovers only.
+6. **Hierarchy by lightness first, then soft elevation.** Each surface level differs from its neighbour by a visible step. Shadows are warm and soft, all derived from `--shadow`: level 1 (cards, canvas nodes) `0 2px 8px -2px`, level 2 (hover, selected node) `0 8px 24px -4px`, level 3 (modals, popovers, a node being dragged) `0 16px 36px -8px`. No other shadow values, and never a shadow as the only cue for state.
 7. **Generated content keeps priority.** Image and 3D previews sit on `--viewer-bg`, a quiet neutral that is not pure white or pure black, so the asset's own colors read correctly.
-8. **Unchanged structure.** Typography, spacing, radius and density stay as in [DESIGN.md](../design/stitch/DESIGN.md). A theme changes color only, never layout or size.
+8. **One structure for all themes.** Typography (Plus Jakarta Sans for headings and labels, Be Vietnam Pro for body text, both bundled with the app, never loaded from a CDN), spacing, radius (8 px controls, 16 px cards, 24 px modals) and density follow the V2 Stitch DESIGN.md. A theme changes color only, never layout or size.
+9. **Mana means live.** `--mana` and its glow (`0 0 20px 2px` of `--mana` at about 22%) mark only things that are really live or selected: a running job or batch, data available to flow along a canvas edge, the selected node, the generate trigger. Never decoration, never a fake progress state. Animations using it stop under `prefers-reduced-motion` (a static highlight remains).
+10. **No demo data.** Stitch exports contain invented numbers (GPU temperature, VRAM, latency, quota, ratings, progress percentages, character art). The UI shows only values from the API; where the API has none, the element is omitted or shows *Unknown* (NFR-3).
 
 ## 4. Theme behavior
 

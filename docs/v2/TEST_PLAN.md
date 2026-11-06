@@ -68,7 +68,7 @@ Run with the mock adapter and a fake compute client unless marked *live*.
 | ID | Area | Checks |
 |---|---|---|
 | 5.1 | Library | Search and filters call the API with the right params; counts derive from listed data only; empty state; create dialog; delete with a confirmation dialog naming the character, then the list refreshes (`BATCH_ATTEMPT_RUNNING` shown localized) |
-| 5.2 | Canvas | 7 nodes, no add/delete/connect affordance; nodes can be dragged and the edges follow; positions persist per character in `localStorage` (survive reload; a missing or corrupt value falls back to the default); *Reset layout*; edges run output → input in stage order; pan, zoom, fit view; keyboard selection; edges highlighted for the selection; hard (solid) vs soft (dashed); stale edge marked |
+| 5.2 | Canvas | 7 nodes, no add/delete/connect affordance; nodes can be dragged and the edges follow, with no re-render of the page and no `localStorage` write per pointer move (saved once on drop); double-click on a node opens its Stage Detail (Enter does the same from the keyboard); an edge animates *data flow* in `--mana` only when its upstream stage has an approved, non-stale revision, and is static under `prefers-reduced-motion`; positions persist per character in `localStorage` (survive reload; a missing or corrupt value falls back to the default); *Reset layout*; edges run output → input in stage order; pan, zoom, fit view; keyboard selection; edges highlighted for the selection; hard (solid) vs soft (dashed); stale edge marked |
 | 5.3 | Inspector + navigation | Every stage shows objective, inputs, outputs, checklist, blockers; selecting S5 → Stage Detail → back keeps `?node=s5` selected (URL and focus) |
 | 5.4 | Shared layout | One `StageDetailPage` renders all seven configurations; input zone read-only; approval zone lists blockers and disables Approve while any exist |
 | 5.5 | Drafts | Save sends `expected_draft_version`; a 409 shows *Reload* without losing the user's text |
@@ -76,7 +76,7 @@ Run with the mock adapter and a fake compute client unless marked *live*.
 | 5.7 | S5 | Submit disabled until the manifest is current; job status from v1; per-task results; Retry shown only with `retryable_task_ids`; final approval needs every required slot |
 | 5.8 | Planned | S6/S7 read-only, labelled *Planned*; no enabled action |
 | 5.9 | Honesty | Source check: no hard-coded GPU, VRAM, temperature, percentage or similarity value in `features/characters/` (same approach as the v1 colour-literal check) |
-| 5.10 | i18n + themes | Dictionary parity for all new keys; every new error code localized; axe clean in all four themes, VI and EN, at 1024 and 1440 px; status never by colour alone |
+| 5.10 | i18n + themes | Dictionary parity for all new keys; every new error code localized; axe clean in all four themes, VI and EN, at 1024 and 1440 px; status never by colour alone; the 24 tokens of UI.md §2 match `tokens.json` and `app.css` |
 
 ## 6. Regression
 

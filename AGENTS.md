@@ -1,6 +1,6 @@
 # AGENTS.md — shared context for Codex and Claude Code
 
-**Current milestone: V2 Character Production (D-035, D-037). V2-0 done (contracts v1.1 = CONTRACTS §13, fixtures in `tests/fixtures/contracts/v2/`); V2-1 backend and V2-2 batch execution done (D-038; the live batch smoke run B-13 was not required); V2-3 to V2-5 frontend by Codex. M0, M1, M2, M3 and M4 done (M4: Animagine XL 4.0, FLUX.2 [klein] 4B and MOSS-Image-SFT for `character`, D-034/D-036/D-037; weights download from the internet, D-032). M5 and M6 not started.** Status lives in [docs/MILESTONES.md](docs/MILESTONES.md).
+**Current milestone: V2 Character Production (D-035, D-037). V2-0 done (contracts v1.1 = CONTRACTS §13, fixtures in `tests/fixtures/contracts/v2/`); V2-1 backend and V2-2 batch execution done (D-038; the live batch smoke run B-13 was not required); V2-3 Library + Workspace done (D-039); V2-4, V2-5 and the V2 Stitch UI refresh (D-039) by Codex. M0, M1, M2, M3 and M4 done (M4: Animagine XL 4.0, FLUX.2 [klein] 4B and MOSS-Image-SFT for `character`, D-034/D-036/D-037; weights download from the internet, D-032). M5 and M6 not started.** Status lives in [docs/MILESTONES.md](docs/MILESTONES.md).
 
 This file is the single set of rules for both agents. Claude Code loads it through [CLAUDE.md](CLAUDE.md).
 

@@ -18,7 +18,9 @@ Related: [CONTRACTS.md](CONTRACTS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [
 | M3 Kaggle Integration | **Done** (2026-11-06; profile `SUNNY`, D-025) |
 | M4 Text-to-2D Models | **Done** (2026-11-06; Animagine XL 4.0, FLUX.2 [klein] 4B, MOSS-Image-SFT for `character`, D-034, D-036, D-037) |
 | V2-0 … V2-2 Character Production: contracts, backend, batches | **Done** (2026-11-06, D-037, D-038) |
-| V2-3 … V2-5 Character Production: frontend | In progress (Codex) |
+| V2-3 Character Production: Library + Workspace | **Done** (2026-11-06, D-038, D-039) |
+| V2-4 … V2-5 Character Production: Stage Detail | In progress (Codex) |
+| UI refresh to the V2 Stitch look, canvas follow-ups | In progress (Codex, D-039) |
 | V2-6 Character Production: integration and sign-off | Not started |
 | M5 Image-to-3D Models | Not started |
 | M6 Text-to-3D Models | Not started |
@@ -59,7 +61,7 @@ Scope and acceptance criteria: [PRODUCT_SPEC.md §8](PRODUCT_SPEC.md#8-character
 | **V2-0 Contract freeze** | Claude Code (docs), owner | Docs; the OD decisions answered | Owner approval | **Done**: D-035; CONTRACTS v1.1 merged as §13 (D-037); fixtures in `tests/fixtures/contracts/v2/` |
 | **V2-1 Backend core** | Claude Code | `characters/` package: IDs, store (atomic, exclusive-create revisions, history), StageConfig, routes 1–14 and 19, approval rules, staleness, freezing | TEST_PLAN §2 and §3 pass in mock mode; all v1 tests pass | **Done** (D-038; route 19 *delete character* added) |
 | **V2-2 Batch execution** | Claude Code | `GenerationRequest.tasks`, `request.batch`, `Artifact.task_id`, `BATCH_PARTIAL`; batch support in the adapter and remote entry (one load per job, per-task results, deadline); routes 15–18; reconciliation | TEST_PLAN §4 passes with the mock adapter | **Done** (D-038): B-01…B-12 pass; the owner accepted it without the live run B-13, which stays an optional check (owner approves the GPU use) before real batch use |
-| **V2-3 Library + Workspace** | Codex | `characterTypes.ts`, ApiClient methods, mock fixtures, `CharacterLibraryPage` (with delete), `CharacterWorkspacePage` (identity header, canvas with movable nodes, inspector) | TEST_PLAN §5.1–5.3 pass; axe and themes clean; VI/EN parity | In progress |
+| **V2-3 Library + Workspace** | Codex | `characterTypes.ts`, ApiClient methods, mock fixtures, `CharacterLibraryPage` (with delete), `CharacterWorkspacePage` (identity header, canvas with movable nodes, inspector) | TEST_PLAN §5.1–5.3 pass; axe and themes clean; VI/EN parity | **Done** (D-039). The follow-ups in D-039 (smooth drag, data-flow edges, double-click, V2 Stitch look) are tracked separately |
 | **V2-4 Stage Detail S1–S4** | Codex | Shared layout + S1, S2, S3 (preview batch UI), S4 (task list, manifest review) | TEST_PLAN §5.4–5.6 pass | In progress |
 | **V2-5 S5 + planned S6/S7** | Codex | S5 batch submit/status/results/retry/approval; S6/S7 read-only; optional Studio prefill | TEST_PLAN §5.7–5.8 pass | In progress |
 | **V2-6 Integration & sign-off** | Both, owner | End-to-end in HTTP mode against the mock backend, then one real character to S5 on Kaggle (owner-approved GPU use) | TEST_PLAN §6 passes; PRODUCT_SPEC §8.5 demonstrated; owner sign-off | Not started |
