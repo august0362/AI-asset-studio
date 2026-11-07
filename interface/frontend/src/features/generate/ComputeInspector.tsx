@@ -30,6 +30,8 @@ interface Props {
   pending: boolean;
   error: unknown;
   serverErrors: ErrorItem[];
+  autoRun: boolean;
+  onAutoRun: (value: boolean) => void;
   onGenerate: () => void;
 }
 export function ComputeInspector({
@@ -43,6 +45,8 @@ export function ComputeInspector({
   pending,
   error,
   serverErrors,
+  autoRun,
+  onAutoRun,
   onGenerate,
 }: Props) {
   const { t, label, number } = useI18n();
@@ -149,6 +153,7 @@ export function ComputeInspector({
           <h3>{t("copy.modelOptions")}</h3>
           <ModelOptions
             model={model}
+            exclude={["style_strength"]}
             values={draft.options}
             invalid={invalid}
             onChange={(key, value) =>
@@ -185,6 +190,19 @@ export function ComputeInspector({
           <Issues items={report?.warnings ?? []} />
           {error ? <Failure error={error} /> : null}
           <Issues items={serverErrors} />
+          <label className="switch-field generate-auto-run">
+            <input
+              type="checkbox"
+              role="switch"
+              name="auto-run"
+              checked={autoRun}
+              onChange={(e) => onAutoRun(e.target.checked)}
+            />
+            <span>
+              <strong>{t("runControl.autoRun")}</strong>
+              <small className="muted">{t("runControl.autoRunHelp")}</small>
+            </span>
+          </label>
           <button
             type="submit"
             className="primary generate-button"
@@ -194,7 +212,9 @@ export function ComputeInspector({
             {pending
               ? t("copy.creatingJob")
               : isRunning
-                ? t("copy.mockJobInProgress")
+                ? isMock
+                  ? t("copy.mockJobInProgress")
+                  : t("copy.jobInProgress")
                 : t(
                     outputFormat === "png"
                       ? "generate.action2d"
@@ -206,7 +226,9 @@ export function ComputeInspector({
               ? t("generate.issueCount", {
                   count: number(report.errors.length, 0),
                 })
-              : t("copy.readyToCreateAMockJob")}
+              : isMock
+                ? t("copy.readyToCreateAMockJob")
+                : t("copy.readyToCreateAJob")}
           </p>
         </form>
       </Panel>

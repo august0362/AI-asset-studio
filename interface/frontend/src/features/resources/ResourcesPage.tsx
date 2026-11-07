@@ -108,7 +108,11 @@ export function SnapshotDashboard({
       <div className="resource-top-grid">
         <Panel
           title={t("copy.weeklyComputeQuota")}
-          extra={<Badge>{t("common.mock")}</Badge>}
+          extra={
+            <Badge>
+              {isMock ? t("common.mock") : t("copy.liveKaggleData")}
+            </Badge>
+          }
         >
           <div className="panel-body quota-grid">
             <div>
@@ -189,7 +193,11 @@ export function SnapshotDashboard({
       </div>
       <div className="section-title">
         <h2>{t("copy.notebookTelemetry")}</h2>
-        <Badge>{t("copy.mockNotAKaggleConnection")}</Badge>
+        <Badge>
+          {isMock
+            ? t("copy.mockNotAKaggleConnection")
+            : t("copy.liveKaggleData")}
+        </Badge>
       </div>
       <div className="telemetry-grid">
         <Panel

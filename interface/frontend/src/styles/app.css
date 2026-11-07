@@ -3038,3 +3038,92 @@ td:last-child {
     grid-template-columns: 1fr;
   }
 }
+
+/* D-041: run control, selection and style images (UI.md §8 terms). */
+.selection-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+.selection-bar > span {
+  margin-right: auto;
+}
+.selection-help {
+  margin: 0 0 12px;
+}
+.job-row-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.job-row-wrap:last-child {
+  border-bottom: 0;
+}
+.job-row-wrap .job-row {
+  flex: 1;
+  min-width: 0;
+  border-bottom: 0;
+}
+.job-row-wrap .auto-run-toggle {
+  padding-right: 12px;
+}
+.job-row-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+.switch-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+}
+.switch-field input[role="switch"] {
+  flex: none;
+}
+.switch-field > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.generate-auto-run {
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.run-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+.style-strength input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary);
+}
+.style-strength output {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+.style-hint {
+  margin: 6px 0;
+}
+@media (max-width: 640px) {
+  .job-row-wrap {
+    flex-wrap: wrap;
+    padding: 0 12px;
+  }
+  .job-row-wrap .auto-run-toggle {
+    padding: 0 0 12px 28px;
+  }
+}

@@ -124,6 +124,11 @@ export function BatchControls({
     queryKey: ["profiles"],
     queryFn: () => api.profiles(),
   });
+  const workflow = useQuery({
+    queryKey: ["character", detail.character.character_id],
+    queryFn: () => api.character(detail.character.character_id),
+    enabled: detail.config.stage_id === "s5",
+  });
   const [chosen, setChosen] = useState(""),
     [accelerator, setAccelerator] = useState("auto"),
     [requestId, setRequestId] = useState(() => crypto.randomUUID());
@@ -175,17 +180,17 @@ export function BatchControls({
         client_request_id: requestId,
         compute: { profile_id: profileId, accelerator_id: accelerator },
       };
-      return detail.config.stage_id === "s3"
-        ? api.createPreviewBatch(detail.character.character_id, {
-            ...request,
-            kind: "preview",
-          })
-        : retry
-          ? api.retryCharacterBatch(
-              detail.character.character_id,
-              batch!.manifest_id,
-              request,
-            )
+      return retry
+        ? api.retryCharacterBatch(
+            detail.character.character_id,
+            batch!.manifest_id,
+            request,
+          )
+        : detail.config.stage_id === "s3"
+          ? api.createPreviewBatch(detail.character.character_id, {
+              ...request,
+              kind: "preview",
+            })
           : api.submitCharacterBatch(
               detail.character.character_id,
               batch!.manifest_id,
@@ -213,6 +218,20 @@ export function BatchControls({
   const productionReady =
     !!batch &&
     batch.status === "ready" &&
+    !workflow.isError &&
+    (["s2", "s4"] as const).every((sid) => {
+      const approved = workflow.data?.stages.find(
+        (s) => s.config.stage_id === sid,
+      )?.state.approved;
+      return (
+        approved &&
+        !approved.stale &&
+        approved.revision ===
+          (sid === "s2"
+            ? batch.approved_spec_revision
+            : batch.prompt_set_revision)
+      );
+    }) &&
     detail.inputs
       .filter((i) => i.kind === "hard")
       .every((i) => i.revision !== null) &&
@@ -228,6 +247,10 @@ export function BatchControls({
           : t("char.production")}
       </h3>
       {profiles.error && <Failure error={profiles.error} />}
+      {workflow.error && <Failure error={workflow.error} />}
+      {detail.config.stage_id === "s5" && batch?.status === "ready" && workflow.data && !productionReady && (
+        <p className="notice warning">{t("errors.BATCH_MANIFEST_STALE")}</p>
+      )}
       <div className="character-field-grid">
         <label>
           {t("char.compute")}

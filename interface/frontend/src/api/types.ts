@@ -3,12 +3,7 @@ import type { CharacterApi, CharacterErrorCode } from "./characterTypes";
 export type Pipeline = "text_to_2d" | "image_to_3d" | "text_to_3d";
 export type Category = "character" | "skill_effect" | "weapon" | "companion";
 export type ImageRole =
-  | "front"
-  | "side"
-  | "back"
-  | "three_quarter"
-  | "detail"
-  | "style_reference";
+  "front" | "side" | "back" | "three_quarter" | "detail" | "style_reference";
 export type OutputFormat = "png" | "glb";
 export type AcceleratorKind = "cpu" | "gpu_cuda" | "tpu";
 export type JobStatus =
@@ -20,17 +15,10 @@ export type JobStatus =
   | "completed"
   | "failed";
 export type Availability =
-  | "available"
-  | "experimental"
-  | "planned"
-  | "unavailable";
+  "available" | "experimental" | "planned" | "unavailable";
 export type Fit = "ok" | "unknown" | "insufficient";
 export type Freshness =
-  | "fresh"
-  | "stale"
-  | "unavailable"
-  | "unsupported"
-  | "not_applicable";
+  "fresh" | "stale" | "unavailable" | "unsupported" | "not_applicable";
 export type Source =
   | "kaggle_cli_quota"
   | "kaggle_cli_status"
@@ -67,6 +55,7 @@ export type ErrorCode =
   | "MODEL_OPTION_INVALID"
   | "MODEL_ACCELERATOR_INCOMPATIBLE"
   | "MODEL_RUNTIME_UNKNOWN"
+  | "MODEL_RUNTIME_EXCEEDS_ESTIMATE"
   | "UPLOAD_NOT_FOUND"
   | "UPLOAD_CORRUPT"
   | "UPLOAD_TOO_LARGE"
@@ -86,6 +75,8 @@ export type ErrorCode =
   | "ARTIFACT_NOT_FOUND"
   | "JOB_NOT_RETRYABLE"
   | "JOB_NOT_TERMINAL"
+  | "JOB_ALREADY_STARTED"
+  | "JOB_GROUP_INVALID"
   | "PATH_INVALID"
   | "KAGGLE_AUTH_FAILED"
   | "KAGGLE_RATE_LIMITED"
@@ -196,6 +187,8 @@ export interface CreateJobRequest {
   options: Record<string, OptionValue>;
   output_format: OutputFormat;
   compute: { profile_id: string; accelerator_id: string | null };
+  /** v1.2 (§14.1): false creates a held job. Defaults to true. */
+  auto_run?: boolean;
 }
 export interface Accelerator {
   accelerator_id: string;
@@ -253,10 +246,7 @@ export interface KaggleResourceSnapshot {
   contract_version: string;
   compute_profile_id: string;
   authentication_status:
-    | "authenticated"
-    | "unauthenticated"
-    | "invalid_credentials"
-    | "unknown";
+    "authenticated" | "unauthenticated" | "invalid_credentials" | "unknown";
   accelerator_type: string | null;
   accelerator_availability: {
     accelerator_id: string;
@@ -272,12 +262,7 @@ export interface KaggleResourceSnapshot {
   session_started_at: string | null;
   estimated_session_remaining_seconds: number | null;
   session_status:
-    | "none"
-    | "queued"
-    | "running"
-    | "finished"
-    | "failed"
-    | "unknown";
+    "none" | "queued" | "running" | "finished" | "failed" | "unknown";
   cpu_utilization_percent: number | null;
   ram_used_bytes: number | null;
   ram_total_bytes: number | null;
@@ -306,6 +291,30 @@ export interface ArtifactsResponse {
 }
 // Backend names the same public artifact shape ArtifactView.
 export type ArtifactView = Artifact;
+/** v1.2 (§14.1): run control of a job. `queue_state` is set only while the job is `created`. */
+export type QueueState = "held" | "waiting" | "starting";
+export interface Scheduling {
+  auto_run: boolean;
+  queue_state: QueueState | null;
+  queue_position: number | null;
+  run_requested_at: string | null;
+  group_id: string | null;
+  group_job_ids: string[];
+  gpu_index: 0 | 1 | null;
+}
+/** v1.2 (§14.4): response of POST /jobs/groups. */
+export interface RunGroup {
+  contract_version: string;
+  group_id: string;
+  job_ids: string[];
+  run_requested_at: string;
+}
+/** v1.2 (§14.5): response of POST /jobs/delete. */
+export interface BulkDeleteResult {
+  contract_version: string;
+  deleted: string[];
+  refused: { job_id: string; code: "JOB_NOT_FOUND" | "JOB_NOT_TERMINAL" }[];
+}
 export interface GenerationResult {
   contract_version: string;
   job_id: string;
@@ -356,6 +365,8 @@ export interface GenerationResult {
   };
   created_at: string;
   updated_at: string;
+  /** v1.2; absent only in v1.0 payloads. */
+  scheduling?: Scheduling;
 }
 export interface JobSummary {
   job_id: string;
@@ -367,6 +378,8 @@ export interface JobSummary {
   updated_at: string;
   primary_artifact: Artifact | null;
   error_code: ErrorCode | null;
+  /** v1.2; absent only in v1.0 payloads. */
+  scheduling?: Scheduling;
 }
 export interface JobStatusResponse {
   job_id: string;
@@ -416,6 +429,10 @@ export interface ApiClient extends CharacterApi {
   logs(id: string, offset?: number, limit?: number): Promise<JobLogs>;
   retryJob(id: string, client_request_id: string): Promise<GenerationResult>;
   deleteJob(id: string): Promise<void>;
+  /** v1.2 (§14.5) */
+  setAutoRun(id: string, autoRun: boolean): Promise<GenerationResult>;
+  createRunGroup(jobIds: [string, string]): Promise<RunGroup>;
+  deleteJobs(jobIds: string[]): Promise<BulkDeleteResult>;
   artifacts(id: string): Promise<ArtifactsResponse>;
   artifactContent(id: string, artifactId: string): Promise<Blob>;
   inputContent(id: string, inputId: string): Promise<Blob>;

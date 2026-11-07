@@ -16,6 +16,7 @@ import {
   PlanPanel,
   Status,
 } from "../../components/ui";
+import { AutoRunToggle, GroupNote, QueueBadge, RunButton } from "./RunControl";
 export function JobDetail({ id }: { id: string }) {
   const {
     t,
@@ -61,9 +62,35 @@ export function JobDetail({ id }: { id: string }) {
   if (!job.data) return <Loading>{t("copy.loadingJobDetails")}</Loading>;
   const j = job.data,
     primary = j.artifacts.find((a) => a.is_primary),
-    terminal = ["completed", "failed"].includes(j.status);
+    terminal = ["completed", "failed"].includes(j.status),
+    queue = j.scheduling?.queue_state ?? null,
+    // §14.6: terminal, held or waiting jobs (a waiting character batch job stays)
+    deletable =
+      terminal || queue === "held" || (queue === "waiting" && !j.request.batch);
   return (
     <div className="job-detail-stack">
+      {/* A finished job shows its image first, then its details (owner, 2026-11-07). */}
+      {primary && (
+        <Panel title={t("copy.jobArtifacts")}>
+          {j.request.batch ? (
+            j.artifacts.map((a) => (
+              <div key={a.artifact_id}>
+                <p className="panel-body">
+                  <code>{a.task_id ?? a.artifact_id}</code>
+                </p>
+                <ArtifactPreview jobId={id} artifact={a} />
+              </div>
+            ))
+          ) : (
+            <ArtifactPreview jobId={id} artifact={primary} />
+          )}
+          <div className="panel-body button-row">
+            {j.artifacts.map((a) => (
+              <DownloadButton key={a.artifact_id} jobId={id} artifact={a} />
+            ))}
+          </div>
+        </Panel>
+      )}
       <Panel
         title={t("copy.jobInspector")}
         extra={<Status status={j.status} />}
@@ -77,6 +104,13 @@ export function JobDetail({ id }: { id: string }) {
           <p className="muted">
             {j.request.model_id} · {label("mode", j.execution.backend)}
           </p>
+          {(queue || j.scheduling?.group_id) && (
+            <div className="run-control-row">
+              <QueueBadge scheduling={j.scheduling} />
+              <AutoRunToggle jobId={id} scheduling={j.scheduling} />
+              <GroupNote jobId={id} scheduling={j.scheduling} />
+            </div>
+          )}
           <dl className="properties">
             <dt>{t("copy.created")}</dt>
             <dd>{date(j.created_at)}</dd>
@@ -121,6 +155,7 @@ export function JobDetail({ id }: { id: string }) {
           {status.error && <Failure error={status.error} />}
           <Issues items={[...(j.error ? [j.error] : []), ...j.warnings]} />
           <div className="button-row">
+            <RunButton jobId={id} scheduling={j.scheduling} />
             {j.status === "failed" && j.error?.retryable && (
               <button
                 className="primary"
@@ -131,7 +166,7 @@ export function JobDetail({ id }: { id: string }) {
                 {retry.isPending ? t("copy.retrying") : t("copy.retryJob")}
               </button>
             )}
-            {terminal && (
+            {deletable && (
               <button
                 className="danger-text"
                 disabled={remove.isPending}
@@ -187,27 +222,6 @@ export function JobDetail({ id }: { id: string }) {
           )}
         </div>
       </Panel>
-      {primary && (
-        <Panel title={t("copy.jobArtifacts")}>
-          {j.request.batch ? (
-            j.artifacts.map((a) => (
-              <div key={a.artifact_id}>
-                <p className="panel-body">
-                  <code>{a.task_id ?? a.artifact_id}</code>
-                </p>
-                <ArtifactPreview jobId={id} artifact={a} />
-              </div>
-            ))
-          ) : (
-            <ArtifactPreview jobId={id} artifact={primary} />
-          )}
-          <div className="panel-body button-row">
-            {j.artifacts.map((a) => (
-              <DownloadButton key={a.artifact_id} jobId={id} artifact={a} />
-            ))}
-          </div>
-        </Panel>
-      )}
       <PlanPanel plan={j.compute.resource_plan} />
     </div>
   );

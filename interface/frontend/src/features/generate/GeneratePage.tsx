@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Box, LockKeyhole, WandSparkles } from "lucide-react";
-import { api } from "../../api/client";
+import { api, isMock } from "../../api/client";
 import { useJob, useJobs, useStudioData } from "../../api/queries";
 import type { Category, CreateJobRequest, Pipeline } from "../../api/types";
 import { validateRequest } from "../../validation/validate";
@@ -25,6 +25,8 @@ import { useDraft } from "./Draft";
 import { ImageInputs } from "./ImageInputs";
 import { ComputeInspector } from "./ComputeInspector";
 import { formatModelTime } from "./modelTime";
+import { useAutoRunPreference } from "./autoRun";
+import { StyleStrength } from "./StyleStrength";
 const routeToPipeline: Record<string, Pipeline> = {
   "text-to-2d": "text_to_2d",
   "image-to-3d": "image_to_3d",
@@ -42,6 +44,13 @@ export function GeneratePage() {
   const jobs = useJobs({ status: "completed" }),
     active = useJob(draft.jobId);
   const model = data.models?.find((m) => m.model_id === draft.modelId);
+  const [autoRun, setAutoRun] = useAutoRunPreference();
+  const hasStyleImages = draft.uploads.some(
+    (u) => u.role === "style_reference",
+  );
+  const styleModel =
+    pipeline === "text_to_2d" &&
+    !!model?.inputs.supported_image_roles.includes("style_reference");
   useEffect(() => {
     if (!draft.profileId && data.profileId)
       setDraft((d) => ({ ...d, profileId: d.profileId || data.profileId! }));
@@ -60,7 +69,10 @@ export function GeneratePage() {
       })),
       options: Object.fromEntries(
         Object.entries(draft.options).filter(
-          ([key]) => model?.options_schema[key],
+          // style_strength only travels with a style image (§14.9: never silently ignored)
+          ([key]) =>
+            model?.options_schema[key] &&
+            (key !== "style_strength" || hasStyleImages),
         ),
       ),
       output_format: pipeline === "text_to_2d" ? "png" : "glb",
@@ -68,8 +80,17 @@ export function GeneratePage() {
         profile_id: data.profileId ?? "",
         accelerator_id: draft.acceleratorId,
       },
+      auto_run: autoRun,
     }),
-    [draft, model, pipeline, requestId, data.profileId],
+    [
+      draft,
+      model,
+      pipeline,
+      requestId,
+      data.profileId,
+      autoRun,
+      hasStyleImages,
+    ],
   );
   const report =
     data.catalog &&
@@ -128,8 +149,11 @@ export function GeneratePage() {
       a.kind === "preview" &&
       a.artifact_id === active.data?.preview?.artifact_id,
   );
+  // A held or waiting job (§14.2) does not block the next one: queueing and grouping need several jobs.
   const isRunning =
-    active.data && !["completed", "failed"].includes(active.data.status);
+    active.data &&
+    !["completed", "failed"].includes(active.data.status) &&
+    !["held", "waiting"].includes(active.data.scheduling?.queue_state ?? "");
   const invalid = report?.errors.map((e) => e.field ?? "") ?? [];
   return (
     <>
@@ -138,7 +162,9 @@ export function GeneratePage() {
           <div className="breadcrumb">{t("copy.workspaceGeneration")}</div>
           <h1>{t("copy.generateStudio")}</h1>
         </div>
-        <Badge tone="secondary">{t("copy.m1MockWorkstation")}</Badge>
+        <Badge tone="secondary">
+          {isMock ? t("copy.m1MockWorkstation") : t("copy.httpWorkstation")}
+        </Badge>
       </div>
       <div className="studio-controls">
         <div className="pipeline-tabs" aria-label={t("copy.pipelineSelector")}>
@@ -207,7 +233,7 @@ export function GeneratePage() {
       <div className="studio-grid">
         <Panel
           title={
-            model.inputs.max_images
+            model.inputs.max_images && !styleModel
               ? t("copy.referenceIngestion")
               : t("copy.promptWorkspace")
           }
@@ -255,7 +281,7 @@ export function GeneratePage() {
               </select>
             </label>
             <p className="small muted">
-              {model.inputs.max_images
+              {model.inputs.max_images && !styleModel
                 ? t(
                     "copy.useClearConsistentViewsFullBodyReferencesHelpPreserveSilhouetteAndIdentity",
                   )
@@ -301,6 +327,7 @@ export function GeneratePage() {
             )}
             {model.inputs.max_images > 0 || draft.uploads.length > 0 ? (
               <ImageInputs
+                style={styleModel}
                 uploads={draft.uploads}
                 model={model}
                 roles={data.catalog.image_roles}
@@ -320,6 +347,21 @@ export function GeneratePage() {
                   setDraft((d) => ({
                     ...d,
                     uploads: d.uploads.filter((_, i) => i !== index),
+                  }))
+                }
+              />
+            ) : null}
+            {styleModel &&
+            hasStyleImages &&
+            model.options_schema.style_strength ? (
+              <StyleStrength
+                rule={model.options_schema.style_strength}
+                value={draft.options.style_strength}
+                invalid={invalid.includes("options.style_strength")}
+                onChange={(value) =>
+                  setDraft((d) => ({
+                    ...d,
+                    options: { ...d.options, style_strength: value },
                   }))
                 }
               />
@@ -349,9 +391,13 @@ export function GeneratePage() {
         >
           <div className="viewport-subhead">
             <span>
-              {draft.jobId ? t("copy.currentJob") : t("copy.exampleFixture")}
+              {draft.jobId
+                ? t("copy.currentJob")
+                : isMock
+                  ? t("copy.exampleFixture")
+                  : t("copy.latestCompletedJob")}
             </span>
-            <Badge>{t("copy.mockOutput")}</Badge>
+            <Badge>{isMock ? t("copy.mockOutput") : t("copy.output")}</Badge>
           </div>
           {output && previewJobId ? (
             <ArtifactPreview jobId={previewJobId} artifact={output} />
@@ -359,7 +405,9 @@ export function GeneratePage() {
             <Empty
               title={
                 isRunning
-                  ? t("copy.yourMockJobIsProcessing")
+                  ? isMock
+                    ? t("copy.yourMockJobIsProcessing")
+                    : t("copy.yourJobIsProcessing")
                   : t("copy.yourNextAssetStartsHere")
               }
             >
@@ -367,9 +415,11 @@ export function GeneratePage() {
                 ? t(
                     "copy.statusUpdatesEvery2SecondsProgressPercentageIsNotReported",
                   )
-                : t(
-                    "copy.addInputsReviewCompatibilityAndGenerateAFixturePreview",
-                  )}
+                : isMock
+                  ? t(
+                      "copy.addInputsReviewCompatibilityAndGenerateAFixturePreview",
+                    )
+                  : t("copy.addInputsReviewCompatibilityAndGenerate")}
             </Empty>
           )}
           <div className="panel-body result-summary" aria-live="polite">
@@ -393,9 +443,11 @@ export function GeneratePage() {
               {pipeline === "image_to_3d"
                 ? t("copy.reconstructionMayApproximateUnseenRegions")
                 : ""}
-              {t(
-                "copy.m1ReturnsFixedTestArtifactsPromptAndOptionsAreValidatedNoAiInferenceRuns",
-              )}
+              {isMock
+                ? t(
+                    "copy.m1ReturnsFixedTestArtifactsPromptAndOptionsAreValidatedNoAiInferenceRuns",
+                  )
+                : t("copy.httpOutputNote")}
             </p>
             {output && previewJobId && (
               <DownloadButton jobId={previewJobId} artifact={output} />
@@ -422,7 +474,14 @@ export function GeneratePage() {
           isRunning={!!isRunning}
           pending={create.isPending}
           error={create.error}
-          serverErrors={create.data?.validation.errors ?? []}
+          serverErrors={[
+            ...(create.data?.validation.errors ?? []),
+            ...(create.data?.validation.warnings ?? []).filter(
+              (w) => !report?.warnings.some((r) => r.code === w.code),
+            ),
+          ]}
+          autoRun={autoRun}
+          onAutoRun={setAutoRun}
           onGenerate={() => create.mutate()}
         />
       </div>

@@ -1,6 +1,7 @@
 import type {
   ApiClient,
   ArtifactsResponse,
+  BulkDeleteResult,
   Catalog,
   Category,
   ComputeProfile,
@@ -14,6 +15,7 @@ import type {
   KaggleResourceSnapshot,
   ModelCapabilities,
   Pipeline,
+  RunGroup,
   UploadRecord,
   ValidationReport,
 } from "./types";
@@ -115,6 +117,21 @@ export class HttpApiClient extends HttpCharacterApi implements ApiClient {
   }
   deleteJob(id: string) {
     return this.request<void>(`/jobs/${encodeURIComponent(id)}`, "DELETE");
+  }
+  setAutoRun(id: string, autoRun: boolean) {
+    return this.request<GenerationResult>(
+      `/jobs/${encodeURIComponent(id)}`,
+      "PATCH",
+      { auto_run: autoRun },
+    );
+  }
+  createRunGroup(jobIds: [string, string]) {
+    return this.request<RunGroup>("/jobs/groups", "POST", { job_ids: jobIds });
+  }
+  deleteJobs(jobIds: string[]) {
+    return this.request<BulkDeleteResult>("/jobs/delete", "POST", {
+      job_ids: jobIds,
+    });
   }
   artifacts(id: string) {
     return this.request<ArtifactsResponse>(

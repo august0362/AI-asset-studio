@@ -43,7 +43,7 @@
   "limits": {
     "max_upload_bytes": 52428800,
     "max_images_per_request": 8,
-    "prompt_max_length": 4000,
+    "prompt_max_length": 10000,
     "supported_upload_mime_types": [
       "image/png",
       "image/jpeg",

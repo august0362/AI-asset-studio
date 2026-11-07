@@ -15,7 +15,8 @@ import type {
   UploadRecord,
 } from "../../src/api/types";
 
-const backend = process.env.AAS_HTTP_BACKEND_URL ?? "http://127.0.0.1:8000/api/v1";
+const backend =
+  process.env.AAS_HTTP_BACKEND_URL ?? "http://127.0.0.1:8000/api/v1";
 const png = resolve("tests/fixtures/artifacts/mock.png");
 let exchanges: unknown[] = [],
   pending: Promise<void>[] = [],
@@ -560,4 +561,57 @@ test("d) HTTP resources show backend mock data and clarified routes/validation b
   const record = await raw(request, `/uploads/${upload.upload_id}`);
   expect(record.status).toBe(200);
   expect(record.body).toEqual(upload);
+});
+
+test("e) D-041 over HTTP: held job, auto-run switch, run-group refusal and bulk delete", async ({
+  page,
+  request,
+}) => {
+  const body = (seed: number) => ({
+    contract_version: "1.0",
+    client_request_id: crypto.randomUUID(),
+    pipeline_type: "text_to_2d",
+    asset_category: "weapon",
+    model_id: "mock-t2d-basic",
+    prompt: `HTTP held blade ${seed}`,
+    inputs: [],
+    options: { seed, width: 512, height: 512 },
+    output_format: "png",
+    compute: { profile_id: "default", accelerator_id: "gpu_t4x2" },
+    auto_run: false,
+  });
+  const a = await raw(request, "/jobs", "POST", body(11));
+  const b = await raw(request, "/jobs", "POST", body(12));
+  expect(a.status).toBe(201);
+  expect(a.body.scheduling).toMatchObject({
+    auto_run: false,
+    queue_state: "held",
+  });
+  const group = await raw(request, "/jobs/groups", "POST", {
+    job_ids: [a.body.job_id, b.body.job_id],
+  });
+  expect(group.status).toBe(422);
+  expect(group.body.errors[0]).toMatchObject({
+    code: "JOB_GROUP_INVALID",
+    details: { reason: "vram" },
+  });
+
+  await page.goto("/jobs");
+  const rowA = page.locator(".job-row-wrap", { hasText: a.body.job_id });
+  await expect(rowA.getByText("Held")).toBeVisible();
+  await rowA.getByRole("switch").click();
+  await expect
+    .poll(
+      async () => (await raw(request, `/jobs/${a.body.job_id}`)).body.status,
+      { timeout: 30_000 },
+    )
+    .toBe("completed");
+
+  const rowB = page.locator(".job-row-wrap", { hasText: b.body.job_id });
+  await rowA.getByRole("checkbox").check();
+  await rowB.getByRole("checkbox").check();
+  page.once("dialog", (dialog) => void dialog.accept());
+  await page.getByRole("button", { name: "Delete selected" }).click();
+  await expect(page.getByText("Deleted 2 job(s).")).toBeVisible();
+  expect((await raw(request, `/jobs/${b.body.job_id}`)).status).toBe(404);
 });

@@ -1,6 +1,8 @@
 import { useI18n } from "../../i18n";
 import { Link, useSearchParams } from "react-router-dom";
-import { Box, Search, X } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Box, Search, Trash2, X } from "lucide-react";
+import { api } from "../../api/client";
 import { useJobs, useJob } from "../../api/queries";
 import type { JobSummary } from "../../api/types";
 import {
@@ -10,20 +12,43 @@ import {
 } from "../../components/ArtifactPreview";
 import { Badge, Empty, Failure, Loading, Panel } from "../../components/ui";
 
+/** A mock label belongs only to assets of mock models (FR-J9), never to real images. */
+function useIsMockModel(modelId: string) {
+  const models = useQuery({
+    queryKey: ["models"],
+    queryFn: () => api.models(),
+  });
+  return !!models.data?.models.find((m) => m.model_id === modelId)?.is_mock;
+}
 function AssetCard({
   job,
   onSelect,
+  onDeleted,
   selected,
 }: {
   job: JobSummary;
   onSelect: () => void;
+  onDeleted: () => void;
   selected: boolean;
 }) {
-  const { t, date, categoryLabels } = useI18n();
+  const { t, date, number, categoryLabels } = useI18n();
+  const queryClient = useQueryClient();
+  const mock = useIsMockModel(job.model_id);
   const detail = useJob(job.job_id),
     preview = detail.data?.artifacts.find(
       (a) => a.artifact_id === detail.data?.preview?.artifact_id,
     );
+  const images =
+    detail.data?.artifacts.filter((a) => a.format === "png").length ??
+    (job.primary_artifact?.format === "png" ? 1 : 0);
+  const remove = useMutation({
+    mutationFn: () => api.deleteJob(job.job_id),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["job", job.job_id] });
+      void queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      onDeleted();
+    },
+  });
   return (
     <article className={`asset-card ${selected ? "selected" : ""}`}>
       <button
@@ -42,7 +67,8 @@ function AssetCard({
             <Box size={40} aria-hidden="true" />
           )}
           <Badge>
-            {job.primary_artifact?.format.toUpperCase()} · {t("common.mock")}
+            {job.primary_artifact?.format.toUpperCase()}
+            {mock ? ` · ${t("common.mock")}` : ""}
           </Badge>
         </div>
         <div className="asset-info">
@@ -67,13 +93,35 @@ function AssetCard({
         {job.primary_artifact && (
           <DownloadButton jobId={job.job_id} artifact={job.primary_artifact} />
         )}
+        <button
+          type="button"
+          className="danger-text"
+          aria-label={t("library.deleteFor", { id: job.job_id })}
+          disabled={remove.isPending}
+          onClick={() => {
+            if (
+              window.confirm(
+                t("library.confirmDelete", {
+                  id: job.job_id,
+                  count: number(images, 0),
+                }),
+              )
+            )
+              remove.mutate();
+          }}
+        >
+          <Trash2 size={14} aria-hidden="true" />
+          {t("library.delete")}
+        </button>
       </div>
+      {remove.error ? <Failure error={remove.error} /> : null}
     </article>
   );
 }
 function AssetDetail({ id, onClose }: { id: string; onClose: () => void }) {
   const { t, date, categoryLabels } = useI18n();
   const job = useJob(id);
+  const mock = useIsMockModel(job.data?.request.model_id ?? "");
   if (job.error) return <Failure error={job.error} />;
   if (!job.data) return <Loading>{t("copy.loadingAssetDetails")}</Loading>;
   const j = job.data,
@@ -98,7 +146,10 @@ function AssetDetail({ id, onClose }: { id: string; onClose: () => void }) {
           })}
         </h2>
         <p className="muted">
-          {j.request.prompt ?? t("copy.imageBasedMockReconstruction")}
+          {j.request.prompt ??
+            (mock
+              ? t("copy.imageBasedMockReconstruction")
+              : t("copy.imageBasedReconstruction"))}
         </p>
         <code className="job-id">{id}</code>
       </div>
@@ -114,11 +165,13 @@ function AssetDetail({ id, onClose }: { id: string; onClose: () => void }) {
           <dt>{t("copy.created")}</dt>
           <dd>{date(j.created_at)}</dd>
         </dl>
-        <p className="small muted">
-          {t(
-            "copy.mockFixtureUnseenRegionsInFutureReconstructionsMayBeApproximated",
-          )}
-        </p>
+        {mock && (
+          <p className="small muted">
+            {t(
+              "copy.mockFixtureUnseenRegionsInFutureReconstructionsMayBeApproximated",
+            )}
+          </p>
+        )}
         {primary && <DownloadButton jobId={id} artifact={primary} />}
         <Link className="text-link" to={`/jobs/${id}`}>
           {t("copy.openSourceJobLogs")}
@@ -228,6 +281,9 @@ export function LibraryPage() {
                   key={j.job_id}
                   job={j}
                   onSelect={() => update("asset", j.job_id)}
+                  onDeleted={() => {
+                    if (selected === j.job_id) update("asset", "");
+                  }}
                   selected={selected === j.job_id}
                 />
               ))}

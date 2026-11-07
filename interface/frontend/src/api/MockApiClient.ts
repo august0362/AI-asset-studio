@@ -2,12 +2,16 @@ import type {
   ApiClient,
   Artifact,
   ArtifactsResponse,
+  BulkDeleteResult,
   CreateJobRequest,
   GenerationResult,
   ImageRole,
   JobFilters,
   JobStatus,
+  JobSummary,
+  RunGroup,
   Scenario,
+  Scheduling,
   UploadRecord,
 } from "./types";
 import { catalog, makeSnapshot, models, profiles } from "./fixtures";
@@ -211,6 +215,19 @@ export class MockApiClient extends MockCharacterApi implements ApiClient {
   private requests = new Map<string, CreateJobRequest>();
   private idempotency = new Map<string, string>();
   private active = new Map<string, number>();
+  /** v1.2 run control (§14): auto-run, FIFO request time and run group per job. */
+  private runControl = new Map<
+    string,
+    {
+      auto_run: boolean;
+      run_requested_at: string | null;
+      order: number;
+      group_id: string | null;
+      group_job_ids: string[];
+      gpu_index: 0 | 1 | null;
+    }
+  >();
+  private requestOrder = 0;
   private scenario: Scenario = "fresh";
   constructor(
     private stepMs = 1400,
@@ -395,15 +412,250 @@ export class MockApiClient extends MockCharacterApi implements ApiClient {
     this.records.set(job_id, job);
     this.requests.set(job_id, copy(req));
     this.idempotency.set(req.client_request_id, job_id);
-    return copy(job);
+    const autoRun = req.auto_run ?? true;
+    this.runControl.set(job_id, {
+      auto_run: autoRun,
+      run_requested_at: autoRun ? stamp : null,
+      order: ++this.requestOrder,
+      group_id: null,
+      group_job_ids: [],
+      gpu_index: null,
+    });
+    return this.view(job);
+  }
+  private control(id: string) {
+    let value = this.runControl.get(id);
+    if (!value) {
+      const job = this.records.get(id);
+      value = {
+        auto_run: true,
+        run_requested_at: job?.created_at ?? null,
+        order: 0,
+        group_id: null,
+        group_job_ids: [],
+        gpu_index: null,
+      };
+      this.runControl.set(id, value);
+    }
+    return value;
+  }
+  private queueState(job: GenerationResult): Scheduling["queue_state"] {
+    if (job.status !== "created") return null;
+    if (this.active.has(job.job_id)) return "starting";
+    return this.control(job.job_id).auto_run ? "waiting" : "held";
+  }
+  private fifo(): string[][] {
+    const waiting = [...this.records.values()]
+      .filter((j) => this.queueState(j) === "waiting")
+      .sort((a, b) => {
+        const x = this.control(a.job_id),
+          y = this.control(b.job_id);
+        return (
+          (x.run_requested_at ?? "").localeCompare(y.run_requested_at ?? "") ||
+          x.order - y.order ||
+          a.job_id.localeCompare(b.job_id)
+        );
+      });
+    const entries: string[][] = [],
+      seen = new Set<string>();
+    for (const job of waiting) {
+      const c = this.control(job.job_id),
+        key = c.group_id ?? job.job_id;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      entries.push(c.group_id ? c.group_job_ids : [job.job_id]);
+    }
+    return entries;
+  }
+  private scheduling(job: GenerationResult, fifo = this.fifo()): Scheduling {
+    const c = this.control(job.job_id),
+      state = this.queueState(job);
+    const position = fifo.findIndex((entry) => entry.includes(job.job_id));
+    return {
+      auto_run: c.auto_run,
+      queue_state: state,
+      queue_position:
+        state === "waiting" && position >= 0 ? position + 1 : null,
+      run_requested_at: c.auto_run ? c.run_requested_at : null,
+      group_id: c.group_id,
+      group_job_ids: [...c.group_job_ids],
+      gpu_index: c.gpu_index,
+    };
+  }
+  private view(job: GenerationResult): GenerationResult {
+    return copy({ ...job, scheduling: this.scheduling(job) });
+  }
+  private hold(id: string) {
+    const c = this.control(id);
+    Object.assign(c, {
+      auto_run: false,
+      run_requested_at: null,
+      group_id: null,
+      group_job_ids: [],
+      gpu_index: null,
+    });
+  }
+  async setAutoRun(id: string, autoRun: boolean) {
+    this.pump();
+    const job = this.get(id),
+      state = this.queueState(job),
+      c = this.control(id);
+    if (state !== "held" && state !== "waiting")
+      reject(
+        "JOB_ALREADY_STARTED",
+        "This job has already started, so its auto-run setting can no longer change.",
+        409,
+      );
+    if (autoRun && state === "held")
+      Object.assign(c, {
+        auto_run: true,
+        run_requested_at: new Date(this.now()).toISOString(),
+        order: ++this.requestOrder,
+      });
+    if (!autoRun && state === "waiting") {
+      for (const partner of c.group_job_ids)
+        if (partner !== id) this.hold(partner);
+      this.hold(id);
+    }
+    return this.view(job);
+  }
+  async createRunGroup(jobIds: [string, string]): Promise<RunGroup> {
+    this.pump();
+    const invalid = (reason: string, message: string): never => {
+      throw new ApiError(
+        {
+          contract_version: "1.0",
+          errors: [
+            issue("JOB_GROUP_INVALID", "job_ids", message, "error", { reason }),
+          ],
+          warnings: [],
+        },
+        422,
+      );
+    };
+    const jobs = jobIds.map((id) => this.get(id));
+    for (const job of jobs) {
+      const state = this.queueState(job);
+      if (state === "waiting")
+        invalid(
+          "not_held",
+          "Only held jobs can be grouped. Turn auto-run off first.",
+        );
+      if (state !== "held")
+        reject(
+          "JOB_ALREADY_STARTED",
+          "This job has already started and cannot be grouped.",
+          409,
+          "job_ids",
+        );
+    }
+    if (jobIds.length !== 2 || jobIds[0] === jobIds[1])
+      invalid("count", "A run group has exactly two different jobs.");
+    for (const job of jobs) {
+      if (job.request.pipeline_type !== "text_to_2d")
+        invalid("pipeline", "Only Text→2D jobs can be grouped.");
+      if (job.request.batch)
+        invalid("batch", "Character batch jobs cannot be grouped.");
+    }
+    if (jobs[0].compute.profile_id !== jobs[1].compute.profile_id)
+      invalid("profile", "Both jobs must use the same compute profile.");
+    for (const job of jobs)
+      if (job.compute.accelerator_id !== "gpu_t4x2")
+        invalid(
+          "accelerator",
+          "Both jobs must run on GPU T4 ×2 (one job per T4).",
+        );
+    const perGpu = profiles
+      .find((p) => p.profile_id === jobs[0].compute.profile_id)
+      ?.accelerators.find(
+        (a) => a.accelerator_id === "gpu_t4x2",
+      )?.vram_bytes_per_device;
+    for (const job of jobs) {
+      const model = models.find((m) => m.model_id === job.request.model_id);
+      if (!model || model.runtime.multi_gpu !== "unsupported")
+        invalid(
+          "multi_gpu",
+          "Only models that use a single GPU can be grouped.",
+        );
+      const need = model!.runtime.minimum_gpu_vram_bytes;
+      if (need === null || !perGpu || need > perGpu)
+        invalid(
+          "vram",
+          "The model's GPU memory need is unknown or larger than one GPU of the accelerator.",
+        );
+    }
+    const group_id = `grp_${randomHex().slice(0, 12)}`,
+      at = new Date(this.now()).toISOString(),
+      order = ++this.requestOrder;
+    jobIds.forEach((id, index) =>
+      Object.assign(this.control(id), {
+        auto_run: true,
+        run_requested_at: at,
+        order,
+        group_id,
+        group_job_ids: [...jobIds],
+        gpu_index: index as 0 | 1,
+      }),
+    );
+    return {
+      contract_version: "1.0",
+      group_id,
+      job_ids: [...jobIds],
+      run_requested_at: at,
+    };
+  }
+  async deleteJobs(jobIds: string[]): Promise<BulkDeleteResult> {
+    if (
+      !jobIds.length ||
+      jobIds.length > 200 ||
+      new Set(jobIds).size !== jobIds.length
+    )
+      reject(
+        "REQUEST_FIELD_INVALID",
+        "Send 1 to 200 different job IDs.",
+        422,
+        "job_ids",
+      );
+    const result: BulkDeleteResult = {
+      contract_version: "1.0",
+      deleted: [],
+      refused: [],
+    };
+    for (const id of jobIds) {
+      try {
+        await this.deleteJob(id);
+        result.deleted.push(id);
+      } catch (error) {
+        const code =
+          error instanceof ApiError &&
+          error.response.errors[0]?.code === "JOB_NOT_FOUND"
+            ? "JOB_NOT_FOUND"
+            : "JOB_NOT_TERMINAL";
+        result.refused.push({ job_id: id, code });
+      }
+    }
+    return result;
   }
   private pump() {
-    const jobs = [...this.records.values()].filter((j) => !terminal(j.status));
+    // Running jobs first, then the FIFO (§14.3): one session per profile in the mock; a run group is one session.
+    const fifo = this.fifo().flat();
+    const jobs = [...this.records.values()]
+      .filter((j) => !terminal(j.status))
+      .filter((j) => this.active.has(j.job_id) || fifo.includes(j.job_id))
+      .sort(
+        (a, b) =>
+          Number(this.active.has(b.job_id)) -
+            Number(this.active.has(a.job_id)) ||
+          fifo.indexOf(a.job_id) - fifo.indexOf(b.job_id),
+      );
     const busy = new Set<string>();
     for (const job of jobs) {
-      if (busy.has(job.compute.profile_id)) continue;
+      if (!this.active.has(job.job_id) && busy.has(job.compute.profile_id))
+        continue;
       const started = this.active.get(job.job_id) ?? this.now();
       this.active.set(job.job_id, started);
+      for (const partner of this.control(job.job_id).group_job_ids)
+        if (!this.active.has(partner)) this.active.set(partner, started);
       const stages: JobStatus[] = job.request.inputs.length
         ? [
             "created",
@@ -479,8 +731,9 @@ export class MockApiClient extends MockCharacterApi implements ApiClient {
             j.request.pipeline_type === filters.pipeline_type),
       )
       .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    const fifo = this.fifo();
     return {
-      jobs: rows.slice(offset, offset + limit).map((j) =>
+      jobs: rows.slice(offset, offset + limit).map((j): JobSummary =>
         copy({
           job_id: j.job_id,
           status: j.status,
@@ -491,6 +744,7 @@ export class MockApiClient extends MockCharacterApi implements ApiClient {
           updated_at: j.updated_at,
           primary_artifact: j.artifacts.find((a) => a.is_primary) ?? null,
           error_code: j.error?.code ?? null,
+          scheduling: this.scheduling(j, fifo),
         }),
       ),
       next_cursor: offset + limit < rows.length ? String(offset + limit) : null,
@@ -509,7 +763,7 @@ export class MockApiClient extends MockCharacterApi implements ApiClient {
     );
     if (fixture && !this.records.has(id) && !this.deletedSharedJobs.has(id))
       return fixture;
-    return copy(this.get(id));
+    return this.view(this.get(id));
   }
   async jobStatus(id: string) {
     const j = await this.job(id);
@@ -547,19 +801,29 @@ export class MockApiClient extends MockCharacterApi implements ApiClient {
     const job = await this.createJob({
       ...this.requests.get(id)!,
       client_request_id,
+      auto_run: true, // a retry is a new, ungrouped job that runs by itself (§14.4)
     });
     const actual = this.get(job.job_id);
     actual.execution.retry_of = id;
-    return copy(actual);
+    return this.view(actual);
   }
   async deleteJob(id: string) {
-    const j = await this.job(id);
-    if (!terminal(j.status))
+    const j = await this.job(id),
+      state = j.scheduling?.queue_state ?? null;
+    if (
+      !terminal(j.status) &&
+      state !== "held" &&
+      !(state === "waiting" && !j.request.batch)
+    )
       reject(
         "JOB_NOT_TERMINAL",
-        "Wait until the job completes or fails before deleting it.",
+        "Only completed, failed, held or waiting jobs can be deleted.",
         409,
       );
+    if (!terminal(j.status))
+      for (const partner of this.control(id).group_job_ids)
+        if (partner !== id) this.hold(partner);
+    this.runControl.delete(id);
     this.records.delete(id);
     if (sharedCharacterFixture("batch_jobs").some((j) => j.job_id === id))
       this.deletedSharedJobs.add(id);

@@ -1,7 +1,7 @@
 import { useI18n } from "../../i18n";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ImagePlus, Trash2 } from "lucide-react";
+import { ClipboardPaste, ImagePlus, Trash2 } from "lucide-react";
 import { api } from "../../api/client";
 import type {
   ErrorItem,
@@ -29,7 +29,20 @@ function Thumbnail({ record }: { record: UploadRecord }) {
     </span>
   );
 }
+/** Image files from a paste event (Ctrl+V). Text pastes are left alone. */
+export function pastedImages(data: DataTransfer | null): File[] {
+  if (!data) return [];
+  const files = Array.from(data.files ?? []).filter((f) =>
+    f.type.startsWith("image/"),
+  );
+  if (files.length) return files;
+  return Array.from(data.items ?? [])
+    .filter((item) => item.kind === "file" && item.type.startsWith("image/"))
+    .map((item) => item.getAsFile())
+    .filter((f): f is File => f !== null);
+}
 export function ImageInputs({
+  style = false,
   uploads,
   roles,
   model,
@@ -38,6 +51,8 @@ export function ImageInputs({
   onRole,
   onRemove,
 }: {
+  /** Text→2D style images (CONTRACTS §14.9): the images give the style, the prompt the content. */
+  style?: boolean;
   uploads: { record: UploadRecord; role: ImageRole }[];
   roles: ImageRole[];
   model: ModelCapabilities;
@@ -91,10 +106,42 @@ export function ImageInputs({
     setBusy(false);
     if (input.current) input.current.value = "";
   }
+  const latest = useRef(upload);
+  latest.current = upload;
+  const accepts = model.inputs.max_images > 0;
+  useEffect(() => {
+    if (!accepts) return;
+    const onPaste = (event: ClipboardEvent) => {
+      const files = pastedImages(event.clipboardData);
+      if (!files.length) return;
+      event.preventDefault();
+      void latest.current(files);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [accepts]);
+  const canReadClipboard =
+    typeof navigator !== "undefined" && !!navigator.clipboard?.read;
+  async function pasteFromClipboard() {
+    try {
+      const items = await navigator.clipboard.read();
+      const files: File[] = [];
+      for (const item of items)
+        for (const type of item.types.filter((t) => t.startsWith("image/")))
+          files.push(
+            new File([await item.getType(type)], `pasted.${type.slice(6)}`, {
+              type,
+            }),
+          );
+      if (files.length) await upload(files);
+    } catch (error) {
+      setUploadErrors([issue("UPLOAD_CORRUPT", "file", errorMessage(error))]);
+    }
+  }
   return (
     <>
       <div className="reference-summary">
-        <span>{t("copy.referenceImages")}</span>
+        <span>{style ? t("style.title") : t("copy.referenceImages")}</span>
         <Badge>
           {t("images.supported", {
             count: number(uploads.length, 0),
@@ -102,6 +149,16 @@ export function ImageInputs({
           })}
         </Badge>
       </div>
+      {style && model.inputs.max_images > 0 && (
+        <>
+          <p className="muted small">{t("style.help")}</p>
+          {!model.options_schema.style_strength && (
+            <p className="notice style-hint small">
+              {t("style.referenceHint")}
+            </p>
+          )}
+        </>
+      )}
       {model.inputs.max_images > 0 && (
         <p className="muted small">
           {model.inputs.required_image_roles.length
@@ -205,12 +262,27 @@ export function ImageInputs({
           >
             <ImagePlus size={24} aria-hidden="true" />
             <strong>
-              {busy ? t("copy.uploadingImages") : t("copy.addReferenceImages")}
+              {busy
+                ? t("copy.uploadingImages")
+                : style
+                  ? t("style.add")
+                  : t("copy.addReferenceImages")}
             </strong>
             <span>
               {t("copy.dropFilesHereOrBrowseMultipleImagesSupported")}
             </span>
+            <span className="small">{t("style.pasteHint")}</span>
           </button>
+          {canReadClipboard && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void pasteFromClipboard()}
+            >
+              <ClipboardPaste size={14} aria-hidden="true" />
+              {t("style.paste")}
+            </button>
+          )}
         </>
       )}
       <Issues items={uploadErrors} />

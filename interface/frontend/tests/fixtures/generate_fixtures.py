@@ -108,7 +108,7 @@ roles = ['front', 'side', 'back', 'three_quarter', 'detail', 'style_reference']
 save('catalog', {'contract_version': '1.0', 'pipelines': [
     {'pipeline_type': p, 'display_name': label, 'availability': availability, 'output_formats': [fmt]}
     for p, label, availability, fmt in [('text_to_2d','Text → 2D','available','png'), ('image_to_3d','Image → 3D','available','glb'), ('text_to_3d','Text → 3D','planned','glb')]],
-    'asset_categories': categories, 'image_roles': roles, 'limits': {'max_upload_bytes': 52428800, 'max_images_per_request': 8, 'prompt_max_length': 4000, 'supported_upload_mime_types': ['image/png','image/jpeg','image/webp']}})
+    'asset_categories': categories, 'image_roles': roles, 'limits': {'max_upload_bytes': 52428800, 'max_images_per_request': 8, 'prompt_max_length': 10000, 'supported_upload_mime_types': ['image/png','image/jpeg','image/webp']}})
 seed = {'type': 'integer', 'minimum': 0, 'maximum': 4294967295, 'default': None}
 models = []
 for id_, label, pipeline, cats, prompt, min_images, max_images, allowed, required, kinds, vram, runtime, availability in [

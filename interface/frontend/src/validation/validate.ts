@@ -76,6 +76,7 @@ export function validateRequest(
     "options",
     "output_format",
     "compute",
+    "auto_run", // v1.2 (§14.1)
   ];
   if (!req || typeof req !== "object") {
     add("REQUEST_FIELD_INVALID", "");
@@ -105,6 +106,8 @@ export function validateRequest(
     add("REQUEST_FIELD_INVALID", "client_request_id");
   if (req.prompt != null && typeof req.prompt !== "string")
     add("REQUEST_FIELD_INVALID", "prompt");
+  if (req.auto_run !== undefined && typeof req.auto_run !== "boolean")
+    add("REQUEST_FIELD_INVALID", "auto_run");
   if (
     !Array.isArray(req.inputs) ||
     req.inputs.some(
