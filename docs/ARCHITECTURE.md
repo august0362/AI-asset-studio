@@ -1,6 +1,6 @@
 # Architecture
 
-This is a local-first **modular monolith** with exactly three business modules: **Interface**, **Models** and **Kaggle**.
+This is a local-first **modular monolith** with exactly three business modules: **Interface**, **Models** and **Kaggle**. Since D-044 the Kaggle module is the compute module with two providers: Kaggle notebooks and the hosted Meshy API (Image→3D).
 Schemas are in [CONTRACTS.md](CONTRACTS.md). Rationale is in [DECISIONS.md](DECISIONS.md).
 
 ## 1. Modules
@@ -10,7 +10,7 @@ Schemas are in [CONTRACTS.md](CONTRACTS.md). Rationale is in [DECISIONS.md](DECI
 | Interface: frontend | `interface/frontend/` | UI, Three.js GLB preview, client-side validation (same rules as the backend), polling | Touch Kaggle, credentials or files; call anything except the REST API |
 | Interface: backend | `interface/backend/aas_backend/` | FastAPI API, orchestration, authoritative validation, job lifecycle, worker, **all of `data/`**, config and secrets | Contain model-specific logic or Kaggle CLI calls |
 | Models | `models/` | Contracts (Pydantic), capability registry, validation rules, adapters | Import `interface` or `kaggle_connector`; know about Kaggle, HTTP or storage |
-| Kaggle | `kaggle_connector/` | Profiles, auth, quota, job packaging, submit/poll/logs/download, telemetry, resource planning, notebook runtime | Import `interface` or `models`; know about pipelines, categories or models |
+| Kaggle (compute) | `kaggle_connector/` | Profiles, auth, quota, job packaging, submit/poll/logs/download, telemetry, resource planning, notebook runtime; the Meshy REST client (key, credit balance, task submit/poll/download/delete; D-044, CONTRACTS §15) | Import `interface` or `models`; know about pipelines, categories or models |
 
 - The package is named `kaggle_connector` so it does not shadow the official `kaggle` package (D-002).
 - AI agents are development-time tools, not a module. Any future in-app agent would live inside Interface (DF-10).
@@ -23,14 +23,15 @@ flowchart LR
     BE --> M[models]
     BE --> K[kaggle_connector]
     K -- CLI subprocess --> KG[(Kaggle)]
+    K -- HTTPS REST --> MS[(Meshy API)]
     BE --> FS[(data/ local filesystem)]
     M -. no import .- K
 ```
 
-- The backend is the only integration point. It maps `ModelInvocation` to `KaggleJobSpec`, and `ModelCapabilities.runtime` to `ResourceRequirements`.
+- The backend is the only integration point. It maps `ModelInvocation` to `KaggleJobSpec` (or to the Meshy task request for a model whose `runtime.provider` is `meshy`), and `ModelCapabilities.runtime` to `ResourceRequirements`.
 - Third-party dependencies are limited to:
   - `models`: pydantic, Pillow
-  - `kaggle_connector`: pydantic and the `kaggle` CLI; the notebook runtime may also use psutil and nvidia-ml-py
+  - `kaggle_connector`: pydantic and the `kaggle` CLI; the notebook runtime may also use psutil and nvidia-ml-py. The Meshy client uses only the standard library (`urllib.request`)
 - An import-boundary test enforces these rules.
 
 ## 2. Directory structure
@@ -45,9 +46,9 @@ AI Asset Studio/
 ├── models/
 │   ├── contracts/               # Pydantic schemas + JSON Schema export
 │   ├── registry/                # capability registry (mocks.py, real.py) + validation stages 2–6
-│   └── adapters/                # mock_text_to_2d, mock_image_to_3d, diffusers_text_to_2d (M4)
+│   └── adapters/                # mock_text_to_2d, mock_image_to_3d, diffusers_text_to_2d (M4), meshy_image_to_3d (M5)
 ├── kaggle_connector/
-│   ├── client/                  # ComputeClient protocol, MockKaggleClient, KaggleCliClient + CLI parsers
+│   ├── client/                  # ComputeClient protocol, MockKaggleClient, KaggleCliClient + CLI parsers, MeshyApiClient, MockMeshyClient
 │   ├── jobs/                    # packaging, submit, poll, logs, download
 │   ├── resources/               # profiles, accelerator catalog, quota, telemetry parsing, planner
 │   └── runtime/                 # runs INSIDE the notebook: runner, telemetry reporter, manifest (no backend imports)
@@ -66,8 +67,9 @@ AI Asset Studio/
 | Frontend | Node 22.12+, React 18, TypeScript strict, Vite, `three` (GLTFLoader, OrbitControls), TanStack Query, react-router, Vitest + Testing Library |
 | Backend | Python 3.11+, FastAPI, uvicorn, pydantic v2, pydantic-settings, python-multipart, Pillow, pytest + httpx, ruff |
 | Kaggle | Official `kaggle` CLI ≥ 2.2.1 (2.2.4 installed), run as a subprocess |
+| Meshy | Meshy REST API over HTTPS (`https://api.meshy.ai`, Bearer key), standard-library `urllib`, polling every 10 s (D-044) |
 | Storage | Local files + JSON. No database |
-| Execution | One in-process worker per profile (concurrency 1). No queue broker |
+| Execution | In-process scheduler with `AAS_MAX_PARALLEL_SESSIONS` session slots (default 1) across all profiles, v1 jobs and V2 batch groups. Sessions that run at the same time use one profile. Jobs stay `created` while held (auto-run off) or waiting (FIFO); a run group of two Text→2D jobs is one session with one job per T4. The selected profile never changes. Meshy jobs use their own FIFO slots (`AAS_MESHY_MAX_PARALLEL_TASKS`, default 2; D-044). No queue broker (D-040, D-041; CONTRACTS §14, §15.7) |
 
 Exact versions are pinned in `pyproject.toml` and `package.json`.
 
@@ -75,6 +77,7 @@ Exact versions are pinned in `pyproject.toml` and `package.json`.
 
 - `AAS_COMPUTE_MODE=mock` selects `MockKaggleClient`. It runs the job package locally and produces the same status sequence, `AAS_*` log lines and manifest as Kaggle, with configurable quota and telemetry scenarios. It is used by every automated test; the frontend's `VITE_API_MODE=mock` uses `MockApiClient` instead of the backend.
 - `kaggle` selects `KaggleCliClient`.
+- The Meshy profile follows the same switch: `mock` selects `MockMeshyClient` (no network), `kaggle` selects `MeshyApiClient` (live, when `AAS_MESHY_API_KEY` is set). CONTRACTS §15.10.
 - Contracts are identical in both modes. Only `/health.compute_mode` tells them apart.
 
 ## 5. Data flow
@@ -125,17 +128,33 @@ Built in M3 (`KaggleCliClient`); the reasons are in DECISIONS D-026…D-031.
 
 | Concern | Design |
 |---|---|
-| Auth | One profile = one account. Only the profile named by `AAS_ACTIVE_PROFILE` is enabled; the others are listed as disabled and their credentials are never read. The token goes only into the CLI subprocess env (`KAGGLE_API_TOKEN`), with an isolated, empty `KAGGLE_CONFIG_DIR`. `kaggle config view` must report the configured username. Auth and quota refresh in the background every 5 min (D-030) |
-| Inputs | Image jobs: one private dataset per job, `aas-in-<job id>`, deleted when the job ends (D-029). Text-only jobs skip this step |
-| Submit | One private kernel per job, `aas-<job id>`: a generated `aas_kernel.py` embeds the runner, the adapter entrypoint and `job.json`, with no secrets → `kaggle kernels push` with an explicit `--timeout`. Accelerators: `cpu` and `gpu_t4x2` (D-031). Internet is off, except for jobs whose adapter sets `requires_internet` (the real models, which download pinned weights; D-032, D-034) |
+| Auth | One profile = one account owned and operated by one authorized person. Every profile listed in `AAS_COMPUTE_PROFILES` with its own `AUTHORIZATION_CONFIRMED=true` is enabled; unconfirmed profiles remain listed as disabled and their credentials are never read. Enabled profiles require a username and token. `AAS_ACTIVE_PROFILE` is ignored with one notice naming the variable. Each enabled profile has its own CLI subprocess env (`KAGGLE_API_TOKEN`) and isolated, empty `KAGGLE_CONFIG_DIR`; `kaggle config view` must match that profile's username. Auth and quota refresh every 5 min per enabled profile; `refresh=1` is limited per profile. Whoever runs a job explicitly selects their own account; the app cannot verify this (A-02). No rotation, pooling, summed quota, failover or resubmission on another profile; recommendations stay within the selected profile (D-008 rules 1 and 3–5, D-040) |
+| Inputs | Image jobs, including Text→2D jobs with style images (D-042): one private dataset per job, `aas-in-<job id>`, deleted when the job ends (D-029); a group kernel attaches both jobs' datasets. Text-only jobs skip this step |
+| Submit | One private kernel per job or run group (`aas-<job id>`, or named from the group ID; a group's kernel runs one process per T4, CONTRACTS §14.4): a generated `aas_kernel.py` embeds the runner, the adapter entrypoint and `job.json`, with no secrets → `kaggle kernels push` with an explicit `--timeout`. Accelerators: `cpu` and `gpu_t4x2` (D-031). Internet is off, except for jobs whose adapter sets `requires_internet` (the real models, which download pinned weights; D-032, D-034) |
 | Poll | `kaggle kernels status` every 30 s, mapped to CONTRACTS §4 (D-030) |
 | Logs | `kaggle kernels logs -f` while running (live telemetry, D-028). `kaggle kernels logs` after the run fills gaps. Lines are redacted before storage |
 | Artifacts | `kaggle kernels output` → `outputs/<job_id>/remote_raw` → manifest check → `collect_outputs` |
-| Cleanup | The dataset is deleted when the job ends. The kernel is deleted when the job completes and kept when it fails, so the run can be inspected (D-031) |
+| Cleanup | When a job ends, completed or failed, the final logs are merged, then the dataset and the kernel are deleted; a group's kernel once both jobs end. Best-effort (D-041, CONTRACTS §14.7) |
 | Retries | CONTRACTS §4. Never auto-resubmit, never switch profile |
 | Quota | `kaggle quota --format json` (D-026). A failed call gives `null` + `unavailable` |
 | Test switch | `AAS_KAGGLE_TEST_FAILURE=kernel_error` makes every Kaggle job fail on purpose, to check error handling (D-031) |
 | Stance | Kaggle is a limited batch platform. No persistent sessions or real-time inference |
+
+### 6.1 Meshy client (D-044)
+
+Image→3D runs on the hosted Meshy API. The rules are in CONTRACTS §15; this table shows where each part lives.
+
+| Concern | Design |
+|---|---|
+| Placement | `kaggle_connector/client/meshy.py` (`MeshyApiClient`) and `kaggle_connector/client/meshy_mock.py` (`MockMeshyClient`), both implementing `ComputeClient`. The backend picks the client by the profile's `provider` |
+| Request | The adapter `models/adapters/meshy_image_to_3d/` builds the endpoint and body as pure data (`entrypoint: null`). The client reads the input files, encodes them as `data:` URIs in memory and sends one `POST`. It knows nothing about categories, roles or options |
+| Auth | `AAS_MESHY_API_KEY` from `.env`, held in backend memory, sent only in the `Authorization` header. `GET /openapi/v1/balance` gives the authentication status and credits every 5 min |
+| Poll | `GET` the task every 10 s; statuses map to CONTRACTS §4 as in §15.6. Progress comes from the task's `progress` |
+| Artifacts | GLB and thumbnail → `outputs/<job_id>/remote_raw` → the client writes the §6.4 manifest → `collect_outputs`. Signed URLs are used once and never stored |
+| Cleanup | Delete the Meshy task after the outputs are stored (`AAS_MESHY_DELETE_TASKS`, default `true`). Best-effort |
+| Scheduling | Separate FIFO slots (`AAS_MESHY_MAX_PARALLEL_TASKS`, default 2); Meshy jobs never take a Kaggle session slot |
+| Retries | The create request is never resubmitted; only a `429` refusal is retried (at most 3 times). Reads follow CONTRACTS §4 rule 4 |
+| Stance | A paid service: every job spends credits, so each one starts from an explicit click and the plan shows the estimate first |
 
 ## 7. Frontend routes
 

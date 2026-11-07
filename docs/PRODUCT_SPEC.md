@@ -4,15 +4,15 @@ What the product does and why. How it is built is in [ARCHITECTURE.md](ARCHITECT
 
 ## 1. Goal and user
 
-A local-first tool that turns prompts and 2D concept art into game assets. Inference runs as batch jobs on Kaggle, and all data stays on the user's machine. It serves **one local user** (a game developer) and has no multi-user accounts.
+A local-first tool that turns prompts and 2D concept art into game assets. Inference runs as batch jobs on Kaggle, and Image→3D runs on the hosted Meshy API (D-044). All data stays on the user's machine, except the images and prompt of a Meshy job, which are sent to Meshy. It serves **one local user** (a game developer) and has no multi-user accounts.
 
 ## 2. Pipelines
 
 | Pipeline | Priority | Input → Output | Status |
 |---|---|---|---|
 | Text → 2D (`text_to_2d`) | First real AI pipeline (M4) | Prompt (+ style reference if the model supports it) → PNG | Real models for `character` (D-034) |
-| Image → 3D (`image_to_3d`) | Highest quality priority (M5) | One or more views (front, side, back…) → GLB with geometry and textures | Mock models only until M5 |
-| Text → 3D (`text_to_3d`) | Last (M6) | Prompt → GLB | `planned`: visible but disabled |
+| Image → 3D (`image_to_3d`) | Highest quality priority (M5) | One or more views (front, side, back…) → GLB with geometry and textures | Meshy (`meshy-7.1`) chosen (D-044); documented, implementation in M5. Mock models until then |
+| Text → 3D (`text_to_3d`) | Dropped (M6, D-045) | Prompt → GLB | `planned`: visible but disabled |
 
 **Image → 3D intent:** full-body characters first. The result should preserve identity, anatomy, silhouette, face, hair, outfit, colors and style as closely as the model allows. Perfect reconstruction is **never** promised, especially for regions the references do not show, and the UI says so next to the result.
 
@@ -48,6 +48,8 @@ Each model declares the categories it supports. The owner chooses every real mod
 | FR-G6 | On a model change, re-validate, keep all uploads and values, and mark incompatible fields |
 | FR-G7 | Every error has a stable code, the affected field and a clear message |
 | FR-G8 | Errors disable Generate. Warnings are shown but do not block |
+| FR-G10 | Text→2D with Animagine XL 4.0 or FLUX.2 [klein]: optional style images, added by upload or paste, plus the prompt. The model takes the style from the images and the content from the prompt; with no image it follows the prompt only. MOSS-Image-SFT is prompt-only (D-042) |
+| FR-G9 | Prompts up to 10 000 characters, or less where the model's text encoder needs it; the prompt field shows the count and the model's limit. Prompts are never truncated (D-041) |
 
 **Jobs and artifacts**
 
@@ -57,7 +59,13 @@ Each model declares the categories it supports. The owner chooses every real mod
 | FR-J2 | Show status, the timeline, progress, logs and errors |
 | FR-J3 | PNG inline preview, and GLB in a Three.js viewer (orbit, zoom, reset) |
 | FR-J4 | Download each artifact as `<job_id>_<artifact_id>.<ext>` |
-| FR-J5 | Jobs survive a backend restart |
+| FR-J5 | Jobs survive a backend restart. Held and waiting jobs keep their place |
+| FR-J6 | Auto-run switch: on, a new job runs by itself (one job, one Kaggle session); off, it is held in `created` until the owner turns auto-run on or runs it in a group. The switch can be flipped while the job waits (D-041) |
+| FR-J7 | Group exactly two held Text→2D jobs into one Kaggle session, one job per T4; each job keeps its own results. No automatic grouping |
+| FR-J8 | Delete held or waiting jobs (nothing has reached Kaggle yet), and delete many jobs at once, with "select all completed" and one confirmation |
+| FR-J9 | Delete an asset from the Asset library; this deletes the job that produced it, after a confirmation. A mock label appears only on assets of mock models |
+| FR-J10 | Up to `AAS_MAX_PARALLEL_SESSIONS` Kaggle sessions run at the same time, on one profile at a time |
+| FR-J11 | The Kaggle notebook of every finished job, completed or failed, is deleted after its logs and outputs are stored locally |
 
 **Kaggle resources**
 
@@ -71,6 +79,7 @@ Each model declares the categories it supports. The owner chooses every real mod
 | FR-R6 | Source, timestamp and freshness for every metric group. Never present stale or missing data as live |
 | FR-R7 | Predicted job fit (`ok`/`unknown`/`insufficient`) with reasons |
 | FR-R8 | Explicit profile selection among authorized profiles only. Auto picks only the accelerator within that profile |
+| FR-R9 | Meshy: authentication status and credits (balance, monthly, permanent, reset time) with source and freshness; each Meshy job shows its estimated credits before Generate and the credits it really used afterwards (D-044, CONTRACTS §15) |
 
 **Appearance** ([UI.md](UI.md))
 
@@ -90,8 +99,8 @@ Each model declares the categories it supports. The owner chooses every real mod
 
 | ID | Requirement |
 |---|---|
-| NFR-1 Local-first | The backend binds to `127.0.0.1`. All data stays in `data/` |
-| NFR-2 Secrets | Kaggle credentials never reach the frontend, logs, job files, notebooks or the repo |
+| NFR-1 Local-first | The backend binds to `127.0.0.1`. All data stays in `data/`. One exception (D-044): the images and prompt of a Meshy Image→3D job are sent to Meshy, and the UI says so |
+| NFR-2 Secrets | Kaggle credentials and the Meshy API key never reach the frontend, logs, job files, notebooks or the repo |
 | NFR-3 Honesty | No fabricated telemetry, quota or runtime. Unknowns are shown as unknown, and estimates are labeled |
 | NFR-4 Compliance | Kaggle ToS: one account per person; no quota circumvention or account rotation (D-008) |
 | NFR-5 Reliability | Atomic metadata writes. Failures keep inputs and logs. Transient retries are bounded, and runs are never auto-resubmitted |

@@ -118,6 +118,18 @@ Use these terms everywhere so the same thing always has the same name. Terms mar
 | Job | Tác vụ |
 | Retry | Thử lại |
 | Delete | Xóa |
+| Delete selected | Xóa mục đã chọn |
+| Select all completed | Chọn tất cả đã hoàn thành |
+| Auto-run (switch) | Tự động chạy |
+| Held (auto-run off) | Đang giữ |
+| Waiting (in the run queue) | Đang xếp hàng |
+| Run (button) | Chạy |
+| Run together (two jobs, one session) | Chạy chung |
+| Run group | Nhóm chạy |
+| Parallel sessions | Phiên song song |
+| Style images | Ảnh phong cách |
+| Style strength | Mức ảnh hưởng phong cách |
+| Paste image | Dán ảnh |
 | Pipeline | Quy trình |
 | Text → 2D / Image → 3D / Text → 3D | Văn bản → 2D / Ảnh → 3D / Văn bản → 3D |
 | Asset category | Loại tài sản |

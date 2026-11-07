@@ -1,12 +1,14 @@
-# Contracts — v1.1
+# Contracts — v1.3
 
 Canonical source for schemas, API, job states, artifacts, validation and error codes. Change only via [§12](#12-contract-change-process).
 v1.1 (2026-11-06) adds Character Production in [§13](#13-character-production-v11); it is additive, so every v1.0 rule still holds.
+v1.2 (2026-11-07) adds run control, run groups, bulk deletion, style images for Text→2D and a 10 000-character prompt limit in [§14](#14-run-control-run-groups-and-deletion-v12) (D-041). It is additive too.
+v1.3 (2026-11-07) adds a second compute provider, the hosted Meshy API, for Image→3D in [§15](#15-hosted-image3d-on-meshy-v13) (D-044). It is additive too: a model or profile without the new fields is a Kaggle one.
 Related: [PRODUCT_SPEC.md](PRODUCT_SPEC.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · [DECISIONS.md](DECISIONS.md)
 
 ## 1. Conventions
 
-- Every top-level v1.0 payload has `"contract_version": "1.0"` (`MAJOR.MINOR`); Character Production payloads (§13) carry `"1.1"`, and requests accept any `1.x`. The encoding is JSON in UTF-8 with `snake_case` keys.
+- Every top-level v1.0 payload has `"contract_version": "1.0"` (`MAJOR.MINOR`); Character Production payloads (§13) carry `"1.1"`, and requests accept any `1.x`. The v1.2 fields (§14) are optional additions to v1.0 payloads, which keep `"1.0"`. The encoding is JSON in UTF-8 with `snake_case` keys.
 - Timestamps are RFC 3339 UTC with `Z`. Sizes are integer bytes, durations are seconds, percentages are 0–100, and quota is in hours.
 - An unknown value is `null` plus an explicit status (§2.1, §6). Never `0`, `""` or a guess.
 - Unknown request fields are rejected (`REQUEST_FIELD_INVALID`). Nothing is silently dropped.
@@ -42,7 +44,7 @@ Related: [PRODUCT_SPEC.md](PRODUCT_SPEC.md) · [ARCHITECTURE.md](ARCHITECTURE.md
 
 - File size: 50 MiB (52 428 800 bytes).
 - Images per request: 8.
-- Prompt: 4 000 characters after trimming. A blank prompt becomes `null`.
+- Prompt: 10 000 characters after trimming (v1.2; it was 4 000). A blank prompt becomes `null`.
 - Upload types: `image/png`, `image/jpeg`, `image/webp`. The type is detected from the file bytes, not from the name or header.
 
 ## 2. Model contracts (Models module)
@@ -149,6 +151,7 @@ Adapter interface:
 | `prompt` | Optional, trimmed |
 | `inputs` | `{upload_id, role}[]`, default `[]`. Each needs a role |
 | `options` | Object, default `{}`, checked against the model's `options_schema` |
+| `auto_run` | Optional boolean, default `true` (v1.2). `false` creates a held job that waits for the owner (§14) |
 | `compute` | Required: `{profile_id, accelerator_id|null}`. `null` means recommend one (§7) |
 
 ```jsonc
@@ -218,8 +221,9 @@ Adapter interface:
 
 - A failed job has the same shape, with `artifacts: []`, `preview: null` and a populated `error`. Example: `{"code":"KAGGLE_KERNEL_ERROR","severity":"error","field":null,"message":"The remote notebook exited with an error. See the job logs.","details":{"failed_in_status":"running","remote_status":"error"},"retryable":false}`.
 - `compute.resource_plan` is the full `ResourcePlan` (§7.3) computed when the job was created (D-020).
-- `execution.backend` is `mock` or `kaggle`.
+- `execution.backend` is `mock` or `kaggle`, or `meshy` from v1.3 (§15).
 - v1.1 adds two optional fields used only by batch jobs (§13.9): `request.batch` and `artifacts[].task_id`. Both are `null` for every other job.
+- v1.2 adds `scheduling` to every job (§14.1).
 - The internal file `data/jobs/<job_id>.json` has the same shape plus `path` on inputs and artifacts. The API strips those paths.
 
 ### 3.5 Artifact conventions
@@ -256,7 +260,7 @@ stateDiagram-v2
 ```
 
 States:
-- `created`: persisted and waiting for the profile's worker slot. Each profile runs one job at a time.
+- `created`: persisted and not yet submitted. The job is **held** for the owner, **waiting** in the FIFO for a session slot, or **starting** (§14.2). At most `AAS_MAX_PARALLEL_SESSIONS` sessions (default 1) run at a time, all on one profile (D-040, D-041). A run group of two jobs counts as one session (§14.4). Waiting jobs are processed FIFO by `scheduling.run_requested_at`. The same slot covers v1 jobs and V2 batch-group jobs; it is held through input upload, submission, polling, download and terminal cleanup. A job keeps its explicitly selected `profile_id` for its entire life.
 - `uploading`: pushing inputs to the remote store.
 - `queued`: the run was submitted but has not started.
 - `running`: executing, with logs and telemetry possibly streaming.
@@ -270,9 +274,9 @@ Rules:
 3. A failure keeps inputs, logs and downloaded files, and sets `error.details.failed_in_status`.
 4. Transient remote reads and downloads get at most 3 in-job retries (5 s / 15 s / 45 s). Each attempt increments `execution.transient_retries`.
 5. A run is **never** resubmitted automatically, because it consumes quota. `POST /jobs/{id}/retry` is allowed only when `error.retryable` is true. It creates a new, re-validated job with `retry_of` set.
-6. On startup, every non-terminal job is reconciled. A job with a remote reference resumes polling. Any other job fails with `BACKEND_RESTARTED` (retryable).
+6. On startup, every non-terminal job is reconciled. A job with a remote reference resumes polling. A held or waiting `created` job stays as it is and keeps its FIFO position (v1.2). Any other job fails with `BACKEND_RESTARTED` (retryable).
 7. A job in `queued` or `running` for longer than `required_seconds × 1.25` fails with `KAGGLE_TIMEOUT`.
-8. Cancellation is out of scope for the MVP (DF-09).
+8. Cancellation is out of scope for the MVP (DF-09). A held or waiting job can be deleted, because nothing has reached Kaggle (§14.6).
 
 ## 5. REST API (`/api/v1`)
 
@@ -293,13 +297,16 @@ The backend binds to `127.0.0.1`, serves a single user, has no auth, and allows 
 | GET | `/jobs/{job_id}/status` | → `{job_id, status, updated_at, progress: {stage, percent, message}}` |
 | GET | `/jobs/{job_id}/logs?offset=0&limit=500` | → `{lines: [{n, at, source: backend|remote, text}], next_offset, complete}` |
 | POST | `/jobs/{job_id}/retry` | `{client_request_id}` → `201` new job or `409 JOB_NOT_RETRYABLE` |
-| DELETE | `/jobs/{job_id}` | → `204`. Terminal jobs only. Removes inputs, outputs, logs and metadata |
+| DELETE | `/jobs/{job_id}` | → `204`. Terminal, held or waiting jobs (§14.6). Removes inputs, outputs, logs and metadata |
+| PATCH | `/jobs/{job_id}` | `{auto_run}` → `200 GenerationResult` (§14.5) |
+| POST | `/jobs/groups` | `{job_ids: [a, b]}` → `201 RunGroup` (§14.4) |
+| POST | `/jobs/delete` | `{job_ids}` → `200 {deleted, refused}` (§14.5) |
 | GET | `/jobs/{job_id}/inputs/{input_id}/content` | → bytes |
 | GET | `/jobs/{job_id}/artifacts[/{artifact_id}/content?download=0|1]` | → `{contract_version, artifacts: Artifact[]}` / bytes (inline or attachment) |
 | GET | `/compute/profiles` | → `{profiles: ComputeProfile[]}` (no secrets) |
 | GET | `/compute/profiles/{profile_id}/snapshot?refresh=0|1` | → `KaggleResourceSnapshot` |
 
-- `JobSummary` = `{job_id, status, pipeline_type, asset_category, model_id, created_at, updated_at, primary_artifact|null, error_code|null}`. `primary_artifact` is the full artifact object, as in §3.4.
+- `JobSummary` = `{job_id, status, pipeline_type, asset_category, model_id, created_at, updated_at, primary_artifact|null, error_code|null, scheduling}` (`scheduling` from v1.2, §14.1). `primary_artifact` is the full artifact object, as in §3.4.
 - `Artifact` = one entry of `GenerationResult.artifacts` (§3.4).
 - `progress` comes from `AAS_PROGRESS` lines, or is `null`. The logs endpoint never returns `AAS_TELEMETRY` lines.
 - Polling (no WebSockets):
@@ -316,7 +323,7 @@ The backend binds to `127.0.0.1`, serves a single user, has no auth, and allows 
                  { "pipeline_type": "text_to_3d", "display_name": "Text → 3D", "availability": "planned", "output_formats": ["glb"] } ],
   "asset_categories": ["character", "skill_effect", "weapon", "companion"],
   "image_roles": ["front", "side", "back", "three_quarter", "detail", "style_reference"],
-  "limits": { "max_upload_bytes": 52428800, "max_images_per_request": 8, "prompt_max_length": 4000,
+  "limits": { "max_upload_bytes": 52428800, "max_images_per_request": 8, "prompt_max_length": 10000,
               "supported_upload_mime_types": ["image/png", "image/jpeg", "image/webp"] } }
 ```
 
@@ -347,7 +354,7 @@ HTTP status codes:
 
 ### 6.1 ComputeProfile (public view; never includes credentials)
 
-A profile is **one Kaggle account, owned and operated by one person who has authorized its use**. The rules are in DECISIONS D-008.
+A profile is **one Kaggle account, owned and operated by one person who has authorized its use**. Multiple profiles may be enabled (D-040 amends D-008 rule 2). Whoever runs a job selects their own account explicitly; the app cannot verify account ownership (A-02). Only the selected profile is considered for recommendation, quota and execution. There is no rotation, pooling, summed quota, automatic failover or resubmission on another profile. The app-wide compute slot is defined in §4.
 
 ```json
 { "contract_version": "1.0", "profile_id": "default", "display_name": "Owner Kaggle", "owner_label": "project-owner",
@@ -436,6 +443,8 @@ Output manifest at `/kaggle/working/aas_output/manifest.json` (the mock client w
 
 On failure the manifest has `status: "error"` and `error: {code, message}`. A missing manifest fails the job with `ARTIFACT_INVALID`.
 
+A run group (§14.4) writes one manifest per job, at `aas_output/<job_id>/manifest.json`. `AAS_PROGRESS` lines are routed by their `job_id`, and plain log lines carry a `[<job_id>]` prefix. The session has a single `AAS_TELEMETRY` reporter (covering both GPUs), and its samples are stored for both jobs.
+
 ## 7. Resource planning (deterministic)
 
 ### 7.1 Inputs
@@ -494,6 +503,8 @@ Stages 4–7 report every error they find. A request with any error creates no j
 
 ### 8.2 Error codes
 
+The codes added in v1.3 for the Meshy provider are listed in §15.8.
+
 Validation codes (`Retry` = `error.retryable`; warnings do not block):
 
 | Code | Sev. | Field | Retry | Condition |
@@ -525,6 +536,7 @@ Validation codes (`Retry` = `error.retryable`; warnings do not block):
 | `MODEL_OPTION_INVALID` | error | `options.<name>` | no | Type, enum, range or length violation |
 | `MODEL_ACCELERATOR_INCOMPATIBLE` | error | `compute.accelerator_id` | no | §7.2 |
 | `MODEL_RUNTIME_UNKNOWN` | warning | `model_id` | — | Runtime estimate unknown |
+| `MODEL_RUNTIME_EXCEEDS_ESTIMATE` | warning | `inputs` | — | v1.2: the job's inputs make the model measurably slower than `estimated_runtime_seconds`; `details` = `{estimated_seconds, measured_seconds, images}` (§14.9) |
 | `UPLOAD_NOT_FOUND` | error | `inputs[i].upload_id` | no | Upload unknown or expired |
 | `UPLOAD_CORRUPT` | error | `inputs[i].upload_id` / `file` | no | Image cannot be decoded |
 | `UPLOAD_TOO_LARGE` | error | `file` | no | Over the global limit (413) |
@@ -542,7 +554,9 @@ Validation codes (`Retry` = `error.retryable`; warnings do not block):
 | `COMPUTE_TELEMETRY_STALE` | warning | snapshot group | — | Sample older than the threshold |
 | `JOB_NOT_FOUND` / `ARTIFACT_NOT_FOUND` | error | — | no | 404 |
 | `JOB_NOT_RETRYABLE` | error | — | no | Job not `failed`, or not retryable |
-| `JOB_NOT_TERMINAL` | error | — | no | Deleting a non-terminal job |
+| `JOB_NOT_TERMINAL` | error | — | no | Deleting a job that has taken a session slot, or a waiting §13.9 batch job (§14.6) |
+| `JOB_ALREADY_STARTED` | error | — | no | PATCH on, or grouping of, a job that is no longer held or waiting (§14) |
+| `JOB_GROUP_INVALID` | error | `job_ids` | no | The two jobs cannot share a session; see `details.reason` (§14.4) |
 | `PATH_INVALID` | error | — | no | Fails the regex or root check (logged as a security event) |
 
 Job-time errors (`GenerationResult.error`):
@@ -561,6 +575,7 @@ Job-time errors (`GenerationResult.error`):
 | `ARTIFACT_INVALID` | no | Manifest or required output missing, or a format check failed |
 | `BACKEND_RESTARTED` | yes | §4 rule 6 |
 | `INTERNAL_ERROR` | no | Unexpected exception (details logged locally only) |
+| `MODEL_PROMPT_TOO_LONG` | no | v1.2: the prompt is longer than the model's text-encoder window, found before the image model loads; `details` = `{tokens, max_tokens}` (§14.8) |
 
 ### 8.3 Model switching (UI)
 
@@ -618,6 +633,8 @@ Lifecycle:
 Path safety: every path is `data_root / <validated relative path>`, resolved and rejected with `PATH_INVALID` if it escapes the root, is absolute, contains `..` or is a symlink. File names are built from IDs, roles and formats only, never from user input.
 
 ## 10. Secrets
+
+The Meshy API key follows the same rules (§15.9).
 
 - Kaggle credentials live only in the local `.env` (gitignored). They are held in backend memory and passed **only** in the environment of the CLI subprocess for the selected profile.
 - They never appear in API responses, the frontend, logs, job files, notebook source or output, or datasets.
@@ -949,7 +966,7 @@ class ReferenceNote(ContractModel):              # S1: how a reference is used
 
 class ConceptContent(ContractModel):             # S1
     stage_id: Literal["s1"]
-    idea: Annotated[str, StringConstraints(max_length=4000)] | None
+    idea: Annotated[str, StringConstraints(max_length=10000)] | None   # 10 000 from v1.2 (D-042)
     directions: list[Annotated[str, StringConstraints(min_length=1, max_length=1000)]]  # max 3
     notes: LongText | None
     palette: list[HexColor]                      # max 12
@@ -999,14 +1016,14 @@ class ConceptCandidate(ContractModel):
 class ConceptValidationContent(ContractModel):   # S3
     stage_id: Literal["s3"]
     preview_profile: PreviewProfile | None
-    preview_prompt: Annotated[str, StringConstraints(max_length=4000)] | None
+    preview_prompt: Annotated[str, StringConstraints(max_length=10000)] | None   # 10 000 from v1.2 (D-042)
     candidates: list[ConceptCandidate]           # max 24
     selected_candidate_id: str | None
     review_notes: LongText | None
 
 class PromptEntry(ContractModel):
     purpose: AssetPurpose
-    canonical_prompt: Annotated[str, StringConstraints(max_length=4000)]
+    canonical_prompt: Annotated[str, StringConstraints(max_length=10000)]   # 10 000 from v1.2 (D-042)
     negative_prompt: Annotated[str, StringConstraints(max_length=1000)] | None
     notes: Annotated[str, StringConstraints(max_length=2000)] | None
 
@@ -1018,7 +1035,7 @@ class ProductionProfile(ContractModel):          # S4
 class ProductionTask(ContractModel):
     task_id: str
     purpose: AssetPurpose
-    prompt: Annotated[str, StringConstraints(min_length=1, max_length=4000)]   # actual model prompt
+    prompt: Annotated[str, StringConstraints(min_length=1, max_length=10000)]   # actual model prompt; 10 000 from v1.2
     negative_prompt: Annotated[str, StringConstraints(max_length=1000)] | None
     seed: int | None                             # 0..4294967295; explicit seed recommended (OD-05)
     width: int
@@ -1735,3 +1752,291 @@ The Kaggle connector (`kaggle_connector/`) is **not changed**: one job is still 
 - S4 approval reports only the plan errors that splitting or another model would fix
   (`COMPUTE_SESSION_LIMIT_EXCEEDED`, `COMPUTE_VRAM_INSUFFICIENT`); quota and authentication are checked when the
   batch is submitted.
+
+## 14. Run control, run groups and deletion (v1.2)
+
+Added in v1.2 (owner, 2026-11-07, [D-041](DECISIONS.md)). It is additive: a client that never sends the new fields gets the v1 behaviour. §1–§13 still hold except where this section names a change.
+
+### 14.1 Fields
+
+| Where | Field | Rule |
+|---|---|---|
+| `CreateJobRequest` (§3.2) | `auto_run: boolean`, default `true` | `false` creates a **held** job. §13.9 batch jobs are always created with `true` |
+| `GenerationResult` (§3.4) and `JobSummary` (§5) | `scheduling: {auto_run, queue_state, queue_position, run_requested_at, group_id, group_job_ids, gpu_index}` | `queue_state` is `held`, `waiting` or `starting` while the job is `created`, otherwise `null`. `queue_position` is the 1-based FIFO position while the job is `waiting`, otherwise `null`. `run_requested_at` is when the job joined the FIFO (`created_at` for an auto-run job); it is `null` while the job is held. `group_id` matches `^grp_[0-9a-f]{12}$` or is `null`. `group_job_ids` lists the group's two jobs in group order, or is `[]`. `gpu_index` is `0` or `1` for a grouped job, otherwise `null` |
+| Older job files | — | A job file without `scheduling` reads as `auto_run: true`, `run_requested_at: created_at`, with no group |
+| `execution.remote_ref` (§3.4) | Format unchanged | Both jobs of a group carry the same `remote_ref` |
+
+### 14.2 Conditions inside `created`
+
+No job state is added. A `created` job is in one of three conditions:
+- **Held:** `auto_run` is `false`. The scheduler never starts it.
+- **Waiting:** the job is in the FIFO and has no session slot. The order is `run_requested_at`, then `created_at`, then `job_id`.
+- **Starting:** the job has taken a slot. It leaves `created` on its next transition (§4).
+
+Only held and waiting jobs can be toggled (`PATCH`) or deleted. Only held jobs can be grouped.
+
+### 14.3 Scheduler
+
+- `AAS_MAX_PARALLEL_SESSIONS` (an integer ≥ 1, default `1`) sets the number of session slots. A job or a group holds one slot from input upload through terminal cleanup, as in D-040.
+- The FIFO head starts only when all three conditions hold:
+  - A slot is free.
+  - No session is running, or every running session uses the head's profile.
+  - When the profile's quota is known, the head's `required_seconds` plus the `required_seconds` of that profile's running sessions is at most its `quota_remaining_seconds`.
+
+  Otherwise the head waits until a session ends. Quota is never combined across profiles.
+- The FIFO is strict: no waiting job overtakes the head.
+- A group's `required_seconds` and run timeout are the larger of its two jobs' values.
+- A job never changes profile and is never resubmitted (§4 rule 5, D-008).
+- If Kaggle refuses a push, for example over its concurrent-session limit (A-08), the job fails with `KAGGLE_SUBMIT_FAILED` (retryable).
+
+### 14.4 Run groups
+
+`POST /jobs/groups` with `{job_ids: [a, b]}` runs two held jobs in one Kaggle session, one job per T4. The request must pass these checks:
+
+| Check | Failure |
+|---|---|
+| Both jobs exist | `404 JOB_NOT_FOUND` |
+| Both jobs are held | `409 JOB_ALREADY_STARTED`; for a job that is waiting, `422 JOB_GROUP_INVALID` with `reason: "not_held"` |
+| The request has exactly two distinct IDs | `reason: "count"` |
+| Both jobs are `text_to_2d`, and neither is a §13.9 batch job | `reason: "pipeline"` or `"batch"` |
+| Both jobs have the same `profile_id`, and both resolved accelerators are `gpu_t4x2` | `reason: "profile"` or `"accelerator"` |
+| Each model has `multi_gpu: "unsupported"` and a known `minimum_gpu_vram_bytes` that fits one GPU of the accelerator | `reason: "multi_gpu"` or `"vram"` |
+
+On success the response is `201 RunGroup`, which is `{contract_version, group_id, job_ids, run_requested_at}`. Both jobs get:
+- `auto_run: true` and the same `run_requested_at`.
+- The `group_id`.
+- `gpu_index` 0 and 1, in request order.
+
+They enter the FIFO as **one** entry. The two jobs may use different models.
+
+The remote run works as follows:
+- There is one kernel per group, named from the group ID the same way job kernels are named (D-030). Its `job.json` lists both jobs. A job with style images keeps its own input dataset (D-029), and both datasets are attached to the group's kernel (D-042).
+- The runner starts two processes, with `CUDA_VISIBLE_DEVICES=0` and `1`. Each process loads its own model and writes its own outputs and manifest under `aas_output/<job_id>/` (§6.4).
+- The kernel ends in error only when both jobs fail.
+- Both jobs move through `uploading`, `queued`, `running` and `downloading` together. After that, each job completes or fails from its own manifest. One job's failure never fails the other.
+- Retrying a failed grouped job creates an ungrouped job with `auto_run: true`.
+
+A group cannot be changed once it is created:
+- Turning auto-run off on either job dissolves the group and holds both jobs.
+- Deleting one waiting job holds the other.
+
+### 14.5 Endpoints
+
+| Method | Path | Request → Response |
+|---|---|---|
+| PATCH | `/jobs/{job_id}` | `{auto_run: boolean}` → `200 GenerationResult`. Allowed only for held or waiting jobs (otherwise `409 JOB_ALREADY_STARTED`). `true` on a held job sets `run_requested_at` to now, so the job joins the end of the FIFO. `false` on a waiting job holds it again. The call is idempotent |
+| POST | `/jobs/groups` | `{job_ids}` → `201 RunGroup` (§14.4) |
+| DELETE | `/jobs/{job_id}` | → `204`. Allowed for terminal, held or waiting jobs. Otherwise `409 JOB_NOT_TERMINAL` |
+| POST | `/jobs/delete` | `{job_ids}` (1–200 distinct IDs) → `200 {contract_version, deleted: [job_id], refused: [{job_id, code}]}`. Each ID is handled exactly as `DELETE /jobs/{id}`. A refused ID gets the code `JOB_NOT_FOUND` or `JOB_NOT_TERMINAL` |
+
+### 14.6 Deletion
+
+- Deleting a job removes the same files as §9. A held or waiting job has nothing on Kaggle, so no remote call is made.
+- Deleting a job and taking a slot use the same lock. If the scheduler takes the slot first, the delete gets `JOB_NOT_TERMINAL`.
+- A waiting §13.9 batch job cannot be deleted (`JOB_NOT_TERMINAL`), so a batch attempt never loses a job silently. Terminal batch jobs can be deleted as in v1. Approved V2 images are copies (§13.5.5).
+- Deleting an asset in the Asset Library deletes the job that produced it, after the user confirms.
+
+### 14.7 Kernel cleanup
+
+This replaces "the kernel is kept when the job fails" (D-031). When a job becomes terminal (completed or failed), the connector:
+1. Merges the final logs.
+2. Downloads the outputs, if the job completed.
+3. Deletes the input dataset and the kernel.
+
+A group's kernel is deleted once both jobs are terminal. Cleanup is best-effort: a failed delete is logged as a warning with no secrets, and it never changes the job's outcome.
+
+### 14.8 Prompt limit
+
+- The global limit is 10 000 characters (§1.3). Each model declares its own `prompt_max_length` (D-041 (7)).
+- Before the image model loads, the remote runtime tokenizes every prompt with the model's own tokenizer. If a prompt is longer than the encoder window, the job fails with `MODEL_PROMPT_TOO_LONG` (`details` = `{tokens, max_tokens}`). In a batch, only that task fails, with reason `prompt_too_long` (§13.9). Prompts are never truncated.
+- An encoder that reads the prompt in windows (Animagine's 75-token CLIP chunks) has no token limit.
+
+### 14.9 Style images for Text→2D
+
+Added with D-042 (owner, 2026-11-07).
+
+- **Models:** `animagine-xl-4` and `flux2-klein-4b` accept `style_reference` images (the existing role, §1.1). `moss-image-sft` keeps `max_images: 0`.
+- **Capabilities:**
+  - `min_images: 0` and `supported_image_roles: ["style_reference"]` (a repeatable role).
+  - `max_images` is the value measured in step G.0 (D-042 (7)), at most the global 8.
+  - `supported_mime_types` is PNG, JPEG and WebP, with the global file-size limit.
+  - `min_image_width`/`min_image_height` are 256, and `max_image_width`/`max_image_height` are 4096.
+  - Measured in G.0 (2026-11-07): `max_images` is 4 for both models (owner decision, D-042 (10)).
+- **Meaning:** the model takes the style (line work, colour, materials, lighting) from the images and the content from the prompt. Several images give one combined style and one output image. With no image, the job is exactly a v1 prompt-only job.
+- **Animagine option:** `style_strength` (`number`, 0.0–1.0; the default is set from G.0) is the IP-Adapter scale. Sending `style_strength` without any style image is `MODEL_OPTION_INVALID` (`details.reason: "requires_style_reference"`), so the option is never silently ignored.
+- **Remote run (adapter, `models/`):**
+  - Style images reach Kaggle through the job's input dataset (D-029), like any image input.
+  - For Animagine, the adapter adds the pinned IP-Adapter files (D-042 (5)) to the job's downloads only when the job has style images. The IP-Adapter is set so that it acts on the style block only (InstantStyle).
+  - For klein, the images are passed as reference images. Each image is prepared by the model's own image processor (resize and crop), and the logs record the size each image was resized to.
+  - No weights are downloaded on the local machine.
+- **Runtime:** style images do not change Animagine's time per image (+0–5 %). They make klein much slower (about 23 s per image with 1 image, 43 s with 2 and 92 s with 4, against 9 s). `estimated_runtime_seconds` stays as measured without images, and a klein job with style images gets the warning `MODEL_RUNTIME_EXCEEDS_ESTIMATE` with the measured value for its image count (§8.2).
+- **Limits:** batch jobs (§13.9) still carry no image inputs.
+- **Run groups:** a job with style images can be grouped (§14.4).
+
+## 15. Hosted Image→3D on Meshy (v1.3)
+
+Added in v1.3 (owner, 2026-11-07, [D-044](DECISIONS.md)). Image→3D runs on the hosted [Meshy API](https://docs.meshy.ai/en/api/quick-start) instead of a Kaggle notebook. It is additive: a model record or profile without the new fields is a Kaggle one, and v1.0 payloads keep `"contract_version": "1.0"`. §1–§14 still hold except where this section names a change. Meshy facts used here were read from Meshy's API docs on 2026-11-07 (A-09).
+
+### 15.1 Providers
+
+| Where | Field | Rule |
+|---|---|---|
+| New enum | `compute_provider` | `kaggle`, `meshy` |
+| `ModelCapabilities.runtime` (§2.1) | `provider: compute_provider`, default `kaggle` | A `meshy` model has `supported_accelerators: []`, `multi_gpu: "unsupported"` and `minimum_gpu_vram_bytes: null`, which is *not applicable* (not listed in `unknown_requirements`). A `kaggle` model still needs at least one accelerator |
+| `ComputeProfile` (§6.1) | `provider: compute_provider`, default `kaggle` | `mode` gains the value `meshy` for the live Meshy profile; the mock Meshy profile has `mode: "mock"` |
+| Meshy profile | — | Exactly one, `profile_id: "meshy"`, `display_name: "Meshy"`, `accelerators: []`. It is enabled when `AAS_MESHY_API_KEY` is set (always in mock mode). `authorization_confirmed` is `true` when enabled: the key belongs to the owner's own paid Meshy account. D-008's multi-account rules concern Kaggle only |
+| `/health.compute_mode` | unchanged | `kaggle` now means *live*: Kaggle profiles and the Meshy profile use their real clients. `mock` uses the mock clients for both (§15.10) |
+
+### 15.2 Model record `meshy-i3d`
+
+| Field | Value |
+|---|---|
+| `model_id`, `display_name`, `adapter` | `meshy-i3d`, `Meshy Image→3D (meshy-7.1)`, `meshy_image_to_3d` |
+| `is_mock`, `availability` | `false`; `experimental` until the live smoke run passes and the owner signs it off, then `available` |
+| Pipelines, categories | `image_to_3d`; `character`, `weapon`, `companion` |
+| Prompt | Supported, not required, at most 800 characters. It is sent as Meshy's `texture_prompt` |
+| Images | 1–4. Roles `front` (required), `three_quarter`, `side`, `back`, each at most once. PNG, JPEG or WebP, at most 20 000 000 bytes, at least 32×32 px. No width/height maximum; `validate_model_specific` rejects an image over 178 956 970 pixels with `MODEL_IMAGE_DIMENSIONS_INVALID` (`details.reason: "max_pixels"`) |
+| Output | `glb` |
+| Runtime | `provider: "meshy"`, no accelerators, `estimated_runtime_seconds: null` and listed in `unknown_requirements` until the smoke run measures it |
+| Pinned model | `ai_model: "meshy-7.1"`, never `latest`, so results do not change silently. `model_revision()` returns `meshy-7.1` for provenance |
+| Seed | None. Meshy's Image→3D endpoints take no seed, so a rerun of the same request gives a different model. The record has no `seed` option |
+
+Options (`options_schema`):
+
+| Option | Type | Default | Meshy field | Rule |
+|---|---|---|---|---|
+| `texture` | boolean | `true` | `should_texture` | `false` gives an untextured mesh |
+| `texture_resolution` | integer, enum `2048`, `4096`, `8192` | `2048` | `texture_resolution` (`2k`, `4k`, `8k`) | Requires `texture: true` |
+| `pbr` | boolean | `true` | `enable_pbr` | Requires `texture: true` |
+| `pose_mode` | string, enum `none`, `a-pose`, `t-pose` | `a-pose` | `pose_mode` (`""` for `none`) | A or T pose prepares the mesh for later rigging outside the app |
+| `geometry_resolution` | string, enum `standard`, `2k`, `4k` | `standard` | `geometry_resolution` | `2k` and `4k` cost more (§15.4) |
+| `remesh` | boolean | `false` | `should_remesh` | — |
+| `topology` | string, enum `triangle`, `quad` | `triangle` | `topology` | Requires `remesh: true` |
+| `target_polycount` | integer, 100–300 000 | `30000` | `target_polycount` | Requires `remesh: true` |
+
+- An option or prompt sent while the option it requires is off is `MODEL_OPTION_INVALID` (`details.reason`: `requires_texture` or `requires_remesh`); a prompt with `texture: false` is `MODEL_PROMPT_NOT_SUPPORTED` with `details.reason: "requires_texture"`. Nothing is silently ignored. The check applies to fields present in the request, not to filled-in defaults.
+- Meshy fields the record does not expose are not sent, so Meshy's defaults apply. `moderation` is sent as `false`.
+
+### 15.3 Request built by the adapter
+
+`build_invocation` stays pure and names files only; it never reads image bytes or the key.
+
+- One image: `POST /openapi/v1/image-to-3d` with `image_url`. Two to four images: `POST /openapi/v1/multi-image-to-3d` with `image_urls`, ordered `front`, `three_quarter`, `side`, `back` (Meshy treats the first image as the front view).
+- `ModelInvocation` for a Meshy model: `entrypoint: null`; `arguments` = `{provider: "meshy", endpoint, body, image_fields}`, where `body` holds the mapped options and `ai_model`, and `image_fields` maps the body field to the ordered `input_files`. `resource_requirements` carries `provider: "meshy"`.
+- The connector turns each input file into a `data:` URI only in memory, at submit time. Job files and logs never hold image data.
+
+### 15.4 Credits and the resource plan
+
+- **Estimate:** the adapter's `estimate_credits(req)` uses Meshy's published price table for `meshy-7.1` (A-09). The same table applies to one and to several images:
+  - 20 credits untextured, 30 textured at 2048 or 4096, 35 textured at 8192.
+  - 5 more with `geometry_resolution` `2k` or `4k`.
+- **ResourcePlan (§7.3) additions:** `provider`, `estimated_credits` (integer or `null`) and `credit_balance` (integer or `null`). For a Meshy job:
+  - `accelerator_id: null`, `selection: "provider"` (new value), `candidates: []`.
+  - `required_seconds`, `estimate_basis`, `session_limit_seconds` and `quota_remaining_seconds` are `null`.
+- **Fit:**
+  - `ok` when the balance is known, fresh (≤ 10 min) and at least the estimate.
+  - `insufficient` with `COMPUTE_CREDITS_INSUFFICIENT` when it is below the estimate.
+  - `unknown` with the warning `COMPUTE_CREDITS_UNKNOWN` when the balance is missing or stale.
+- **Labels:** the UI labels the estimate as an estimate. The credits a job really used come from the task's `consumed_credits` (§15.6).
+
+### 15.5 Snapshot of the Meshy profile
+
+`GET /compute/profiles/meshy/snapshot` returns the §6.2 shape with these additions, which are `null` (freshness `not_applicable`) for Kaggle profiles:
+
+| Field | Meaning |
+|---|---|
+| `provider` | `meshy` (or `kaggle` on Kaggle profiles) |
+| `credit_balance`, `monthly_credits`, `permanent_credits`, `credits_reset_at` | From `GET /openapi/v1/balance` (`balance`, `monthly_credits`, `permanent_credits`, `monthly_resets_at` as RFC 3339). The call is free. `null` when it was never read or failed |
+| `observed_at.credits`, `source.credits`, `freshness_status.credits` | A fourth group, `credits`. Source `meshy_api_balance`, `mock` or `none`. Fresh ≤ 10 min, refreshed every 5 min, `refresh=1` at most once per 60 s |
+
+- `authentication_status` comes from the balance call: 200 `authenticated`, 401 `invalid_credentials`, no key `unauthenticated`, a network error `unknown`.
+- Quota, session, host and GPU fields are `null` with freshness `not_applicable`; `gpu_devices` and `accelerator_availability` are `[]`; `session_status` is `none`.
+
+### 15.6 Job execution
+
+- **States (§4, unchanged):** images travel inside the create request, so a Meshy job goes `created` → `queued` with no `uploading` step.
+  - Meshy `PENDING` → `queued`; `IN_PROGRESS` → `running`; `SUCCEEDED` → `downloading`.
+  - `FAILED` or `CANCELED` → `failed` with `MESHY_TASK_FAILED` (`details`: `meshy_status`, and Meshy's `task_error.message`).
+- **Execution record:** `execution.backend: "meshy"`, `remote_ref: "meshy:<task id>"`. New fields `execution.provider_model` (`meshy-7.1`) and `execution.consumed_credits` (integer from the task, or `null`; `null` for every other backend).
+- **Progress and logs:**
+  - `progress` = `{stage: "meshy", percent: <task progress>, message: <Meshy status>}`.
+  - The backend logs one `remote` line per status or progress change. There is no `AAS_TELEMETRY`.
+- **Polling:** `GET` the task every 10 s. Transient read errors follow §4 rule 4.
+- **Submit:**
+  - The create `POST` is sent once and never resubmitted (§4 rule 5).
+  - A `429` answer means Meshy refused the task, so nothing was created or charged. That `POST` is retried at most 3 times, honouring `Retry-After`, and then fails with `MESHY_RATE_LIMITED`.
+  - A network error or `5xx` after sending leaves the outcome unknown. The job fails with `MESHY_SUBMIT_FAILED` (retryable), and the message says a task may still exist on Meshy.
+- **Download:**
+  - On `SUCCEEDED` the connector fetches `model_urls.glb` to `outputs/<job_id>/remote_raw/model.glb`, and `thumbnail_url` to `preview.png` when present.
+  - It then writes the §6.4 `manifest.json`, and `collect_outputs` runs as usual (GLB and PNG checks; a preview that is not a PNG is dropped with a log line).
+  - Meshy keeps files for 3 days: a job that cannot download within that window fails with `ARTIFACT_DOWNLOAD_FAILED`.
+- **Signed URLs:** Meshy's asset URLs grant access, so they are never stored in job files or logs. Only the task ID is kept.
+- **Restart (§4 rule 6):** a job with a `remote_ref` resumes polling.
+- **Timeout:** §4 rule 7 does not apply. A Meshy job still `queued` or `running` after `AAS_MESHY_TIMEOUT_SECONDS` (default 3600) fails with `MESHY_TIMEOUT` (retryable).
+- **Cleanup (like §14.7):** once the job is terminal and its outputs are stored, the connector deletes the Meshy task (`DELETE /openapi/v1/<endpoint>/<id>`) when `AAS_MESHY_DELETE_TASKS` is `true` (the default). Best-effort; a failure is a log warning and never changes the outcome.
+
+### 15.7 Scheduling and validation
+
+- **Scheduling:**
+  - Meshy jobs do not use Kaggle session slots. They have their own FIFO with `AAS_MESHY_MAX_PARALLEL_TASKS` slots (default 2, at most the plan's concurrent-task limit).
+  - Held, waiting, starting, `PATCH`, deletion and retry work as in §14.2, §14.5 and §14.6.
+  - Run groups stay Text→2D only (§14.4).
+- **Compute selection:** a Meshy model needs `compute: {profile_id: "meshy", accelerator_id: null}`.
+  - Any accelerator is `MODEL_ACCELERATOR_INCOMPATIBLE`.
+  - A Kaggle profile with a Meshy model, or the Meshy profile with a Kaggle model, is `COMPUTE_PROVIDER_INCOMPATIBLE`.
+- **Stage 7 (§8.1)** for a Meshy job checks that the profile exists and is enabled (`COMPUTE_PROFILE_NOT_FOUND`), that it is authenticated (`COMPUTE_PROFILE_UNAUTHENTICATED`), and the credit fit (§15.4).
+
+### 15.8 Error codes (additions)
+
+Validation codes:
+
+| Code | Sev. | Field | Retry | Condition |
+|---|---|---|---|---|
+| `COMPUTE_PROVIDER_INCOMPATIBLE` | error | `compute.profile_id` | no | The profile's provider differs from the model's (§15.7) |
+| `COMPUTE_CREDITS_INSUFFICIENT` | error | `compute.profile_id` | yes (after a top-up) | Known balance below the estimate (§15.4) |
+| `COMPUTE_CREDITS_UNKNOWN` | warning | `compute.profile_id` | — | Balance missing or stale |
+
+Job-time codes:
+
+| Code | Retry | Condition |
+|---|---|---|
+| `MESHY_AUTH_FAILED` | no | 401, or 403 for an account or key reason |
+| `MESHY_CREDITS_INSUFFICIENT` | yes | 402 |
+| `MESHY_RATE_LIMITED` | yes | 429 after the retries in §15.6 |
+| `MESHY_NETWORK_ERROR` | yes | Connection error or timeout on a read, after the in-job retries |
+| `MESHY_SUBMIT_FAILED` | yes | The create request's outcome is unknown (§15.6) |
+| `MESHY_REQUEST_REJECTED` | no | 400, or 403 for content moderation. `details.message` is Meshy's message |
+| `MESHY_TASK_FAILED` | no | The task ended `FAILED` or `CANCELED` |
+| `MESHY_TIMEOUT` | yes | §15.6 |
+
+`ARTIFACT_DOWNLOAD_FAILED`, `ARTIFACT_INVALID`, `BACKEND_RESTARTED` and `INTERNAL_ERROR` apply as in §8.2.
+
+### 15.9 Secrets and data leaving the machine
+
+- **API key:**
+  - `AAS_MESHY_API_KEY` lives only in `.env` and in backend memory.
+  - It is sent only as `Authorization: Bearer …` to `https://api.meshy.ai`.
+  - It never appears in API responses, the frontend, logs, job files or the repository.
+  - The log writer redacts its value and any `Bearer <token>`.
+  - A test checks that a known fake key never reaches `data/` or an API response.
+- **Data leaving the machine:** the input images and the prompt of a Meshy job are sent to Meshy. This is the one exception to "all data stays on the machine" (NFR-1, D-044). The Image→3D form says so for a Meshy model, and Meshy deletes its files after 3 days, or earlier when the task is deleted (§15.6).
+
+### 15.10 Mock mode and tests
+
+- `AAS_COMPUTE_MODE=mock` serves the Meshy profile through `MockMeshyClient`, which makes no network calls.
+  - The task goes `PENDING` → `IN_PROGRESS` (progress 0–100) → `SUCCEEDED`.
+  - It writes a valid GLB (the `mock_image_to_3d` generator) and a PNG preview.
+  - Balance scenarios: `fresh`, `low`, `unknown`, `unauthenticated`. Failure switches: `submit_402`, `submit_429`, `submit_unknown`, `task_failed`, `download`.
+  - `meshy-i3d` jobs use it in mock mode.
+- Every automated test runs in mock mode. Live Meshy tests are marked `meshy` and are opt-in. Each live run spends credits, so the owner approves it first.
+- Fixtures for v1.3 go in `tests/fixtures/contracts/v1_3/`: the `meshy-i3d` record, the Meshy profile, a snapshot with credits, ResourcePlans with each fit, a completed Meshy job and each new error code.
+
+### 15.11 Frontend
+
+- **Image→3D form, Meshy model:**
+  - The profile is fixed to Meshy and the accelerator picker is hidden.
+  - The plan panel shows the estimated credits (labelled as an estimate), the balance with its source and freshness, and the fit.
+  - A note says the images and prompt are sent to Meshy and that unseen regions are approximated (M5).
+- **Resources view:** a Meshy card with authentication and credits (balance, monthly, permanent, reset time). It shows no GPU, session or quota panels.
+- **Job detail:** shows `consumed_credits` and the pinned Meshy model.
+- **Text:** every new code is localized (FR-U8). New strings go through i18n.

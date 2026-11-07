@@ -1,6 +1,6 @@
 # AGENTS.md — shared context for Codex and Claude Code
 
-**Current milestone: V2 Character Production (D-035, D-037). V2-0 done (contracts v1.1 = CONTRACTS §13, fixtures in `tests/fixtures/contracts/v2/`); V2-1 backend and V2-2 batch execution done (D-038; the live batch smoke run B-13 was not required); V2-3 Library + Workspace done (D-039); V2-4 and V2-5 by Codex; the V2 Stitch UI refresh and canvas follow-ups (D-039) implemented, awaiting owner sign-off. M0, M1, M2, M3 and M4 done (M4: Animagine XL 4.0, FLUX.2 [klein] 4B and MOSS-Image-SFT for `character`, D-034/D-036/D-037; weights download from the internet, D-032). M5 and M6 not started.** Status lives in [docs/MILESTONES.md](docs/MILESTONES.md).
+**Current milestone: V2 Character Production (D-035, D-037). V2-0 done (contracts v1.1 = CONTRACTS §13, fixtures in `tests/fixtures/contracts/v2/`); V2-1 backend and V2-2 batch execution done (D-038; the live batch smoke run B-13 was not required); V2-3 Library + Workspace done (D-039); V2-4 and V2-5 by Codex; the V2 Stitch UI refresh and canvas follow-ups (D-039) implemented, awaiting owner sign-off. D-040 multiple authorized profiles and one app-wide FIFO compute slot implemented and verified, awaiting owner sign-off (owner transferred backend work to Codex for this task; changes uncommitted). D-041 (auto-run switch, run groups of two jobs on the two T4s, parallel sessions, job and asset deletion, kernel cleanup for every finished job, 10 000-character prompts; D-042 style images for Animagine via IP-Adapter and for klein, 4 images each; contract v1.2) implemented and verified, awaiting owner sign-off (uncommitted). M0, M1, M2, M3 and M4 done (M4: Animagine XL 4.0, FLUX.2 [klein] 4B and MOSS-Image-SFT for `character`, D-034/D-036/D-037; weights download from the internet, D-032). M5 in progress: Kaggle benchmark run (D-043), the owner chose the hosted Meshy API for Image→3D (D-044, contract v1.3 = CONTRACTS §15, documented, implementation not started; paused by the owner). M6 dropped (D-045).** Status lives in [docs/MILESTONES.md](docs/MILESTONES.md).
 
 This file is the single set of rules for both agents. Claude Code loads it through [CLAUDE.md](CLAUDE.md).
 
@@ -32,7 +32,7 @@ There are exactly three business modules. Never add a fourth one.
 | Interface: frontend | `interface/frontend/` | Backend REST API only |
 | Interface: backend | `interface/backend/aas_backend/` | `models`, `kaggle_connector` |
 | Models | `models/` | Standard library, pydantic, Pillow. A real model's remote entrypoint runs only in the notebook and may also import its pinned runtime libraries (torch, diffusers, …; D-034) |
-| Kaggle | `kaggle_connector/` | Standard library, pydantic, the official `kaggle` CLI (subprocess); the notebook runtime may also use psutil and pynvml |
+| Kaggle (compute) | `kaggle_connector/` | Standard library, pydantic, the official `kaggle` CLI (subprocess); the notebook runtime may also use psutil and pynvml. The Meshy client (D-044) uses the standard library only |
 
 `models` and `kaggle_connector` never import each other or `interface`; only the backend integrates them. The frontend never handles Kaggle credentials or filesystem paths. The backend is the only writer of `data/`.
 
@@ -41,7 +41,8 @@ There are exactly three business modules. Never add a fourth one.
 - Work only within the current milestone's scope, and make only the changes the task needs. No unrelated refactors, renames, reformatting or dependency upgrades.
 - Contract changes follow CONTRACTS §12 and come first: docs, then fixtures, then code. They go through Claude Code.
 - Real AI models are chosen **only by the owner** (D-032), through the process in MILESTONES.
-- Kaggle: official CLI only. One enabled profile; the user selects it explicitly. No account rotation, quota pooling or auto-failover (D-008).
+- Kaggle: official CLI only. Multiple authorized profiles may be enabled; whoever runs a job explicitly selects their own account (A-02, D-040). FIFO session slots (`AAS_MAX_PARALLEL_SESSIONS`, default 1; sessions running at the same time use one profile) across v1 jobs, run groups and V2 batch groups (D-041). No rotation, pooling, summed quota, auto-failover or resubmission on another profile (D-008 rules 1 and 3–5).
+- Meshy (Image→3D, D-044): REST API with the key from `.env` (`AAS_MESHY_API_KEY`) only; rules in CONTRACTS §15. Every live Meshy call that creates a task spends credits: in the app it starts from an explicit click; outside the app (live tests, smoke runs) it needs the owner's approval first, like a paid GPU run.
 - Never fabricate telemetry, quota, runtimes or metrics: use `null` plus an explicit status. Never silently drop inputs or options.
 - Secrets live only in `.env`. They never go into logs, `data/`, API responses, notebooks or commits. Never commit `.env`, tokens, `kaggle.json` or anything under `data/`.
 - Every behavior change ships with tests. The validation matrix (CONTRACTS §8.4, V-01…V-20) must keep passing.
