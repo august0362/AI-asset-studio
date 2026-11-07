@@ -20,7 +20,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Literal
 
-from ..jobs.packaging import OUTPUT_DIR_NAME, write_package
+from ..jobs.packaging import OUTPUT_DIR_NAME, write_group_package, write_package
 from ..resources.catalog import PROVISIONAL_ACCELERATORS
 from ..resources.contracts import (
     CONTRACT_VERSION,
@@ -31,7 +31,7 @@ from ..resources.contracts import (
 )
 from ..resources.snapshot import QuotaReading, ResourceMonitor, SessionState
 from ..resources.telemetry import parse_line
-from .base import ComputeError, KaggleJobSpec, RemoteRefNotFound, RemoteStatus
+from .base import ComputeError, KaggleGroupSpec, KaggleJobSpec, RemoteRefNotFound, RemoteStatus
 
 SCENARIOS = (
     "fresh",
@@ -148,12 +148,26 @@ def _telemetry_config(scenario: str, accelerator_id: str) -> dict:
 
 @dataclass
 class _Run:
-    spec: KaggleJobSpec
+    spec: KaggleJobSpec | KaggleGroupSpec
     sandbox: Path
     state: RemoteStatus = "queued"
     lines: list[str] = field(default_factory=list)
     status_calls: int = 0
     download_calls: int = 0
+
+    @property
+    def run_id(self) -> str:
+        return self.spec.group_id if isinstance(self.spec, KaggleGroupSpec) else self.spec.job_id
+
+    @property
+    def members(self) -> tuple[KaggleJobSpec, ...]:
+        return self.spec.members if isinstance(self.spec, KaggleGroupSpec) else (self.spec,)
+
+    def output_dirs(self) -> list[tuple[KaggleJobSpec, Path]]:
+        root = self.sandbox / "working" / OUTPUT_DIR_NAME
+        if isinstance(self.spec, KaggleGroupSpec):
+            return [(m, root / m.job_id) for m in self.spec.members]
+        return [(self.spec, root)]
 
 
 class MockKaggleClient:
@@ -187,6 +201,7 @@ class MockKaggleClient:
         self._lock = threading.Lock()
         self._stop = threading.Event()
         self._runs: dict[str, _Run] = {}
+        self.released: list[tuple[str, list[str]]] = []  # (remote_ref, job_ids) of every cleanup, for tests
         self._profile = mock_profile()
         self.monitor = ResourceMonitor(
             self._profile, session_source="mock", telemetry_source="mock", clock=clock
@@ -293,6 +308,42 @@ class MockKaggleClient:
         ).start()
         return ref
 
+    def submit_group(self, spec: KaggleGroupSpec) -> str:
+        if self.failure == "submit":
+            raise ComputeError(
+                "KAGGLE_SUBMIT_FAILED", "Simulated kernel push failure (mock).", retryable=True
+            )
+        input_dirs = []
+        for member in spec.members:
+            inputs = self._sandbox(member.job_id) / "inputs"
+            if member.requires_input_upload and not inputs.is_dir():
+                raise ComputeError("KAGGLE_SUBMIT_FAILED", "Inputs were not uploaded before submission.")
+            inputs.mkdir(parents=True, exist_ok=True)
+            input_dirs.append(str(inputs))
+        sandbox = self._sandbox(spec.group_id)
+        working = sandbox / "working"
+        working.mkdir(parents=True, exist_ok=True)
+        package = sandbox / "package"
+        write_group_package(
+            spec,
+            package,
+            input_dirs=input_dirs,
+            output_dir=str(working / OUTPUT_DIR_NAME),
+            telemetry=_telemetry_config(self.scenario, spec.accelerator_id),
+        )
+        if self.failure == "kernel_error":
+            for index in range(len(spec.members)):
+                (package / f"entry_{index}.py").write_text(_KERNEL_ERROR_ENTRY, encoding="utf-8")
+        ref = f"mock/aas-runner/{spec.group_id}"
+        run = _Run(spec=spec, sandbox=sandbox)
+        with self._lock:
+            self._runs[ref] = run
+        self.monitor.session_submitted(spec.group_id, spec.accelerator_id)
+        threading.Thread(
+            target=self._execute, args=(run,), name=f"mock-run-{spec.group_id}", daemon=True
+        ).start()
+        return ref
+
     def _scrub(self, line: str) -> str:
         """Remote logs must not expose local paths: the sandbox plays the role of /kaggle."""
         for variant in {str(self._root), self._root.as_posix(), str(self._root).replace("\\", "\\\\")}:
@@ -336,17 +387,17 @@ class MockKaggleClient:
         remaining = self.run_seconds - (time.monotonic() - started)
         if remaining > 0 and self._stop.wait(remaining):
             return
-        output = run.sandbox / "working" / OUTPUT_DIR_NAME
-        if code == 0 and self.failure == "invalid_artifact":
-            self._corrupt_primary(run, output)
-        if self.failure == "missing_manifest":
-            (output / "manifest.json").unlink(missing_ok=True)
+        for member, output in run.output_dirs():
+            if code == 0 and self.failure == "invalid_artifact":
+                self._corrupt_primary(member, output)
+            if self.failure == "missing_manifest":
+                (output / "manifest.json").unlink(missing_ok=True)
         with self._lock:
             run.state = "complete" if code == 0 else "error"
 
     @staticmethod
-    def _corrupt_primary(run: _Run, output: Path) -> None:
-        primary = next((o for o in run.spec.expected_outputs if o.required), None)
+    def _corrupt_primary(spec: KaggleJobSpec, output: Path) -> None:
+        primary = next((o for o in spec.expected_outputs if o.required), None)
         manifest_path = output / "manifest.json"
         if primary is None or not manifest_path.is_file():
             return
@@ -375,7 +426,7 @@ class MockKaggleClient:
                 "KAGGLE_NETWORK_ERROR", "Simulated network timeout (mock).", transient=True, retryable=True
             )
         session = {"queued": "queued", "running": "running", "complete": "finished", "error": "failed"}[state]
-        self.monitor.session_observed(run.spec.job_id, session)
+        self.monitor.session_observed(run.run_id, session)
         return state
 
     def logs(self, remote_ref: str, offset: int) -> tuple[list[str], int]:
@@ -396,13 +447,15 @@ class MockKaggleClient:
                 transient=True,
                 retryable=True,
             )
-        if state != "complete":
+        if state not in ("complete", "error"):  # an errored run still has its outputs and manifest
             raise ComputeError("ARTIFACT_DOWNLOAD_FAILED", "The run has not completed.", retryable=True)
         dest_dir.mkdir(parents=True, exist_ok=True)
         shutil.copytree(run.sandbox / "working", dest_dir, dirs_exist_ok=True)
 
-    def release(self, remote_ref: str, *, succeeded: bool = False) -> None:
-        """Nothing remote to clean up: the sandbox stays until ``close``."""
+    def release(self, remote_ref: str, job_ids: list[str]) -> None:
+        """Records the cleanup (§14.7) for tests; the sandbox itself stays until ``close``."""
+        with self._lock:
+            self.released.append((remote_ref, list(job_ids)))
 
     def redaction_terms(self) -> list[str]:
         return []

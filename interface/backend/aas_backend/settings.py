@@ -1,7 +1,7 @@
 """Backend configuration from the environment and ``.env`` (pydantic-settings).
 
-Kaggle profile credentials (``AAS_PROFILE_*``) are **not** read in mock mode; in kaggle mode only the active
-profile's credentials are read (:mod:`aas_backend.profiles`). Unknown ``AAS_*`` keys are ignored.
+Kaggle profile credentials (``AAS_PROFILE_*``) are **not** read in mock mode; in kaggle mode only confirmed,
+enabled profiles' credentials are read (:mod:`aas_backend.profiles`). Unknown ``AAS_*`` keys are ignored.
 """
 
 from __future__ import annotations
@@ -26,12 +26,15 @@ class Settings(BaseSettings):
     backend_port: int = Field(default=8000, ge=1, le=65535)
     frontend_origin: str = "http://localhost:5173"
 
-    # Kaggle compute (AAS_COMPUTE_MODE=kaggle). Exactly one profile is active (D-008, D-025).
+    # Kaggle compute (D-040): every listed, authorized profile may be enabled.
     compute_profiles: str = "default"
-    active_profile: str | None = None
+    active_profile: str | None = None  # obsolete; accepted only to log a notice, never used for selection
     kaggle_cli: str | None = None  # path to the kaggle executable; default: found on PATH
     # Test switch (D-031): "kernel_error" makes every Kaggle run fail on purpose inside the real notebook.
     kaggle_test_failure: Literal["kernel_error"] | None = None
+
+    # Kaggle sessions that may run at the same time, all on one profile (D-041, CONTRACTS §14.3).
+    max_parallel_sessions: int = Field(default=1, ge=1)
 
     # Mock compute (AAS_COMPUTE_MODE=mock)
     mock_scenario: str = "fresh"

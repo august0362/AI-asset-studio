@@ -1,4 +1,4 @@
-"""Validation and job routes (docs/CONTRACTS.md §5)."""
+"""Validation and job routes (docs/CONTRACTS.md §5, §14.5)."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from fastapi import APIRouter, Request, Response
 from models.contracts import CONTRACT_VERSION, JOB_STATUSES, PIPELINE_TYPES, TERMINAL_STATUSES
 
 from ..errors import api_error
-from ..orchestrator.records import artifact_view, to_result, to_summary
+from ..orchestrator.records import artifact_view
 from ..schemas import ArtifactList, JobList, JobStatusView, LogLine, LogPage
 from .common import file_response, flag_query, int_query, json_body, require_id, respond, service
 
@@ -24,7 +24,7 @@ async def validate(request: Request):
 async def create_job(request: Request):
     body = await json_body(request)
     record, _ = service(request).create_job(body)
-    return respond(to_result(record), 201)
+    return respond(service(request).result(record), 201)
 
 
 @router.get("/jobs")
@@ -41,7 +41,9 @@ def list_jobs(request: Request):
     )
     return respond(
         JobList(
-            contract_version=CONTRACT_VERSION, jobs=[to_summary(r) for r in records], next_cursor=next_cursor
+            contract_version=CONTRACT_VERSION,
+            jobs=service(request).summaries(records),
+            next_cursor=next_cursor,
         )
     )
 
@@ -53,7 +55,27 @@ def _job(request: Request, job_id: str):
 
 @router.get("/jobs/{job_id}")
 def get_job(job_id: str, request: Request):
-    return respond(to_result(_job(request, job_id)))
+    return respond(service(request).result(_job(request, job_id)))
+
+
+@router.patch("/jobs/{job_id}")
+async def patch_job(job_id: str, request: Request):
+    require_id("job_id", job_id)
+    body = await json_body(request)
+    record = service(request).set_auto_run(job_id, body)
+    return respond(service(request).result(record))
+
+
+@router.post("/jobs/groups")
+async def create_group(request: Request):
+    body = await json_body(request)
+    return respond(service(request).create_group(body), 201)
+
+
+@router.post("/jobs/delete")
+async def delete_jobs(request: Request):
+    body = await json_body(request)
+    return respond(service(request).delete_jobs(body))
 
 
 @router.get("/jobs/{job_id}/status")
@@ -88,7 +110,7 @@ async def retry_job(job_id: str, request: Request):
     require_id("job_id", job_id)
     body = await json_body(request)
     record, _ = service(request).retry(job_id, body)
-    return respond(to_result(record), 201)
+    return respond(service(request).result(record), 201)
 
 
 @router.delete("/jobs/{job_id}")

@@ -33,6 +33,8 @@ MEASURED = {  # model_id: (display name, seconds per image, VRAM GiB, negative p
     "flux2-klein-4b": ("FLUX.2 [klein] 4B", 9, 14, False),
     "moss-image-sft": ("MOSS-Image-SFT", 354, 13, True),
 }
+PROMPT_LIMIT = {"animagine-xl-4": 10_000, "flux2-klein-4b": 8_192, "moss-image-sft": 10_000}
+STYLE_MAX = {"animagine-xl-4": 4, "flux2-klein-4b": 4, "moss-image-sft": 0}
 
 
 def adapter(model_id: str) -> DiffusersTextTo2DAdapter:
@@ -75,7 +77,15 @@ def test_records_are_the_three_chosen_models_with_measured_values():
         assert caps.runtime.multi_gpu == "unsupported"
         assert caps.runtime.estimated_runtime_seconds == seconds
         assert caps.runtime.minimum_gpu_vram_bytes == vram * GIB
-        assert caps.inputs.prompt_required and caps.inputs.max_images == 0
+        assert caps.inputs.prompt_required
+        assert caps.inputs.prompt_max_length == PROMPT_LIMIT[caps.model_id]  # D-041 (7), G.0
+        assert caps.inputs.max_images == STYLE_MAX[caps.model_id]  # D-042 (7), G.0
+        if caps.inputs.max_images:
+            assert caps.inputs.min_images == 0 and caps.inputs.supported_image_roles == ["style_reference"]
+            assert caps.inputs.required_image_roles == []
+            assert caps.inputs.supported_mime_types == ["image/png", "image/jpeg", "image/webp"]
+            assert (caps.inputs.min_image_width, caps.inputs.max_image_width) == (256, 4096)
+        assert ("style_strength" in caps.options_schema) is (caps.model_id == "animagine-xl-4")
         assert ("negative_prompt" in caps.options_schema) is negative
         assert caps.options_schema["width"].enum == caps.options_schema["height"].enum == [832, 1024, 1216]
         assert caps.unknown_requirements == []

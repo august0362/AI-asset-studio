@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import UUID4, Field, SerializerFunctionWrapHandler, StrictStr, model_serializer
+from pydantic import UUID4, Field, SerializerFunctionWrapHandler, StrictBool, StrictStr, model_serializer
 
 from .common import (
     INPUT_ID_PATTERN,
@@ -62,6 +62,7 @@ class CreateJobRequest(ContractModel):
     options: dict[str, Any] = Field(default_factory=dict)
     output_format: StrictStr
     compute: ComputeSelection
+    auto_run: StrictBool = True  # v1.2 (§14.1): false creates a held job
 
 
 class RetryRequest(ContractModel):

@@ -14,6 +14,16 @@ M4 benchmark:
 * ``flux2_klein`` and ``moss``: the text encoder runs first and is freed before the image model loads, so one 15 GiB
   T4 is enough. MOSS's 9B encoder does not fit one T4 and is split between the GPU and host RAM.
 
+Prompts are never truncated (CONTRACTS §14.8): before any model loads, each prompt is tokenized with the model's own
+tokenizer. A prompt longer than the encoder window (klein 2 048 Qwen3 tokens, MOSS 4 096) fails that image with
+``MODEL_PROMPT_TOO_LONG`` (a batch task with reason ``prompt_too_long``). klein uses the smallest measured window
+(512, 1 024 or 2 048) that holds the prompt, so short prompts render exactly as benchmarked.
+
+Style images (CONTRACTS §14.9) come from the job's input folder. Animagine: the pinned IP-Adapter, acting on the style
+block only (InstantStyle); the images are encoded once, then the image encoder leaves the GPU (measured in G.0: 12.3
+GiB peak instead of 14.3). klein: the images are passed as reference images. The size each image was resized to is
+logged. In a run group the runner sets ``AAS_GPU_INDEX`` so each process uses its own T4.
+
 Third-party imports happen inside functions: this file is imported locally only by tests, which never call them.
 ``AAS_ENTRY_DEVICE=cpu`` (test hook) runs the same code on the CPU in fp32 (bf16 for MOSS) for code checks.
 """
@@ -33,21 +43,67 @@ from pathlib import Path
 
 MODEL_ROOT = Path("/tmp/aas_models")  # noqa: S108 - scratch disk of the ephemeral notebook
 TASK_RESULTS_FILE = "task_results.json"
+KLEIN_WINDOWS = (
+    512,
+    1024,
+    2048,
+)  # Qwen3 token windows that ran in G.0; 2 048 read a 1 493-token prompt in full
+MOSS_MAX_TOKENS = 4096
+KLEIN_REFERENCE_AREA = 1024 * 1024  # FLUX.2 resizes larger reference images to this area
+
+
+class PromptTooLong(Exception):
+    """Reported by the runner as ``MODEL_PROMPT_TOO_LONG`` with ``{tokens, max_tokens}`` (CONTRACTS §14.8)."""
+
+    aas_code = "MODEL_PROMPT_TOO_LONG"
+    aas_reason = "prompt_too_long"
+
+    def __init__(self, tokens: int, max_tokens: int) -> None:
+        super().__init__(f"The prompt has {tokens} tokens; this model reads at most {max_tokens}.")
+        self.aas_details = {"tokens": tokens, "max_tokens": max_tokens}
 
 
 def _log(message: str) -> None:
     print(message, flush=True)
 
 
+INSTALL_LOCK = Path("/tmp/aas_pip.lock")  # noqa: S108 - shared by the processes of one notebook session
+
+
 def _install(pins: list[str], progress) -> None:
+    """In a run group both processes install the same pins; concurrent pip runs collide (live run 2026-11-07:
+    ``OSError ... /usr/local/bin/diffusers-cli``). An exclusive file lock serializes them; the second finds the
+    packages already installed."""
     progress("setup", 2, "Installing " + " ".join(pins))
     started = time.time()
-    done = subprocess.run(
-        [sys.executable, "-m", "pip", "install", "-q", *pins], capture_output=True, text=True, check=False
-    )
+    with _install_lock():
+        waited = time.time() - started
+        done = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "-q", *pins], capture_output=True, text=True, check=False
+        )
     if done.returncode != 0:
         raise RuntimeError("pip install failed: " + (done.stdout + done.stderr)[-400:])
-    _log(f"Installed {' '.join(pins)} in {time.time() - started:.0f} s")
+    note = f" (waited {waited:.0f} s for the other process)" if waited >= 1 else ""
+    _log(f"Installed {' '.join(pins)} in {time.time() - started:.0f} s{note}")
+
+
+class _install_lock:
+    def __enter__(self):
+        try:
+            import fcntl  # Linux (the notebook); absent on Windows, where tests never install anything
+        except ImportError:
+            self.handle = None
+            return self
+        self.handle = INSTALL_LOCK.open("w")
+        fcntl.flock(self.handle, fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, *exc) -> None:
+        if self.handle is not None:
+            import fcntl
+
+            fcntl.flock(self.handle, fcntl.LOCK_UN)
+            self.handle.close()
 
 
 def _download(recipe: dict, progress) -> Path:
@@ -133,6 +189,10 @@ class _Batch:
         self.progress = progress
         self.deadline = arguments.get("deadline_seconds") if self.is_batch else None
         self.started = time.monotonic()
+        self.style = list(arguments.get("style_images") or [])  # never set for a batch (§14.9)
+        self.style_strength = arguments.get("style_strength")
+        self.ip_adapter = arguments.get("ip_adapter")
+        self.input_dir: Path | None = None
         self.results: dict[int, dict] = {}
         self.errors: dict[int, Exception] = {}
         self.loads = 0
@@ -186,7 +246,7 @@ class _Batch:
             self._last = time.monotonic() - self._task_started
         message = f"{exc.__class__.__name__}: {exc}"[:500]
         self.errors[item["index"]] = exc
-        self._record(item, "failed", None, message)
+        self._record(item, "failed", None, message, getattr(exc, "aas_reason", None))
         _log(f"{self.label(item)} failed: {message}")
 
     def _record(
@@ -238,6 +298,7 @@ def _sdxl(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
     pipe.to(rt.device)
     pipe.set_progress_bar_config(disable=True)
     batch.model_loaded()
+    style = _sdxl_style(pipe, batch, rt, progress) if batch.style else {}
 
     toks, encs = [pipe.tokenizer, pipe.tokenizer_2], [pipe.text_encoder, pipe.text_encoder_2]
 
@@ -277,10 +338,55 @@ def _sdxl(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
                     guidance_scale=recipe["guidance"],
                     generator=rt.generator(item["seed"]),
                     output_type="np",
+                    **style,
                 )
             batch.done(item, out.images[0])
         except Exception as exc:
             batch.failed(item, exc)
+
+
+def _style_images(batch: _Batch) -> list[tuple[dict, object]]:
+    from PIL import Image
+
+    images = []
+    for entry in batch.style:
+        with Image.open(batch.input_dir / entry["file"]) as image:
+            images.append((entry, image.convert("RGB")))
+    return images
+
+
+def _sdxl_style(pipe, batch: _Batch, rt: _Torch, progress) -> dict:
+    """IP-Adapter on the style block only; the images are encoded once and the encoder leaves the GPU."""
+    ipa = batch.ip_adapter
+    progress("inference", 35, f"Loading the IP-Adapter for {len(batch.style)} style image(s)")
+    folder = _download(ipa, progress)
+    pipe.load_ip_adapter(
+        str(folder),
+        subfolder=ipa["subfolder"],
+        weight_name=ipa["weight_name"],
+        image_encoder_folder=ipa["image_encoder_folder"],
+    )
+    strength = float(batch.style_strength)
+    block = {
+        k: {b: [strength if v else 0.0 for v in vs] for b, vs in d.items()}
+        for k, d in ipa["style_block"].items()
+    }
+    pipe.set_ip_adapter_scale(block)
+    crop = pipe.feature_extractor.crop_size
+    images = _style_images(batch)
+    for entry, image in images:
+        _log(
+            f"Style image {entry['input_id']}: {image.width}x{image.height} -> {crop['width']}x{crop['height']} "
+            "(CLIP image processor: shorter side resized, centre crop)"
+        )
+    _log(f"IP-Adapter {ipa['repo']} @ {ipa['revision']}; style block only; strength {strength:g}")
+    with rt.torch.no_grad():
+        embeds = pipe.prepare_ip_adapter_image_embeds(
+            [[image for _, image in images]], None, rt.device, 1, True
+        )
+    pipe.image_encoder.to("cpu")
+    rt.free()
+    return {"ip_adapter_image_embeds": embeds}
 
 
 # --- text encoder first, image model second (FLUX.2 klein, MOSS-Image) ------------------------------------------
@@ -318,12 +424,33 @@ def _finite(*tensors) -> None:
 
 def _klein(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
     from diffusers import Flux2KleinPipeline
+    from transformers import AutoTokenizer
 
     torch, recipe = rt.torch, batch.recipe
-    progress("inference", 30, f"Encoding {len(batch.items)} prompt(s)")
+    tokenizer = AutoTokenizer.from_pretrained(folder / "tokenizer")
+    windows = {}
+    for item in batch.items:  # before any model loads (§14.8)
+        text = tokenizer.apply_chat_template(
+            [{"role": "user", "content": item["prompt"]}],
+            tokenize=False,
+            add_generation_prompt=True,
+            enable_thinking=False,
+        )
+        tokens = len(tokenizer(text).input_ids)
+        window = next((w for w in KLEIN_WINDOWS if tokens <= w), None)
+        if window is None:
+            batch.failed(item, PromptTooLong(tokens, KLEIN_WINDOWS[-1]))
+            continue
+        windows[item["index"]] = window
+        _log(f"{batch.label(item)}: {tokens} Qwen3 tokens, window {window}")
+    if not windows:
+        return
+    progress("inference", 30, f"Encoding {len(windows)} prompt(s)")
     encoder, tokenizer = _text_encoder(folder, rt)
     embeds = {}
     for item in batch.items:
+        if item["index"] not in windows:
+            continue
         try:
             with torch.no_grad():
                 value = Flux2KleinPipeline._get_qwen3_prompt_embeds(
@@ -332,7 +459,7 @@ def _klein(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
                     item["prompt"],
                     dtype=rt.dtype,
                     device=torch.device("cpu"),
-                    max_sequence_length=512,
+                    max_sequence_length=windows[item["index"]],
                 )
             _finite(value)
             embeds[item["index"]] = value
@@ -340,6 +467,7 @@ def _klein(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
             batch.failed(item, exc)
     del encoder
     rt.free()
+    references = _klein_references(batch) if batch.style else None
     progress("inference", 45, "Loading the image model")
     pipe = Flux2KleinPipeline.from_pretrained(folder, text_encoder=None, tokenizer=None, torch_dtype=rt.dtype)
     pipe.to(rt.device)
@@ -348,8 +476,10 @@ def _klein(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
     for item in batch.pending():
         try:
             with torch.no_grad():
+                extra = {"image": references} if references else {}
                 out = pipe(
                     prompt_embeds=embeds[item["index"]].to(rt.device),
+                    **extra,
                     width=item["width"],
                     height=item["height"],
                     num_inference_steps=recipe["steps"],
@@ -362,16 +492,39 @@ def _klein(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
             batch.failed(item, exc)
 
 
-def _moss_encode(encoder, tokenizer, text: str, rt: _Torch):
-    """One prompt → (embeddings, mask) on the CPU. A plain function, not a closure: a closure (or a default
-    argument) would keep the 15.6 GiB encoder alive after ``del`` and the image model would not fit."""
-    formatted = tokenizer.apply_chat_template(
+def _klein_references(batch: _Batch) -> list:
+    """Reference images as FLUX.2 prepares them: at most 1 MP, both sides a multiple of 16 (logged per image)."""
+    from PIL import Image
+
+    prepared = []
+    for entry, image in _style_images(batch):
+        width, height = image.size
+        if width * height > KLEIN_REFERENCE_AREA:
+            scale = math.sqrt(KLEIN_REFERENCE_AREA / (width * height))
+            width, height = int(width * scale), int(height * scale)
+        width, height = max(16, width // 16 * 16), max(16, height // 16 * 16)
+        _log(
+            f"Style image {entry['input_id']}: {image.width}x{image.height} -> {width}x{height} (FLUX.2 reference)"
+        )
+        prepared.append(image.resize((width, height), Image.Resampling.LANCZOS))
+    return prepared
+
+
+def _moss_format(tokenizer, text: str) -> str:
+    return tokenizer.apply_chat_template(
         [{"role": "user", "content": text}],
         tokenize=False,
         add_generation_prompt=True,
         enable_thinking=True,
     )
-    inputs = tokenizer(formatted, return_tensors="pt", truncation=True, max_length=4096).to(rt.device)
+
+
+def _moss_encode(encoder, tokenizer, text: str, rt: _Torch):
+    """One prompt → (embeddings, mask) on the CPU. A plain function, not a closure: a closure (or a default
+    argument) would keep the 15.6 GiB encoder alive after ``del`` and the image model would not fit."""
+    inputs = tokenizer(_moss_format(tokenizer, text), return_tensors="pt").to(
+        rt.device
+    )  # checked: never truncated
     row = encoder(**inputs, use_cache=False, return_dict=True).last_hidden_state[0]
     return row[None].to("cpu"), rt.torch.ones(1, row.shape[0], dtype=rt.torch.bool)
 
@@ -380,12 +533,25 @@ def _moss(batch: _Batch, folder: Path, rt: _Torch, progress) -> None:
     import importlib
 
     from diffusers import AutoencoderKLFlux2
+    from transformers import AutoTokenizer
 
     torch, recipe = rt.torch, batch.recipe
-    progress("inference", 30, f"Encoding {len(batch.items)} prompt(s)")
+    tokenizer = AutoTokenizer.from_pretrained(folder / "tokenizer")
+    for item in batch.items:  # before any model loads (§14.8)
+        tokens = max(
+            len(tokenizer(_moss_format(tokenizer, text)).input_ids)
+            for text in (item["prompt"], item["negative_prompt"] or "")
+        )
+        if tokens > MOSS_MAX_TOKENS:
+            batch.failed(item, PromptTooLong(tokens, MOSS_MAX_TOKENS))
+    if len(batch.results) == len(batch.items):
+        return
+    progress("inference", 30, f"Encoding {len(batch.items) - len(batch.results)} prompt(s)")
     encoder, tokenizer = _text_encoder(folder, rt)
     encoded = {}
     for item in batch.items:
+        if item["index"] in batch.results:
+            continue
         try:
             with torch.no_grad():
                 emb, mask = _moss_encode(encoder, tokenizer, item["prompt"], rt)
@@ -442,8 +608,10 @@ def main(arguments: dict, input_dir: Path, output_dir: Path, progress) -> None:
     os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
     os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
     os.environ.pop("HF_TOKEN", None)  # ungated weights only (D-032)
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # one model, one T4 (D-033); set before torch loads
+    # One model, one T4 (D-033); in a run group the runner names this process's GPU. Set before torch loads.
+    os.environ["CUDA_VISIBLE_DEVICES"] = os.environ.get("AAS_GPU_INDEX", "0")
     batch = _Batch(arguments, Path(output_dir), progress)
+    batch.input_dir = Path(input_dir)
     recipe = batch.recipe
     deadline = f"; deadline {batch.deadline} s" if batch.deadline is not None else ""
     _log(
@@ -455,6 +623,8 @@ def main(arguments: dict, input_dir: Path, output_dir: Path, progress) -> None:
         _log("Prompt sent to the model: " + item["prompt"])
         if item.get("negative_prompt"):
             _log("Negative prompt: " + item["negative_prompt"])
+    if batch.style:
+        _log(f"{len(batch.style)} style image(s): " + ", ".join(e["input_id"] for e in batch.style))
 
     _install(arguments["pins"], progress)
     folder = _download(recipe, progress)
@@ -464,5 +634,7 @@ def main(arguments: dict, input_dir: Path, output_dir: Path, progress) -> None:
     FAMILIES[recipe["family"]](batch, folder, rt, progress)
     _log(f"Rendering finished in {time.time() - started:.1f} s")
     shutil.rmtree(folder, ignore_errors=True)
+    if batch.ip_adapter:
+        shutil.rmtree(MODEL_ROOT / batch.ip_adapter["key"], ignore_errors=True)
     batch.finish()
     progress("inference", 100, "Images written")

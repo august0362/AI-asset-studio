@@ -1,0 +1,12 @@
+{
+  "code": "MODEL_RUNTIME_EXCEEDS_ESTIMATE",
+  "severity": "warning",
+  "field": "inputs",
+  "message": "Style images make this model slower: about 23 s per image was measured with 1 image(s), against the 9 s estimate.",
+  "details": {
+    "estimated_seconds": 9,
+    "measured_seconds": 23,
+    "images": 1
+  },
+  "retryable": false
+}

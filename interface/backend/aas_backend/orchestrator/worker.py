@@ -1,21 +1,29 @@
-"""One in-process worker per compute profile, concurrency 1 (D-006). Drives a job through CONTRACTS §4.
+"""Drives one session (a job, or a run group of two jobs) through CONTRACTS §4; :mod:`.scheduler` decides when.
 
-Runs are never resubmitted automatically. Transient remote reads and downloads get at most 3 retries.
+Runs are never resubmitted automatically. Transient remote reads and downloads get at most 3 retries. Every terminal
+run is cleaned up on Kaggle, completed or failed (CONTRACTS §14.7).
 """
 
 from __future__ import annotations
 
 import logging
 import os
-import queue
-import threading
+import re
 from collections.abc import Callable
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 
-from kaggle_connector.client import ComputeError, KaggleJobSpec, OutputSpec, RemoteRefNotFound
+from kaggle_connector.client import (
+    ComputeError,
+    KaggleGroupSpec,
+    KaggleJobSpec,
+    OutputSpec,
+    RemoteRefNotFound,
+)
 from kaggle_connector.jobs.manifest import ManifestInvalid, read_manifest, verify_outputs
 from kaggle_connector.jobs.packaging import OUTPUT_DIR_NAME
 from kaggle_connector.resources import parse_line
+from kaggle_connector.resources.contracts import OutputManifest
 from models.adapters import ArtifactInvalidError
 from models.adapters.base import PACKAGE_ROOT
 from models.contracts import CONTRACT_VERSION, GenerationInput, GenerationRequest, warning
@@ -32,11 +40,15 @@ log = logging.getLogger("aas_backend")
 T = TypeVar("T")
 MAX_TRANSIENT_RETRIES = 3
 
+GROUP_LINE = re.compile(r"^\[(job_\d{8}T\d{6}Z_[0-9a-f]{6})\] ?(.*)$", re.DOTALL)
+CODED_REMOTE_ERRORS = frozenset({"MODEL_PROMPT_TOO_LONG"})  # model errors the runner reports by code (§14.8)
+
 FAILURE_MESSAGES = {
     "KAGGLE_KERNEL_ERROR": "The remote notebook exited with an error. See the job logs.",
     "KAGGLE_TIMEOUT": "The run took longer than its planned time limit.",
     "BACKEND_RESTARTED": "The backend restarted while this job was in progress. Retry the job.",
     "INTERNAL_ERROR": "Unexpected internal error. Details are in the local log.",
+    "MODEL_PROMPT_TOO_LONG": "The prompt is longer than the model's text encoder can read. Shorten the prompt.",
 }
 
 
@@ -117,7 +129,7 @@ def batch_partial(request: GenerationRequest, artifacts, report: dict[str, dict]
             failed.append(task.task_id)
             tasks[task.task_id] = {
                 "status": "failed",
-                "reason": None,
+                "reason": entry.get("reason"),  # e.g. prompt_too_long (§14.8)
                 "message": entry.get("message")
                 or (
                     "The task produced no valid PNG."
@@ -170,15 +182,25 @@ class JobRunner:
                 attempt += 1
 
     def _pull_logs(self, rec: JobRecord) -> JobRecord:
+        """New remote lines into the job's log. In a run group (§6.4) every job reads the session's lines and keeps
+        its own: progress by ``job_id``, plain lines by their ``[<job_id>]`` prefix (removed), session-wide lines and
+        telemetry for both jobs."""
         try:
             lines, next_offset = self.s.client.logs(rec.execution.remote_ref, rec.internal.remote_log_offset)
         except ComputeError:
             return rec  # logs are best-effort; the authoritative read happens at the end
         if not lines:
             return rec
+        grouped = rec.scheduling.group_id is not None
         texts = []
         for line in lines:
+            if grouped and (match := GROUP_LINE.match(line)):
+                if match.group(1) != rec.job_id:
+                    continue
+                line = match.group(2)
             parsed = parse_line(line)
+            if grouped and parsed.kind == "progress" and parsed.progress.job_id != rec.job_id:
+                continue
             if parsed.kind == "telemetry":
                 self.s.logs.append_telemetry(rec.job_id, parsed.telemetry.model_dump(mode="json"))
                 rec.internal.telemetry_samples += 1
@@ -272,7 +294,7 @@ class JobRunner:
             else:  # error: the remote run started and ended in error
                 if rec.status == "queued":
                     rec = self.s.transition(rec, "running", self._started)
-                raise JobFailure("KAGGLE_KERNEL_ERROR", details={"remote_status": "error"})
+                raise self._remote_error(rec, [rec.job_id])[rec.job_id]
             if self.s.stopping.wait(self.s.settings.effective_poll_seconds):
                 return None
         return None
@@ -286,21 +308,28 @@ class JobRunner:
 
     def _download(self, rec: JobRecord) -> JobRecord:
         ref = rec.execution.remote_ref
-        out_root = self.s.store.outputs_dir(rec.job_id)
-        raw = out_root / "remote_raw"
+        raw = self.s.store.outputs_dir(rec.job_id) / "remote_raw"
         rec, _ = self._with_retries(rec, "download", lambda: self.s.client.download(ref, raw))
         rec = self._pull_logs(rec)
-        output_dir = raw / OUTPUT_DIR_NAME
+        rec = self._collect(rec, raw / OUTPUT_DIR_NAME)
+        remove_tree(raw)  # kept when collecting fails, so the outputs can be inspected
+        return rec
+
+    def _manifest_failure(self, manifest: OutputManifest) -> JobFailure:
+        error = manifest.error
+        if error is not None and error.code in CODED_REMOTE_ERRORS:
+            return JobFailure(error.code, details=dict(error.details))
+        return JobFailure(
+            "KAGGLE_KERNEL_ERROR",
+            details={"remote_status": "error", "manifest_error": error.model_dump() if error else None},
+        )
+
+    def _collect(self, rec: JobRecord, output_dir: Path) -> JobRecord:
+        """One job's downloaded outputs → artifacts, then ``completed``. Raises ``JobFailure``."""
         try:
             manifest = read_manifest(output_dir)
             if manifest.status == "error":
-                raise JobFailure(
-                    "KAGGLE_KERNEL_ERROR",
-                    details={
-                        "remote_status": "error",
-                        "manifest_error": manifest.error.model_dump() if manifest.error else None,
-                    },
-                )
+                raise self._manifest_failure(manifest)
             verify_outputs(manifest, output_dir, rec.job_id)
             adapter = self.s.registry.adapter(rec.request.model_id)
             request = generation_request(rec)
@@ -317,9 +346,10 @@ class JobRunner:
 
         for artifact in artifacts:
             relative = f"outputs/{rec.job_id}/{artifact.artifact_id}.{artifact.format}"
-            os.replace(output_dir / artifact.path, safe_path(self.s.data_root, relative))
+            target = safe_path(self.s.data_root, relative)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            os.replace(output_dir / artifact.path, target)
             artifact.path = relative
-        remove_tree(raw)
         preview = next((a for a in artifacts if a.kind == "preview"), None) or next(
             (a for a in artifacts if a.is_primary and a.kind == "image"), None
         )
@@ -341,7 +371,31 @@ class JobRunner:
             )
         return rec
 
-    # --- entry point -----------------------------------------------------------------------------------------
+    def _remote_error(self, rec: JobRecord, job_ids: list[str]) -> dict[str, JobFailure]:
+        """The run ended in error. A job whose manifest reports a coded model error (§14.8) fails with that code;
+        any other job fails with ``KAGGLE_KERNEL_ERROR``. The outputs are read once, best-effort."""
+        failures = {
+            job_id: JobFailure("KAGGLE_KERNEL_ERROR", details={"remote_status": "error"})
+            for job_id in job_ids
+        }
+        raw = self.s.store.outputs_dir(job_ids[0]) / "remote_raw"
+        try:
+            self.s.client.download(rec.execution.remote_ref, raw)
+            for job_id in job_ids:
+                folder = raw / OUTPUT_DIR_NAME / job_id if len(job_ids) > 1 else raw / OUTPUT_DIR_NAME
+                try:
+                    manifest = read_manifest(folder)
+                except ManifestInvalid:
+                    continue
+                if manifest.job_id == job_id and manifest.status == "error":
+                    failures[job_id] = self._manifest_failure(manifest)
+        except ComputeError:
+            pass
+        finally:
+            remove_tree(raw)
+        return failures
+
+    # --- entry point: one job ----------------------------------------------------------------------------------
 
     def process(self, job_id: str) -> None:
         rec = self.s.get_record(job_id)
@@ -365,37 +419,167 @@ class JobRunner:
             )
         except Exception:
             log.exception("unexpected error while processing %s", job_id)
-            current = self.s.get_record(job_id)
-            if current is not None and current.status not in ("completed", "failed"):
-                self.s.fail(current, "INTERNAL_ERROR", FAILURE_MESSAGES["INTERNAL_ERROR"], {}, False)
-        self._release(job_id)
+            self._internal_error(job_id)
+        self._release([job_id])
 
-    def _release(self, job_id: str) -> None:
-        """Terminal jobs free their remote inputs (the Kaggle input dataset). Best-effort."""
-        rec = self.s.get_record(job_id)
-        if rec is None or rec.status not in ("completed", "failed") or not rec.execution.remote_ref:
+    def _internal_error(self, job_id: str) -> None:
+        current = self.s.get_record(job_id)
+        if current is not None and current.status not in ("completed", "failed"):
+            self.s.fail(current, "INTERNAL_ERROR", FAILURE_MESSAGES["INTERNAL_ERROR"], {}, False)
+
+    def _release(self, job_ids: list[str], remote_ref: str | None = None) -> None:
+        """Once every job of the run is terminal: clean up on Kaggle (§14.7), then store the final log lines that
+        the cleanup merged. Best-effort; a cleanup failure never changes a job's outcome."""
+        records = [r for r in (self.s.get_record(j) for j in job_ids) if r is not None]
+        if any(r.status not in ("completed", "failed") for r in records):
+            return
+        remote_ref = remote_ref or next(
+            (r.execution.remote_ref for r in records if r.execution.remote_ref), None
+        )
+        if not remote_ref:
             return
         try:
-            self.s.client.release(rec.execution.remote_ref, succeeded=rec.status == "completed")
+            self.s.client.release(remote_ref, list(job_ids))
         except Exception:
-            log.exception("releasing the remote inputs of %s failed", job_id)
+            log.exception("cleaning up the remote run %s failed", remote_ref)
+        for record in records:
+            if record.execution.remote_ref:
+                self._pull_logs(record)
+                self.s.log(
+                    record.job_id, "Remote run cleaned up: kernel and input dataset deleted on Kaggle."
+                )
 
+    # --- entry point: a run group (§14.4) ---------------------------------------------------------------------
 
-class ProfileWorker(threading.Thread):
-    def __init__(self, service: JobService, profile_id: str) -> None:
-        super().__init__(name=f"aas-worker-{profile_id}", daemon=True)
-        self.profile_id = profile_id
-        self.queue: queue.Queue[str] = queue.Queue()
-        self.runner = JobRunner(service)
-        self._service = service
+    def process_group(self, job_ids: list[str]) -> None:
+        ref = None
+        try:
+            recs = [self.s.get_record(j) for j in job_ids]
+            if any(r is None for r in recs) or all(r.status in ("completed", "failed") for r in recs):
+                return
+            ref = next((r.execution.remote_ref for r in recs if r.execution.remote_ref), None)
+            if all(r.status == "created" for r in recs):
+                recs, ref = self._submit_group(recs)
+            if any(r.status in ("queued", "running") for r in recs):
+                polled = self._poll_group(recs)
+                if polled is None:
+                    return  # shutting down: reconciled on the next start
+                recs = polled
+            if any(r.status == "downloading" for r in recs):
+                self._download_group(recs)
+        except ShuttingDown:
+            return
+        except JobFailure as failure:
+            for job_id in job_ids:
+                self.s.fail(
+                    self.s.get_record(job_id),
+                    failure.code,
+                    failure.message,
+                    failure.details,
+                    failure.retryable,
+                )
+        except Exception:
+            log.exception("unexpected error while processing the run group of %s", job_ids)
+            for job_id in job_ids:
+                self._internal_error(job_id)
+        self._release(job_ids, ref)
 
-    def enqueue(self, job_id: str) -> None:
-        self.queue.put(job_id)
+    def _group_spec(self, recs: list[JobRecord]) -> KaggleGroupSpec:
+        specs = tuple(self._spec(r) for r in recs)
+        first = recs[0]
+        return KaggleGroupSpec(
+            group_id=first.scheduling.group_id,
+            profile_id=first.compute.profile_id,
+            accelerator_id=first.compute.accelerator_id,
+            timeout_seconds=max(spec.timeout_seconds for spec in specs),
+            members=specs,
+        )
 
-    def run(self) -> None:
-        while not self._service.stopping.is_set():
-            try:
-                job_id = self.queue.get(timeout=0.2)
-            except queue.Empty:
+    def _submit_group(self, recs: list[JobRecord]) -> tuple[list[JobRecord], str]:
+        spec = self._group_spec(recs)
+        if any(m.requires_input_upload for m in spec.members):
+            recs = [self.s.transition(r, "uploading") for r in recs]
+            for member in spec.members:
+                if member.requires_input_upload:
+                    try:
+                        self.s.client.upload_inputs(member)
+                    except ComputeError as exc:
+                        raise JobFailure(exc.code, exc.message, retryable=exc.retryable) from exc
+        try:
+            ref = self.s.client.submit_group(spec)
+        except ComputeError as exc:
+            raise JobFailure(exc.code, exc.message, retryable=exc.retryable) from exc
+
+        def mark(r: JobRecord) -> None:
+            r.execution.remote_ref = ref
+            r.execution.submitted_at = self.s.clock()
+
+        recs = [self.s.transition(r, "queued", mark) for r in recs]
+        for r in recs:
+            self.s.log(
+                r.job_id,
+                f"Submitted to {self.s.client.mode} compute as {ref} in run group {spec.group_id} "
+                f"(GPU {r.scheduling.gpu_index}; accelerator {spec.accelerator_id}, "
+                f"timeout {spec.timeout_seconds} s).",
+            )
+        return recs, ref
+
+    def _advance(self, recs: list[JobRecord], new: str, before: str, mutate) -> list[JobRecord]:
+        """Moves every job of the group that is still in ``before`` to ``new`` (they share these states)."""
+        current = [self.s.get_record(r.job_id) or r for r in recs]
+        return [self.s.transition(r, new, mutate) if r.status == before else r for r in current]
+
+    def _poll_group(self, recs: list[JobRecord]) -> list[JobRecord] | None:
+        ref = recs[0].execution.remote_ref
+        deadline = max(r.internal.deadline_seconds for r in recs)
+        while not self.s.stopping.is_set():
+            _, remote = self._with_retries(recs[0], "status check", lambda: self.s.client.status(ref))
+            recs = [self._pull_logs(self.s.get_record(r.job_id) or r) for r in recs]
+            if remote in ("queued", "running"):
+                if remote == "running":
+                    recs = self._advance(recs, "running", "queued", self._started)
+                submitted = recs[0].execution.submitted_at or recs[0].created_at
+                elapsed = (self.s.clock() - submitted).total_seconds()
+                if is_timed_out(elapsed, deadline):
+                    raise JobFailure(
+                        "KAGGLE_TIMEOUT",
+                        retryable=True,
+                        details={"elapsed_seconds": int(elapsed), "deadline_seconds": deadline},
+                    )
+            elif remote == "complete":
+                recs = self._advance(recs, "running", "queued", self._started)
+                return self._advance(recs, "downloading", "running", self._finished)
+            else:  # the kernel ends in error only when both jobs failed; each gets the code from its manifest
+                recs = self._advance(recs, "running", "queued", self._started)
+                failures = self._remote_error(recs[0], [r.job_id for r in recs])
+                for r in recs:
+                    f = failures[r.job_id]
+                    self.s.fail(self.s.get_record(r.job_id), f.code, f.message, f.details, f.retryable)
+                return [self.s.get_record(r.job_id) or r for r in recs]
+            if self.s.stopping.wait(self.s.settings.effective_poll_seconds):
+                return None
+        return None
+
+    def _download_group(self, recs: list[JobRecord]) -> None:
+        """One download for the session; then each job completes or fails from its own manifest."""
+        ref = recs[0].execution.remote_ref
+        raw = self.s.store.outputs_dir(recs[0].job_id) / "remote_raw"
+        self._with_retries(recs[0], "download", lambda: self.s.client.download(ref, raw))
+        failed = False
+        for rec in recs:
+            rec = self._pull_logs(self.s.get_record(rec.job_id) or rec)
+            if rec.status != "downloading":
                 continue
-            self.runner.process(job_id)
+            try:
+                self._collect(rec, raw / OUTPUT_DIR_NAME / rec.job_id)
+            except JobFailure as failure:
+                failed = True
+                self.s.fail(
+                    self.s.get_record(rec.job_id),
+                    failure.code,
+                    failure.message,
+                    failure.details,
+                    failure.retryable,
+                )
+        if not failed:
+            remove_tree(raw)  # kept when a job's outputs are invalid, so they can be inspected

@@ -24,7 +24,7 @@ from kaggle_connector.client.cli import (
     parse_quota,
     payload_lines,
 )
-from kaggle_connector.client.kaggle_cli import STATUS_MAP, dataset_slug_for_slug
+from kaggle_connector.client.kaggle_cli import STATUS_MAP
 from kaggle_connector.jobs.kaggle_package import dataset_slug_for, slug_for
 from kaggle_connector.resources.telemetry import parse_line
 from tests.kaggle_fake import fixture
@@ -166,7 +166,6 @@ def test_slugs_derive_from_the_job_id():
     job_id = "job_20261106T101500Z_a1b2c3"
     assert slug_for(job_id) == "aas-job-20261106t101500z-a1b2c3"
     assert dataset_slug_for(job_id) == "aas-in-job-20261106t101500z-a1b2c3"
-    assert dataset_slug_for_slug(slug_for(job_id)) == dataset_slug_for(job_id)
 
 
 # --- redaction and subprocess isolation (CONTRACTS §10) ------------------------------------------------------------

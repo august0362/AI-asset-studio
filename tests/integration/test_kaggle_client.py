@@ -123,8 +123,10 @@ def test_smoke_job_runs_the_full_lifecycle_with_inputs(kaggle_factory):
     assert meta["is_private"] is True and meta["enable_internet"] is False and meta["enable_gpu"] is True
     assert meta["id"] == f"{OWNER}/{kernel.slug}" and kernel.slug.startswith("aas-")
     assert meta["dataset_sources"] == [f"{OWNER}/aas-in-{kernel.slug.removeprefix('aas-')}"]
-    assert h.fake.deleted_datasets == meta["dataset_sources"]  # released once terminal (DF-08)
-    assert h.fake.deleted_kernels == [meta["id"]]  # a successful job's kernel is deleted (D-031)
+    assert wait_for(
+        lambda: h.fake.deleted_datasets == meta["dataset_sources"]
+    )  # released once terminal (DF-08)
+    assert wait_for(lambda: h.fake.deleted_kernels == [meta["id"]])  # every finished job's kernel (§14.7)
 
     for artifact in job["artifacts"]:
         assert h.client.get(f"{API}{artifact['content_url'].removeprefix('/api/v1')}").status_code == 200
@@ -152,8 +154,19 @@ def test_cpu_job_without_inputs_skips_uploading(kaggle_factory):
     assert kernel.metadata["dataset_sources"] == [] and h.fake.deleted_datasets == []
 
 
-def test_test_switch_makes_the_real_notebook_fail_and_keeps_its_kernel(kaggle_factory):
-    """AAS_KAGGLE_TEST_FAILURE=kernel_error: the generated notebook itself raises (D-031)."""
+def wait_for(condition, timeout: float = 5.0) -> bool:
+    """Cleanup runs right after the job becomes terminal, on the session thread."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if condition():
+            return True
+        time.sleep(0.02)
+    return condition()
+
+
+def test_test_switch_makes_the_real_notebook_fail_and_its_kernel_is_deleted(kaggle_factory):
+    """AAS_KAGGLE_TEST_FAILURE=kernel_error: the generated notebook itself raises (D-031). Since D-041 the failed
+    job's kernel is deleted too, after its final logs are stored (CONTRACTS §14.7)."""
     h = kaggle_factory(test_failure="kernel_error")
     body = request_body(compute={"profile_id": "sunny", "accelerator_id": "cpu"})
     job = h.wait(h.client.post(f"{API}/jobs", json=body).json()["job_id"])
@@ -165,7 +178,9 @@ def test_test_switch_makes_the_real_notebook_fail_and_keeps_its_kernel(kaggle_fa
     error_at = next(i for i, line in enumerate(logs) if "ERROR entrypoint failed" in line)
     noted_at = next(i for i, line in enumerate(logs) if line.startswith("Kaggle reported:"))
     assert noted_at > error_at  # the local note comes after the remote lines
-    assert h.fake.deleted_kernels == []  # a failed job's kernel stays for inspection
+    kernel = next(iter(h.fake.kernels.values()))
+    assert wait_for(lambda: h.fake.deleted_kernels == [kernel.metadata["id"]])  # §14.7: failed jobs too
+    assert any("Remote run cleaned up" in line for line in h.logs(job["job_id"]))
 
 
 def test_deliberately_failing_notebook_ends_with_kernel_error_and_readable_logs(kaggle_factory):
@@ -244,8 +259,8 @@ def test_live_telemetry_reaches_the_snapshot_with_gpus_separate(kaggle_factory):
     assert snap.session_status == "finished" and snap.accelerator_type == "gpu_t4x2"
     # After the run the session is not running, so host/gpu are not_applicable (never shown as live).
     assert snap.freshness_status.gpu == "not_applicable"
-    assert h.compute._account.monitor.telemetry is not None
-    assert [g.index for g in h.compute._account.monitor.telemetry.gpus] == [0, 1]
+    assert h.compute._accounts["sunny"].monitor.telemetry is not None
+    assert [g.index for g in h.compute._accounts["sunny"].monitor.telemetry.gpus] == [0, 1]
 
 
 def test_resumed_run_after_restart_is_identified_by_its_reference(kaggle_factory, tmp_path):
@@ -350,3 +365,53 @@ def test_real_model_kernel_has_internet_one_t4_and_the_pinned_recipe(kaggle_fact
     assert arguments["recipe"]["repo"] == "cagliostrolab/animagine-xl-4.0"
     assert arguments["pins"] == ["diffusers==0.42.1", "transformers==5.22.1", "accelerate==1.15.0"]
     assert arguments["prompt"].endswith("absurdres") and arguments["seed"] == 1
+
+
+# --- run groups through the real client (CONTRACTS §14.4, D-042 (9)) ---------------------------------------------
+
+
+def style_group_registry() -> ModelRegistry:
+    from models.contracts import ModelCapabilities
+    from models.registry import MOCK_CAPABILITIES
+
+    base = next(c for c in MOCK_CAPABILITIES if c.model_id == "mock-t2d-styleref").model_dump()
+    record = {
+        **base,
+        "model_id": "mock-t2d-style-group",
+        "runtime": {**base["runtime"], "minimum_gpu_vram_bytes": 8 * 2**30},
+        "unknown_requirements": [],
+    }
+    return ModelRegistry([*MOCK_CAPABILITIES, ModelCapabilities.model_validate(record)])
+
+
+def test_a_run_group_with_style_images_attaches_both_datasets_and_cleans_up(kaggle_factory):
+    h = kaggle_factory(registry=style_group_registry(), denied_status_calls=0, queued_status_calls=0)
+    ids = []
+    for color in ((200, 40, 40), (40, 40, 200)):
+        files = {"file": ("style.png", image_bytes(512, 512, color=color), "image/png")}
+        upload = h.client.post(f"{API}/uploads", files=files).json()["upload_id"]
+        body = request_body(
+            model_id="mock-t2d-style-group",
+            inputs=[{"upload_id": upload, "role": "style_reference"}],
+            options={"seed": 1},
+            compute={"profile_id": "sunny", "accelerator_id": "gpu_t4x2"},
+            auto_run=False,
+        )
+        response = h.client.post(f"{API}/jobs", json=body)
+        assert response.status_code == 201, response.text
+        ids.append(response.json()["job_id"])
+    group = h.client.post(f"{API}/jobs/groups", json={"job_ids": ids})
+    assert group.status_code == 201, group.text
+    jobs = [h.wait(job_id) for job_id in ids]
+    assert [j["status"] for j in jobs] == ["completed", "completed"], [j["error"] for j in jobs]
+    assert len(h.fake.kernels) == 1  # one kernel, one session
+    kernel = next(iter(h.fake.kernels.values()))
+    assert kernel.slug == "aas-" + group.json()["group_id"].replace("_", "-")
+    assert kernel.accelerator == "NvidiaTeslaT4" and kernel.metadata["is_private"] is True
+    assert len(kernel.metadata["dataset_sources"]) == 2  # each job keeps its own input dataset
+    assert all(j["execution"]["remote_ref"] == f"sunny/{kernel.slug}" for j in jobs)
+    assert wait_for(lambda: h.fake.deleted_kernels == [kernel.metadata["id"]])
+    assert wait_for(lambda: sorted(h.fake.deleted_datasets) == sorted(kernel.metadata["dataset_sources"]))
+    for job in jobs:
+        assert statuses(job) == ["created", "uploading", "queued", "running", "downloading", "completed"]
+        assert not any(OWNER in line for line in h.logs(job["job_id"]))

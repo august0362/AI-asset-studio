@@ -1,0 +1,79 @@
+{
+  "contract_version": "1.0",
+  "job_id": "job_20261106T184346Z_8afd76",
+  "status": "created",
+  "status_history": [
+    {
+      "status": "created",
+      "at": "2026-11-06T18:43:46Z"
+    }
+  ],
+  "request": {
+    "pipeline_type": "text_to_2d",
+    "asset_category": "character",
+    "model_id": "mock-t2d-group",
+    "prompt": "A knight in silver armor, full body",
+    "output_format": "png",
+    "options": {
+      "seed": 42,
+      "width": 512,
+      "height": 512,
+      "negative_prompt": null
+    },
+    "inputs": [],
+    "batch": null
+  },
+  "compute": {
+    "profile_id": "default",
+    "accelerator_id": "gpu_t4x2",
+    "resource_plan": {
+      "contract_version": "1.0",
+      "profile_id": "default",
+      "accelerator_id": "gpu_t4x2",
+      "selection": "user_selected",
+      "fit": "ok",
+      "required_seconds": 645,
+      "estimate_basis": {
+        "estimated_runtime_seconds": 30,
+        "safety_factor": 1.5,
+        "overhead_seconds": 600
+      },
+      "session_limit_seconds": 43200,
+      "quota_remaining_seconds": 66600,
+      "candidates": [
+        {
+          "accelerator_id": "gpu_t4x2",
+          "fit": "ok",
+          "reasons": []
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    }
+  },
+  "artifacts": [],
+  "preview": null,
+  "warnings": [],
+  "error": null,
+  "execution": {
+    "backend": "mock",
+    "remote_ref": null,
+    "submitted_at": null,
+    "started_at": null,
+    "finished_at": null,
+    "duration_seconds": null,
+    "transient_retries": 0,
+    "retry_of": null
+  },
+  "created_at": "2026-11-06T18:43:46Z",
+  "updated_at": "2026-11-06T18:43:46Z",
+  "scheduling": {
+    "auto_run": false,
+    "queue_state": "held",
+    "queue_position": null,
+    "run_requested_at": null,
+    "group_id": null,
+    "group_job_ids": [],
+    "gpu_index": null
+  }
+}

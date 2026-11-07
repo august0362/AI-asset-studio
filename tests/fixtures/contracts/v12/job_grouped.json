@@ -1,0 +1,114 @@
+{
+  "contract_version": "1.0",
+  "job_id": "job_20261106T184346Z_c7e9a6",
+  "status": "completed",
+  "status_history": [
+    {
+      "status": "created",
+      "at": "2026-11-06T18:43:46Z"
+    },
+    {
+      "status": "queued",
+      "at": "2026-11-06T18:43:50Z"
+    },
+    {
+      "status": "running",
+      "at": "2026-11-06T18:43:50Z"
+    },
+    {
+      "status": "downloading",
+      "at": "2026-11-06T18:43:52Z"
+    },
+    {
+      "status": "completed",
+      "at": "2026-11-06T18:43:52Z"
+    }
+  ],
+  "request": {
+    "pipeline_type": "text_to_2d",
+    "asset_category": "character",
+    "model_id": "mock-t2d-group",
+    "prompt": "A knight in silver armor, full body",
+    "output_format": "png",
+    "options": {
+      "seed": 42,
+      "width": 512,
+      "height": 512,
+      "negative_prompt": null
+    },
+    "inputs": [],
+    "batch": null
+  },
+  "compute": {
+    "profile_id": "default",
+    "accelerator_id": "gpu_t4x2",
+    "resource_plan": {
+      "contract_version": "1.0",
+      "profile_id": "default",
+      "accelerator_id": "gpu_t4x2",
+      "selection": "user_selected",
+      "fit": "ok",
+      "required_seconds": 645,
+      "estimate_basis": {
+        "estimated_runtime_seconds": 30,
+        "safety_factor": 1.5,
+        "overhead_seconds": 600
+      },
+      "session_limit_seconds": 43200,
+      "quota_remaining_seconds": 66600,
+      "candidates": [
+        {
+          "accelerator_id": "gpu_t4x2",
+          "fit": "ok",
+          "reasons": []
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    }
+  },
+  "artifacts": [
+    {
+      "artifact_id": "art_01",
+      "kind": "image",
+      "format": "png",
+      "mime_type": "image/png",
+      "size_bytes": 27380,
+      "sha256": "a586ca44afc45c10c739803c50ce91b0d64941b9032e80d4519757e934a83cb4",
+      "width": 512,
+      "height": 512,
+      "is_primary": true,
+      "content_url": "/api/v1/jobs/job_20261106T184346Z_c7e9a6/artifacts/art_01/content",
+      "task_id": null
+    }
+  ],
+  "preview": {
+    "artifact_id": "art_01"
+  },
+  "warnings": [],
+  "error": null,
+  "execution": {
+    "backend": "mock",
+    "remote_ref": "mock/aas-runner/grp_1c887f933523",
+    "submitted_at": "2026-11-06T18:43:50Z",
+    "started_at": "2026-11-06T18:43:50Z",
+    "finished_at": "2026-11-06T18:43:52Z",
+    "duration_seconds": 2,
+    "transient_retries": 0,
+    "retry_of": null
+  },
+  "created_at": "2026-11-06T18:43:46Z",
+  "updated_at": "2026-11-06T18:43:52Z",
+  "scheduling": {
+    "auto_run": true,
+    "queue_state": null,
+    "queue_position": null,
+    "run_requested_at": "2026-11-06T18:43:46Z",
+    "group_id": "grp_1c887f933523",
+    "group_job_ids": [
+      "job_20261106T184346Z_c7e9a6",
+      "job_20261106T184346Z_ad2e3f"
+    ],
+    "gpu_index": 0
+  }
+}

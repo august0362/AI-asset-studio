@@ -72,7 +72,7 @@ PROFILE_ID_PATTERN = r"^[a-z0-9][a-z0-9-]{1,31}$"
 
 MAX_UPLOAD_BYTES = 52_428_800
 MAX_IMAGES_PER_REQUEST = 8
-PROMPT_MAX_LENGTH = 4000
+PROMPT_MAX_LENGTH = 10_000  # v1.2 (D-041); it was 4 000
 SUPPORTED_UPLOAD_MIME_TYPES = ("image/png", "image/jpeg", "image/webp")
 
 FORMAT_MIME_TYPES = {"png": "image/png", "glb": "model/gltf-binary"}

@@ -5,6 +5,11 @@ used when present). It never imports the backend, ``models`` or ``kaggle_connect
 
 Usage: ``python runner.py [job.json]``. Prints ``AAS_PROGRESS`` / ``AAS_TELEMETRY`` lines to stdout and writes
 ``<output_dir>/manifest.json``. Exit code 0 on success, 1 on failure.
+
+Run group (CONTRACTS §14.4): when ``job.json`` has ``jobs``, the runner starts one child process per job with
+``CUDA_VISIBLE_DEVICES`` set to the job's ``gpu_index``, prefixes the children's plain lines with ``[<job_id>]``,
+reports telemetry once for the whole session, and exits 1 only when every job failed. Each job writes its own
+``<output_dir>/<job_id>/manifest.json``.
 """
 
 from __future__ import annotations
@@ -12,6 +17,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import threading
@@ -19,6 +25,9 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 MAX_LINE_BYTES = 4096
+# Model errors an entrypoint may report by code (exception attribute ``aas_code``); anything else is a kernel error.
+CODED_ERRORS = frozenset({"MODEL_PROMPT_TOO_LONG"})
+_PRINT = threading.Lock()
 
 
 def _now(offset_seconds: float = 0) -> str:
@@ -31,7 +40,12 @@ def _emit(prefix: str, payload: dict) -> None:
     if len(line.encode("utf-8")) > MAX_LINE_BYTES:
         payload = {**payload, "gpus": [], "errors": ["line truncated"]} if "gpus" in payload else payload
         line = f"{prefix} {json.dumps(payload, separators=(',', ':'))}"[:MAX_LINE_BYTES]
-    print(line, flush=True)
+    _print(line)
+
+
+def _print(line: str) -> None:
+    with _PRINT:
+        print(line, flush=True)
 
 
 def _live_sample(job_id: str) -> dict:
@@ -156,7 +170,12 @@ def _sha256(path: Path) -> str:
 
 def run(job_path: Path) -> int:
     job = json.loads(job_path.read_text(encoding="utf-8"))
-    base = job_path.parent
+    if "jobs" in job:
+        return run_group(job, job_path)
+    return run_job(job, job_path.parent)
+
+
+def run_job(job: dict, base: Path) -> int:
     job_id = job["job_id"]
     input_dir = Path(job["input_dir"]) if Path(job["input_dir"]).is_absolute() else base / job["input_dir"]
     output_dir = (
@@ -181,8 +200,15 @@ def run(job_path: Path) -> int:
         module.main(job["arguments"], input_dir, output_dir, progress)
     except Exception as exc:
         # Type and message only: no traceback, so no local paths or source lines leak into logs.
-        error = {"code": "KAGGLE_KERNEL_ERROR", "message": f"{exc.__class__.__name__}: {exc}"[:500]}
-        print(f"ERROR entrypoint failed: {error['message']}", flush=True)
+        code = getattr(exc, "aas_code", None)
+        error = {
+            "code": code if code in CODED_ERRORS else "KAGGLE_KERNEL_ERROR",
+            "message": f"{exc.__class__.__name__}: {exc}"[:500],
+        }
+        details = getattr(exc, "aas_details", None)
+        if code in CODED_ERRORS and isinstance(details, dict):
+            error["details"] = {k: v for k, v in details.items() if isinstance(v, (int, str))}
+        _print(f"ERROR entrypoint failed: {error['message']}")
     finally:
         reporter.stop_event.set()
         reporter.join(timeout=5)
@@ -211,6 +237,59 @@ def run(job_path: Path) -> int:
     if error is None:
         progress("finished", 100, "Outputs written")
     return 1 if error else 0
+
+
+def _relay(job_id: str, stream) -> None:
+    """A child's stdout: protocol lines carry their own ``job_id``; plain lines get a ``[<job_id>]`` prefix."""
+    for raw in stream:
+        line = raw.rstrip("\r\n")
+        if line.startswith(("AAS_PROGRESS ", "AAS_TELEMETRY ")):
+            _print(line)
+        else:
+            _print(f"[{job_id}] {line}")
+
+
+def run_group(doc: dict, job_path: Path) -> int:
+    base = job_path.parent
+    group_id = doc["group_id"]
+    output_root = (
+        Path(doc["output_dir"]) if Path(doc["output_dir"]).is_absolute() else base / doc["output_dir"]
+    )
+    output_root.mkdir(parents=True, exist_ok=True)
+    reporter = TelemetryReporter(group_id, doc.get("telemetry", {}))
+    reporter.start()
+    _print(f"Run group {group_id}: {len(doc['jobs'])} jobs, one process per GPU")
+    children = []
+    try:
+        for index, member in enumerate(doc["jobs"]):
+            job = {**member, "output_dir": str(output_root / member["job_id"]), "telemetry": {"mode": "off"}}
+            path = base / f"job_{index}.json"
+            path.write_text(json.dumps(job), encoding="utf-8")
+            env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
+            env["CUDA_VISIBLE_DEVICES"] = env["AAS_GPU_INDEX"] = str(member["gpu_index"])
+            process = subprocess.Popen(
+                [sys.executable, str(Path(__file__).resolve()), str(path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                env=env,
+                cwd=str(base),
+            )
+            relay = threading.Thread(target=_relay, args=(member["job_id"], process.stdout), daemon=True)
+            relay.start()
+            children.append((member["job_id"], process, relay))
+        codes = {}
+        for job_id, process, relay in children:
+            codes[job_id] = process.wait()
+            relay.join(timeout=10)
+    finally:
+        reporter.stop_event.set()
+        reporter.join(timeout=5)
+    failed = [job_id for job_id, code in codes.items() if code != 0]
+    _print(f"Run group {group_id} finished: {len(codes) - len(failed)} of {len(codes)} job(s) succeeded")
+    return 1 if len(failed) == len(codes) else 0
 
 
 def main(argv: list[str]) -> int:

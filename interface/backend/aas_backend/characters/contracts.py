@@ -235,7 +235,7 @@ class ReferenceNote(ContractModel):
 
 class ConceptContent(ContractModel):
     stage_id: Literal["s1"]
-    idea: _text(4000) | None = None
+    idea: _text(10_000) | None = None
     directions: list[_text(1000, 1)] = Field(default_factory=list, max_length=3)
     notes: LongText | None = None
     palette: list[HexColor] = Field(default_factory=list, max_length=12)
@@ -291,7 +291,7 @@ class ConceptCandidate(ContractModel):
 class ConceptValidationContent(ContractModel):
     stage_id: Literal["s3"]
     preview_profile: PreviewProfile | None = None
-    preview_prompt: _text(4000) | None = None
+    preview_prompt: _text(10_000) | None = None
     candidates: list[ConceptCandidate] = Field(default_factory=list, max_length=24)
     selected_candidate_id: Annotated[str, StringConstraints(pattern=CANDIDATE_ID_PATTERN)] | None = None
     review_notes: LongText | None = None
@@ -299,7 +299,7 @@ class ConceptValidationContent(ContractModel):
 
 class PromptEntry(ContractModel):
     purpose: AssetPurpose
-    canonical_prompt: _text(4000)
+    canonical_prompt: _text(10_000)
     negative_prompt: _text(1000) | None = None
     notes: _text(2000) | None = None
 
@@ -313,7 +313,7 @@ class ProductionProfile(ContractModel):
 class ProductionTask(ContractModel):
     task_id: TaskId
     purpose: AssetPurpose
-    prompt: _text(4000, 1)
+    prompt: _text(10_000, 1)
     negative_prompt: _text(1000) | None = None
     seed: StrictInt | None = Field(default=None, ge=0, le=4294967295)
     width: StrictInt = Field(ge=1, le=8192)

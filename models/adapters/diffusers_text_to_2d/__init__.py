@@ -3,14 +3,19 @@
 One adapter, one remote entrypoint, one recipe per model. Recipes hold what the M4 benchmark measured: pinned
 repository revisions and libraries, steps, guidance, scheduler and prompt handling. Weights are ungated and are
 downloaded inside the Kaggle run, so jobs need the internet (D-032).
+
+Style images (D-042, CONTRACTS §14.9): ``style_reference`` inputs give the style, the prompt gives the content.
+Animagine uses the pinned IP-Adapter, downloaded inside the run only when the job has style images; nothing is
+downloaded on the local machine.
 """
 
 from __future__ import annotations
 
+from pathlib import PurePosixPath
 from typing import Any
 
 from ...contracts import CreateJobRequest, ErrorItem, ExpectedOutput, GenerationRequest
-from ...contracts.common import error
+from ...contracts.common import error, warning
 from ..base import ModelAdapter, deadline_seconds, task_output_name
 
 PINS = ["diffusers==0.42.1", "transformers==5.22.1", "accelerate==1.15.0"]
@@ -24,6 +29,26 @@ ANIMAGINE_NEGATIVE = (
     "lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, "
     "worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry"
 )
+
+# D-042 (5): IP-Adapter for SDXL, Apache-2.0, not gated. Only the safetensors weights are fetched (the repository
+# also holds .bin copies). InstantStyle: the adapter acts on the style block only (``up.block_0``, attention 1).
+IP_ADAPTER = {
+    "key": "ip_adapter_sdxl",
+    "repo": "h94/IP-Adapter",
+    "revision": "018e402774aeeddd60609b4ecdb7e298259dc729",
+    "allow_patterns": [
+        "sdxl_models/ip-adapter_sdxl.safetensors",
+        "sdxl_models/image_encoder/config.json",
+        "sdxl_models/image_encoder/model.safetensors",
+    ],
+    "subfolder": "sdxl_models",
+    "weight_name": "ip-adapter_sdxl.safetensors",
+    "image_encoder_folder": "image_encoder",
+    "style_block": {"up": {"block_0": [0.0, 1.0, 0.0]}},
+}
+DEFAULT_STYLE_STRENGTH = 0.6
+# Seconds per image of FLUX.2 [klein] with N reference images, measured in G.0 (CONTRACTS §14.9); 9 s without.
+KLEIN_STYLE_SECONDS = {1: 23, 2: 43, 4: 92}
 
 RECIPES: dict[str, dict[str, Any]] = {
     "animagine-xl-4": {
@@ -114,6 +139,39 @@ class DiffusersTextTo2DAdapter(ModelAdapter):
 
     def validate_model_specific(self, request: CreateJobRequest) -> list[ErrorItem]:
         options = request.options or {}
+        problems: list[ErrorItem] = []
+        if options.get("style_strength") is not None and not any(
+            i.role == "style_reference" for i in request.inputs
+        ):  # §14.9: never silently ignored
+            problems.append(
+                error(
+                    "MODEL_OPTION_INVALID",
+                    "options.style_strength",
+                    "Style strength needs at least one style image.",
+                    {"value": options["style_strength"], "reason": "requires_style_reference"},
+                )
+            )
+        images = sum(1 for i in request.inputs if i.role == "style_reference")
+        if images and self._recipe()["family"] == "flux2_klein":
+            measured_with = min(k for k in KLEIN_STYLE_SECONDS if k >= images)  # never an unmeasured value
+            measured = KLEIN_STYLE_SECONDS[measured_with]
+            problems.append(
+                warning(
+                    "MODEL_RUNTIME_EXCEEDS_ESTIMATE",
+                    "inputs",
+                    f"Style images make this model slower: about {measured} s per image was measured with "
+                    f"{measured_with} image(s), against the "
+                    f"{self._capabilities.runtime.estimated_runtime_seconds} s estimate.",
+                    {
+                        "estimated_seconds": self._capabilities.runtime.estimated_runtime_seconds,
+                        "measured_seconds": measured,
+                        "images": images,
+                    },
+                )
+            )
+        return problems + self._size_problems(options)
+
+    def _size_problems(self, options: dict[str, Any]) -> list[ErrorItem]:
         width, height = options.get("width", 1024), options.get("height", 1024)
         if (width, height) in SIZES or not isinstance(width, int) or not isinstance(height, int):
             return []  # type and enum problems are reported by the option checks
@@ -134,7 +192,25 @@ class DiffusersTextTo2DAdapter(ModelAdapter):
         recipe = self._recipe()
         options = request.options
         prompt, negative = self._prompts(request.prompt, options.get("negative_prompt"))
+        style = [
+            {
+                "input_id": i.input_id,
+                "file": PurePosixPath(i.path).name,
+                "width": i.width,
+                "height": i.height,
+            }
+            for i in request.inputs
+            if i.role == "style_reference"
+        ]
+        extra: dict[str, Any] = {}
+        if style:
+            extra["style_images"] = style
+            if recipe["family"] == "sdxl":
+                strength = options.get("style_strength")
+                extra["style_strength"] = DEFAULT_STYLE_STRENGTH if strength is None else strength
+                extra["ip_adapter"] = IP_ADAPTER
         return {
+            **extra,
             "model_id": request.model_id,
             "asset_category": request.asset_category,
             "prompt": prompt,

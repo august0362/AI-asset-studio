@@ -109,7 +109,7 @@ def test_live_cpu_round_trip_with_input_dataset(client, tmp_path: Path):
         "lines": [line for line in lines if not line.startswith("AAS_TELEMETRY")][-12:],
     }
     print(json.dumps(report, indent=2))
-    client.release(ref, succeeded=state == "complete")
+    client.release(ref, [job_id])
     assert state == "complete", report
     manifest = read_manifest(dest / OUTPUT_DIR_NAME)
     verify_outputs(manifest, dest / OUTPUT_DIR_NAME, job_id)
@@ -149,4 +149,4 @@ def test_live_failing_cpu_kernel_reports_error_with_readable_logs(client, tmp_pa
     print(json.dumps(report, indent=2))
     assert state == "error"
     assert any("ERROR entrypoint failed: RuntimeError: Deliberate failure" in line for line in lines)
-    client.release(ref, succeeded=True)  # test cleanup: also delete this deliberately failed kernel
+    client.release(ref, [job_id])  # every finished run is deleted, failed ones too (§14.7)

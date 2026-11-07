@@ -1,10 +1,11 @@
-"""KaggleCliClient (M3): the ComputeClient for one authorized Kaggle account, through the official CLI (D-007).
+"""KaggleCliClient: explicitly selected, authorized Kaggle accounts through the official CLI (D-007, D-040).
 
-* Exactly one profile is enabled (D-008, D-025). Other listed profiles are shown as disabled and their credentials
-  are never loaded. Nothing here selects, rotates, pools or fails over between profiles.
+* Each enabled profile has its own CLI and resource monitor. Disabled profiles' credentials are never loaded.
+  Nothing here selects, rotates, pools or fails over between profiles.
 * ``remote_ref`` is ``<profile_id>/<kernel slug>``: it identifies the run without storing the Kaggle account name.
-* One private kernel per job (``aas-<job id>``) and, when the job has inputs, one private dataset per job
-  (``aas-in-<job id>``), deleted by :meth:`release` once the job is terminal (DF-08).
+* One private kernel per job (``aas-<job id>``) or run group (``aas-<group id>``, CONTRACTS §14.4) and, when a job
+  has inputs, one private dataset per job (``aas-in-<job id>``). :meth:`release` deletes both once every job of the
+  run is terminal, completed or failed (DF-08, CONTRACTS §14.7).
 * Submission is never retried here or by the worker. Reads raise ``ComputeError(transient=True)`` for network and
   rate-limit failures so the worker applies its bounded retries (D-015).
 * Quota comes only from ``kaggle quota --format json`` (D-009); live telemetry only from ``AAS_TELEMETRY`` lines in
@@ -25,13 +26,19 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
-from ..jobs.kaggle_package import dataset_slug_for, slug_for, write_dataset_package, write_kernel_package
+from ..jobs.kaggle_package import (
+    dataset_slug_for,
+    slug_for,
+    write_dataset_package,
+    write_group_kernel_package,
+    write_kernel_package,
+)
 from ..jobs.packaging import OUTPUT_DIR_NAME
 from ..resources.catalog import KAGGLE_ACCELERATORS, KAGGLE_MACHINE_SHAPES
 from ..resources.contracts import CONTRACT_VERSION, ComputeProfile, KaggleResourceSnapshot, utc_now
 from ..resources.snapshot import QuotaReading, ResourceMonitor
 from ..resources.telemetry import parse_line
-from .base import ComputeError, KaggleJobSpec, RemoteRefNotFound, RemoteStatus
+from .base import ComputeError, KaggleGroupSpec, KaggleJobSpec, RemoteRefNotFound, RemoteStatus
 from .cli import (
     CliResult,
     CliRunner,
@@ -80,7 +87,7 @@ _SESSION = {"queued": "queued", "running": "running", "complete": "finished", "e
 
 @dataclass(frozen=True)
 class KaggleProfileConfig:
-    """One Kaggle account from ``.env``. Credentials are present only for the enabled profile."""
+    """One Kaggle account from ``.env``. Credentials are present only when this profile is enabled."""
 
     profile_id: str
     username: str
@@ -119,9 +126,9 @@ class _Account:
 class _Run:
     profile_id: str
     slug: str
-    job_id: str | None
+    job_id: str | None  # the job or group ID; None for a run resumed after a backend restart
     submitted_at: float | None  # monotonic; None for a run resumed after a backend restart
-    dataset_ref: str | None = None
+    dataset_refs: list[str] = field(default_factory=list)
     lines: list[str] = field(default_factory=list)  # what logs() returns: remote lines plus local notes
     remote_lines: list[str] = field(default_factory=list)  # remote lines only, aligned with the final blob
     stream: LineStream | None = None
@@ -149,13 +156,15 @@ class KaggleCliClient:
         test_failure: Literal["kernel_error"] | None = None,
     ) -> None:
         enabled = [p for p in profiles if p.enabled]
-        if len(enabled) != 1:
-            raise ValueError("exactly one Kaggle compute profile must be enabled (D-008)")
-        profile = enabled[0]
-        if not profile.authorization_confirmed:
-            raise ValueError(f"profile {profile.profile_id} is not authorized (AUTHORIZATION_CONFIRMED=true)")
-        if not (profile.token or profile.legacy_key):
-            raise ValueError(f"profile {profile.profile_id} has no Kaggle API token")
+        if len({p.profile_id for p in profiles}) != len(profiles):
+            raise ValueError("duplicate compute profile IDs")
+        for profile in enabled:
+            if not profile.authorization_confirmed:
+                raise ValueError(
+                    f"profile {profile.profile_id} is not authorized (AUTHORIZATION_CONFIRMED=true)"
+                )
+            if not profile.username or not (profile.token or profile.legacy_key):
+                raise ValueError(f"profile {profile.profile_id} has missing Kaggle credentials")
         self._configs = profiles
         self._clock = clock
         self._monotonic = monotonic
@@ -170,7 +179,10 @@ class KaggleCliClient:
         self._runs: dict[str, _Run] = {}
         self._datasets: dict[str, str] = {}  # job_id -> owner/dataset-slug
 
-        redact = SecretRedactor([s for s in (profile.token, profile.legacy_key) if s], [profile.username])
+        # Any profile's accidental output must redact every enabled account's secrets.
+        redact = SecretRedactor(
+            [s for p in enabled for s in (p.token, p.legacy_key) if s], [p.username for p in enabled]
+        )
         if cli_factory is None:
 
             def cli_factory(config: KaggleProfileConfig, red: SecretRedactor) -> CliRunner:
@@ -182,19 +194,28 @@ class KaggleCliClient:
                     redact=red,
                 )
 
-        public = profile.public()
-        monitor = ResourceMonitor(
-            public, session_source="kaggle_cli_status", telemetry_source="notebook_telemetry", clock=clock
-        )
-        self._account = _Account(
-            config=profile, cli=cli_factory(profile, redact), monitor=monitor, redact=redact
-        )
-        self._refresher: threading.Thread | None = None
-        if background_refresh:
-            self._refresher = threading.Thread(
-                target=self._refresh_loop, name="aas-kaggle-refresh", daemon=True
+        self._accounts: dict[str, _Account] = {}
+        for profile in enabled:
+            monitor = ResourceMonitor(
+                profile.public(),
+                session_source="kaggle_cli_status",
+                telemetry_source="notebook_telemetry",
+                clock=clock,
             )
-            self._refresher.start()
+            self._accounts[profile.profile_id] = _Account(
+                config=profile, cli=cli_factory(profile, redact), monitor=monitor, redact=redact
+            )
+        self._refreshers: list[threading.Thread] = []
+        if background_refresh:
+            for profile_id in self._accounts:
+                thread = threading.Thread(
+                    target=self._refresh_loop,
+                    args=(profile_id,),
+                    name=f"aas-kaggle-refresh-{profile_id}",
+                    daemon=True,
+                )
+                self._refreshers.append(thread)
+                thread.start()
 
     # --- profiles, auth, quota -----------------------------------------------------------------------------------
 
@@ -202,21 +223,24 @@ class KaggleCliClient:
         return [p.public() for p in self._configs]
 
     def redaction_terms(self) -> list[str]:
-        config = self._account.config
-        terms = [t for t in (config.token, config.legacy_key, config.username, self._account.owner) if t]
+        terms = [
+            t
+            for acct in self._accounts.values()
+            for t in (acct.config.token, acct.config.legacy_key, acct.config.username, acct.owner)
+            if t
+        ]
         return sorted(set(terms), key=len, reverse=True)
 
     def _acct(self, profile_id: str) -> _Account:
-        if profile_id != self._account.config.profile_id:
-            raise KeyError(profile_id)
-        return self._account
+        return self._accounts[profile_id]
 
-    def _refresh_loop(self) -> None:
+    def _refresh_loop(self, profile_id: str) -> None:
         while not self._stop.is_set():
             try:
-                self.refresh(self._account.config.profile_id)
+                self.refresh(profile_id)
             except Exception:  # never let the refresher die; the snapshot reports what is unknown
-                log.exception("Kaggle quota refresh failed")
+                # Exception text may contain CLI output; never write it to logs.
+                log.warning("Kaggle auth/quota refresh failed for profile %s", profile_id)
             if self._stop.wait(QUOTA_CACHE_SECONDS):
                 return
 
@@ -406,10 +430,75 @@ class KaggleCliClient:
         if pushed.slug and pushed.slug != slug:
             slug = pushed.slug
         ref = f"{acct.config.profile_id}/{slug}"
-        run = _Run(acct.config.profile_id, slug, spec.job_id, self._monotonic(), dataset_ref=dataset_ref)
+        run = _Run(
+            acct.config.profile_id,
+            slug,
+            spec.job_id,
+            self._monotonic(),
+            dataset_refs=[dataset_ref] if dataset_ref else [],
+        )
         with self._lock:
             self._runs[ref] = run
         acct.monitor.session_submitted(spec.job_id, spec.accelerator_id)
+        return ref
+
+    def submit_group(self, spec: KaggleGroupSpec) -> str:
+        """One kernel for both jobs of a run group; both members' input datasets are attached (CONTRACTS §14.4)."""
+        acct = self._acct(spec.profile_id)
+        owner = self._require_owner(acct)
+        if spec.accelerator_id not in KAGGLE_MACHINE_SHAPES:
+            raise ComputeError(
+                "KAGGLE_SUBMIT_FAILED",
+                f"Accelerator {spec.accelerator_id} is not available on Kaggle profiles.",
+            )
+        with self._lock:
+            refs = [self._datasets.get(m.job_id) for m in spec.members]
+        if any(m.requires_input_upload and ref is None for m, ref in zip(spec.members, refs, strict=True)):
+            raise ComputeError("KAGGLE_SUBMIT_FAILED", "Inputs were not uploaded before submission.")
+        shape = KAGGLE_MACHINE_SHAPES[spec.accelerator_id]
+        slug = slug_for(spec.group_id)
+        folder = self._root / spec.group_id / "kernel"
+        try:
+            if self._test_failure == "kernel_error":
+                members = tuple(
+                    dataclasses.replace(m, entrypoint_file=self._failing_entry(m.job_id))
+                    for m in spec.members
+                )
+                spec = dataclasses.replace(spec, members=members)
+            write_group_kernel_package(
+                spec,
+                folder,
+                owner=owner,
+                slug=slug,
+                dataset_refs=[r for r in refs if r],
+                gpu=shape is not None,
+            )
+            args = ["kernels", "push", "-p", str(folder), "--timeout", str(int(spec.timeout_seconds))]
+            if shape:
+                args += ["--accelerator", shape]
+            result = acct.cli.run(args, timeout=PUSH_TIMEOUT)
+        finally:
+            shutil.rmtree(folder.parent, ignore_errors=True)
+        pushed = parse_push(result.text) if result.ok else None
+        if pushed is None:
+            for member in spec.members:  # never retried (D-015); the inputs are removed now
+                self._discard_dataset(acct, member.job_id)
+            raise self._fail(
+                result, "KAGGLE_SUBMIT_FAILED", "Kaggle did not accept the kernel push.", read=False
+            )
+        if pushed.slug and pushed.slug != slug:
+            slug = pushed.slug
+        ref = f"{acct.config.profile_id}/{slug}"
+        run = _Run(
+            acct.config.profile_id,
+            slug,
+            spec.group_id,
+            self._monotonic(),
+            dataset_refs=[r for r in refs if r],
+        )
+        with self._lock:
+            self._runs[ref] = run
+        acct.monitor.session_submitted(spec.group_id, spec.accelerator_id)
         return ref
 
     def _failing_entry(self, job_id: str) -> Path:
@@ -578,36 +667,44 @@ class KaggleCliClient:
                     item.replace(output / item.name)
         self._merge_final_logs(acct, run)
 
-    def release(self, remote_ref: str, *, succeeded: bool = False) -> None:
-        """Once the job is terminal: delete its input dataset (the user's images) and, if it succeeded, its kernel.
-
-        A failed job's kernel stays on Kaggle so the owner can inspect it there (D-031). Best-effort; never raises.
-        """
+    def release(self, remote_ref: str, job_ids: list[str]) -> None:
+        """Once every job of the run is terminal, completed or failed (CONTRACTS §14.7): merge the final logs, then
+        delete the jobs' input datasets (the user's images) and the kernel. Best-effort; never raises."""
         try:
             acct, run = self._run_for(remote_ref)
         except ComputeError:
             return
+        try:
+            self._merge_final_logs(acct, run)
+        except Exception:  # cleanup never changes the outcome
+            log.warning("could not merge the final logs before cleanup")
         if run.stream is not None:
             run.stream.terminate()
-        if succeeded and acct.owner:
-            result = acct.cli.run(
-                ["kernels", "delete", f"{acct.owner}/{run.slug}", "-y"], timeout=READ_TIMEOUT
-            )
-            if not result.ok:
-                log.warning("could not delete the kernel of a finished job (%s)", classify(result).kind)
-        dataset = run.dataset_ref
-        if dataset is None and run.job_id is None:
-            dataset = f"{acct.owner}/{dataset_slug_for_slug(run.slug)}" if acct.owner else None
-            probe = acct.cli.run(["datasets", "status", dataset], timeout=READ_TIMEOUT) if dataset else None
-            if probe is None or parse_dataset_status(probe.stdout) is None:
-                dataset = None
-        if dataset is None:
-            return
-        self._delete_dataset(acct, dataset)
+        owner = acct.owner
+        if owner is None:
+            try:
+                owner = self._require_owner(acct)
+            except ComputeError:
+                log.warning("could not clean up a finished run: the account could not be verified")
+                return
+        result = acct.cli.run(["kernels", "delete", f"{owner}/{run.slug}", "-y"], timeout=READ_TIMEOUT)
+        if not result.ok:
+            log.warning("could not delete the kernel of a finished run (%s)", classify(result).kind)
         with self._lock:
-            if run.job_id:
-                self._datasets.pop(run.job_id, None)
-            run.dataset_ref = None
+            datasets = list(run.dataset_refs)
+            known = {self._datasets.pop(job_id) for job_id in job_ids if job_id in self._datasets}
+            run.dataset_refs = []
+        datasets += [ref for ref in known if ref not in datasets]
+        if run.job_id is None:  # resumed after a restart: the job IDs name the datasets
+            for job_id in job_ids:
+                guess = f"{owner}/{dataset_slug_for(job_id)}"
+                if guess in datasets:
+                    continue
+                probe = acct.cli.run(["datasets", "status", guess], timeout=READ_TIMEOUT)
+                if probe.ok and parse_dataset_status(probe.stdout) is not None:
+                    datasets.append(guess)
+        for dataset in datasets:
+            self._delete_dataset(acct, dataset)
 
     def close(self) -> None:
         self._stop.set()
@@ -615,11 +712,9 @@ class KaggleCliClient:
             streams = [r.stream for r in self._runs.values() if r.stream is not None]
         for stream in streams:
             stream.terminate()
-        self._account.cli.close()
+        for account in self._accounts.values():
+            account.cli.close()
+        for thread in self._refreshers:
+            thread.join(timeout=1)
         if self._owns_root:
             shutil.rmtree(self._root, ignore_errors=True)
-
-
-def dataset_slug_for_slug(kernel_slug: str) -> str:
-    """``aas-job-…`` (kernel) → ``aas-in-job-…`` (its dataset): both derive from the same job id."""
-    return ("aas-in-" + kernel_slug.removeprefix("aas-"))[:50].rstrip("-")

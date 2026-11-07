@@ -7,6 +7,8 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
+from pydantic import Field, SerializerFunctionWrapHandler, StrictBool, StrictStr, model_serializer
+
 from kaggle_connector.resources.contracts import ComputeProfile, ResourcePlan
 from models.contracts import (
     ArtifactKind,
@@ -130,6 +132,55 @@ class Execution(ContractModel):
     retry_of: str | None = None
 
 
+GROUP_ID_PATTERN = r"^grp_[0-9a-f]{12}$"
+
+
+class Scheduling(ContractModel):
+    """v1.2 (§14.1): run control of a job. ``queue_state`` is set only while the job is ``created``."""
+
+    auto_run: bool
+    queue_state: Literal["held", "waiting", "starting"] | None
+    queue_position: int | None = Field(ge=1)
+    run_requested_at: UtcDatetime | None
+    group_id: str | None = Field(pattern=GROUP_ID_PATTERN)
+    group_job_ids: list[str]
+    gpu_index: Literal[0, 1] | None
+
+
+class RunGroup(ContractModel):
+    """v1.2 (§14.4): ``201`` response of ``POST /jobs/groups``."""
+
+    contract_version: ContractVersion
+    group_id: str = Field(pattern=GROUP_ID_PATTERN)
+    job_ids: list[str]
+    run_requested_at: UtcDatetime
+
+
+class RefusedDelete(ContractModel):
+    job_id: str
+    code: Literal["JOB_NOT_FOUND", "JOB_NOT_TERMINAL"]
+
+
+class BulkDeleteResult(ContractModel):
+    """v1.2 (§14.5): ``200`` response of ``POST /jobs/delete``."""
+
+    contract_version: ContractVersion
+    deleted: list[str]
+    refused: list[RefusedDelete]
+
+
+class AutoRunBody(ContractModel):
+    """Body of ``PATCH /jobs/{job_id}`` (§14.5)."""
+
+    auto_run: StrictBool
+
+
+class JobIdsBody(ContractModel):
+    """Body of ``POST /jobs/groups`` and ``POST /jobs/delete`` (§14.5)."""
+
+    job_ids: list[StrictStr]
+
+
 class GenerationResult(ContractModel):
     contract_version: ContractVersion
     job_id: str
@@ -144,6 +195,14 @@ class GenerationResult(ContractModel):
     execution: Execution
     created_at: UtcDatetime
     updated_at: UtcDatetime
+    scheduling: Scheduling | None = None  # v1.2 (§14.1): always set by this backend; absent in v1.0 payloads
+
+    @model_serializer(mode="wrap")
+    def _omit_absent_scheduling(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data = handler(self)
+        if data.get("scheduling") is None:
+            data.pop("scheduling", None)  # a v1.0 payload stays exactly v1.0
+        return data
 
 
 class JobSummary(ContractModel):
@@ -156,6 +215,14 @@ class JobSummary(ContractModel):
     updated_at: UtcDatetime
     primary_artifact: ArtifactView | None
     error_code: str | None
+    scheduling: Scheduling | None = None  # v1.2 (§14.1): always set by this backend; absent in v1.0 payloads
+
+    @model_serializer(mode="wrap")
+    def _omit_absent_scheduling(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        data = handler(self)
+        if data.get("scheduling") is None:
+            data.pop("scheduling", None)  # a v1.0 payload stays exactly v1.0
+        return data
 
 
 class JobList(ContractModel):

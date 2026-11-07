@@ -38,6 +38,24 @@ class KaggleJobSpec:
         return bool(self.input_files)
 
 
+@dataclass(frozen=True)
+class KaggleGroupSpec:
+    """A run group (CONTRACTS §14.4): two jobs in one session, one process per T4 (``members[i]`` on GPU ``i``).
+
+    The group's timeout is the larger of its members' timeouts. Each member keeps its own input dataset.
+    """
+
+    group_id: str
+    profile_id: str
+    accelerator_id: str
+    timeout_seconds: int
+    members: tuple[KaggleJobSpec, KaggleJobSpec]
+
+    @property
+    def internet(self) -> bool:
+        return any(m.internet for m in self.members)
+
+
 class ComputeError(Exception):
     """A remote operation failed. ``code`` is a CONTRACTS §8.2 job-time code."""
 
@@ -67,14 +85,19 @@ class ComputeClient(Protocol):
 
     def submit(self, spec: KaggleJobSpec) -> str: ...
 
+    def submit_group(self, spec: KaggleGroupSpec) -> str:
+        """One kernel for both members; both jobs share the returned ``remote_ref``."""
+        ...
+
     def status(self, remote_ref: str) -> RemoteStatus: ...
 
     def logs(self, remote_ref: str, offset: int) -> tuple[list[str], int]: ...
 
     def download(self, remote_ref: str, dest_dir: Path) -> None: ...
 
-    def release(self, remote_ref: str, *, succeeded: bool = False) -> None:
-        """Best-effort cleanup once the job is terminal: remote inputs, and the remote run if it succeeded."""
+    def release(self, remote_ref: str, job_ids: list[str]) -> None:
+        """Best-effort cleanup once every job of the run is terminal, completed or failed (CONTRACTS §14.7): merge the
+        final logs, then delete the jobs' input datasets and the kernel. Never raises."""
         ...
 
     def redaction_terms(self) -> list[str]:

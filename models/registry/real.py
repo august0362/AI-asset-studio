@@ -4,6 +4,13 @@ Every number comes from the M4 benchmark on one Kaggle T4 in fp16 (2026-11-06):
 ``estimated_runtime_seconds`` is the measured mean time for one ~1 MP image, excluding package installs, weight
 download and loading (the planner's overhead covers those); ``minimum_gpu_vram_bytes`` is the measured peak that
 PyTorch reserved, rounded up to a whole GiB. Only ``character`` is enabled for now (MILESTONES M4 scope).
+
+D-041/D-042 (step G.0, 2026-11-07, T4 fp16, 1024x1024): prompt limits follow each text encoder
+(CONTRACTS §14.8), and style images (``style_reference``, §14.9) are offered where they were measured:
+Animagine XL 4.0 + IP-Adapter (style block only, image encoder moved off the GPU after encoding) peaked at
+12.26 GiB with 1, 2 and 4 images and took 30-32 s per image, against 29.6 s without. FLUX.2 [klein] with reference
+images peaked at 10.86-11.22 GiB but slowed down a lot (see ``KLEIN_STYLE_SECONDS``); its estimate stays the one
+measured without images, and validation warns instead (owner, D-042 (10)).
 """
 
 from __future__ import annotations
@@ -14,7 +21,25 @@ GIB = 2**30
 _SEED = {"type": "integer", "minimum": 0, "maximum": 4294967295, "default": None}
 _SIZE = {"type": "integer", "enum": [832, 1024, 1216], "default": 1024}
 _NEGATIVE = {"type": "string", "max_length": 1000, "default": None}
-_PROMPT = {"prompt_supported": True, "prompt_required": True, "prompt_max_length": 2000}
+# FLUX.2 [klein] reads at most 2 048 Qwen3 tokens: a 1 493-token prompt was read in full with a 2 048-token window
+# (its last sentence showed in the image) and cut at 512 or 1 024. About 4 characters per token gives 8 192; the
+# remote token check enforces the window itself. Animagine reads in 75-token CLIP chunks (no limit); MOSS-Image's
+# encoder takes 4 096 tokens, beyond what 10 000 characters produce (D-041 (7)).
+PROMPT_LIMITS = {"animagine-xl-4": 10_000, "flux2-klein-4b": 8_192, "moss-image-sft": 10_000}
+# Style images per model, measured in G.0: the largest count whose peak stayed within 14 GiB (D-042 (7)).
+STYLE_IMAGES = {"animagine-xl-4": 4, "flux2-klein-4b": 4, "moss-image-sft": 0}
+STYLE_STRENGTH = {"type": "number", "minimum": 0.0, "maximum": 1.0, "default": 0.6}
+_STYLE_INPUTS = {
+    "min_images": 0,
+    "supported_image_roles": ["style_reference"],
+    "required_image_roles": [],
+    "supported_mime_types": ["image/png", "image/jpeg", "image/webp"],
+    "maximum_file_size_bytes": 52_428_800,
+    "min_image_width": 256,
+    "min_image_height": 256,
+    "max_image_width": 4096,
+    "max_image_height": 4096,
+}
 _NO_IMAGES = {
     "min_images": 0,
     "max_images": 0,
@@ -33,6 +58,11 @@ def _record(model_id: str, name: str, seconds: int, vram_gib: int, negative: boo
     options = {"seed": _SEED, "width": _SIZE, "height": _SIZE}
     if negative:
         options["negative_prompt"] = _NEGATIVE
+    images = STYLE_IMAGES[model_id]
+    if images and model_id == "animagine-xl-4":
+        options["style_strength"] = STYLE_STRENGTH  # the IP-Adapter scale (CONTRACTS §14.9)
+    prompt = {"prompt_supported": True, "prompt_required": True, "prompt_max_length": PROMPT_LIMITS[model_id]}
+    inputs = {**prompt, **_STYLE_INPUTS, "max_images": images} if images else {**prompt, **_NO_IMAGES}
     return {
         "contract_version": "1.0",
         "model_id": model_id,
@@ -42,7 +72,7 @@ def _record(model_id: str, name: str, seconds: int, vram_gib: int, negative: boo
         "availability": "available",
         "supported_pipeline_types": ["text_to_2d"],
         "supported_asset_categories": ["character"],
-        "inputs": {**_PROMPT, **_NO_IMAGES},
+        "inputs": inputs,
         "supported_output_formats": ["png"],
         "runtime": {
             "supported_accelerators": ["gpu_cuda"],

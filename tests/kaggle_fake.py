@@ -201,7 +201,15 @@ class FakeKaggleCli:
             )
         job = json.loads((package / "job.json").read_text(encoding="utf-8"))
         sources = kernel.metadata["dataset_sources"]
-        job["input_dir"] = str(self.datasets[sources[0]]) if sources else str(kernel.sandbox / "no-input")
+        if "jobs" in job:  # a run group: each job's dataset is found through its marker, as the wrapper does
+            mounts = {}
+            for ref in sources:
+                marker = json.loads((self.datasets[ref] / "aas_inputs.json").read_text(encoding="utf-8"))
+                mounts[marker["job_id"]] = str(self.datasets[ref])
+            for member in job["jobs"]:
+                member["input_dir"] = mounts.get(member["job_id"], str(kernel.sandbox / "no-input"))
+        else:
+            job["input_dir"] = str(self.datasets[sources[0]]) if sources else str(kernel.sandbox / "no-input")
         job["output_dir"] = str(working / Path(job["output_dir"]).name)
         if job["telemetry"].get("mode") == "live":  # no real GPU here: a fixed, clearly fake T4×2 sample
             job["telemetry"] = {"mode": "fixed", "interval_seconds": 5, "fixed_sample": _FAKE_T4X2}

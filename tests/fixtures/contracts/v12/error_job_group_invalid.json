@@ -1,0 +1,17 @@
+{
+  "contract_version": "1.0",
+  "warnings": [],
+  "errors": [
+    {
+      "code": "JOB_GROUP_INVALID",
+      "severity": "error",
+      "field": "job_ids",
+      "message": "Only held jobs can be grouped. Turn auto-run off first.",
+      "details": {
+        "reason": "not_held",
+        "job_id": "job_20261106T184346Z_e1781a"
+      },
+      "retryable": false
+    }
+  ]
+}

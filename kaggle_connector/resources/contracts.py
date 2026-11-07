@@ -232,6 +232,7 @@ class OutputEntry(_Contract):
 class ManifestError(_Contract):
     code: str
     message: str
+    details: dict[str, Any] = Field(default_factory=dict)  # v1.2: e.g. {tokens, max_tokens} (§14.8)
 
 
 class OutputManifest(_Contract):

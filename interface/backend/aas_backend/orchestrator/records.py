@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from models.contracts import (
     Artifact,
@@ -31,6 +31,7 @@ from ..schemas import (
     PreviewRef,
     Progress,
     RequestView,
+    Scheduling,
     StatusEntry,
 )
 
@@ -74,6 +75,21 @@ class InternalState(ContractModel):
     telemetry_malformed: int = 0
 
 
+class SchedulingRecord(ContractModel):
+    """Run control (§14). A job file without it (before v1.2) reads as auto-run, requested at creation, ungrouped.
+
+    ``slot_taken`` is internal: the job holds a session slot (``starting`` while it is still ``created``).
+    """
+
+    auto_run: bool = True
+    run_requested_at: UtcDatetime | None = None
+    requested_ns: int = 0  # precise FIFO order (timestamps are second-precision)
+    group_id: str | None = None
+    group_job_ids: list[str] = Field(default_factory=list)
+    gpu_index: int | None = None
+    slot_taken: bool = False
+
+
 class JobRecord(ContractModel):
     contract_version: ContractVersion
     job_id: str
@@ -89,6 +105,13 @@ class JobRecord(ContractModel):
     created_at: UtcDatetime
     updated_at: UtcDatetime
     internal: InternalState
+    scheduling: SchedulingRecord = Field(default_factory=SchedulingRecord)
+
+    @model_validator(mode="after")
+    def _older_files(self) -> JobRecord:
+        if self.scheduling.auto_run and self.scheduling.run_requested_at is None:
+            self.scheduling.run_requested_at = self.created_at
+        return self
 
 
 def artifact_view(job_id: str, artifact: Artifact) -> ArtifactView:
@@ -96,7 +119,7 @@ def artifact_view(job_id: str, artifact: Artifact) -> ArtifactView:
     return ArtifactView(**data, content_url=f"{API}/jobs/{job_id}/artifacts/{artifact.artifact_id}/content")
 
 
-def to_result(record: JobRecord) -> GenerationResult:
+def to_result(record: JobRecord, scheduling: Scheduling) -> GenerationResult:
     """Public view: strips paths and internal state."""
     req = record.request
     return GenerationResult(
@@ -133,10 +156,11 @@ def to_result(record: JobRecord) -> GenerationResult:
         execution=record.execution,
         created_at=record.created_at,
         updated_at=record.updated_at,
+        scheduling=scheduling,
     )
 
 
-def to_summary(record: JobRecord) -> JobSummary:
+def to_summary(record: JobRecord, scheduling: Scheduling) -> JobSummary:
     primary = next((a for a in record.artifacts if a.is_primary), None)
     return JobSummary(
         job_id=record.job_id,
@@ -148,4 +172,5 @@ def to_summary(record: JobRecord) -> JobSummary:
         updated_at=record.updated_at,
         primary_artifact=artifact_view(record.job_id, primary) if primary else None,
         error_code=record.error.code if record.error else None,
+        scheduling=scheduling,
     )

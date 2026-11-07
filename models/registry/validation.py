@@ -446,5 +446,6 @@ def validate_model_request(
     _stage_output(req, caps, result)
     _stage_options(req, caps, result)
     if not result.errors:
-        result.errors.extend(registry.adapter(caps.model_id).validate_model_specific(req))
+        for item in registry.adapter(caps.model_id).validate_model_specific(req):
+            (result.warnings if item.severity == "warning" else result.errors).append(item)
     return result

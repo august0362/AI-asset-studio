@@ -1,0 +1,16 @@
+{
+  "contract_version": "1.0",
+  "warnings": [],
+  "errors": [
+    {
+      "code": "JOB_ALREADY_STARTED",
+      "severity": "error",
+      "field": null,
+      "message": "This job has already started, so its auto-run setting can no longer change.",
+      "details": {
+        "status": "queued"
+      },
+      "retryable": false
+    }
+  ]
+}

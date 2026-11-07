@@ -1,0 +1,13 @@
+{
+  "contract_version": "1.0",
+  "deleted": [
+    "job_20261106T184346Z_a73f31",
+    "job_20261106T184346Z_8afd76"
+  ],
+  "refused": [
+    {
+      "job_id": "job_20261106T101500Z_a1b2c3",
+      "code": "JOB_NOT_FOUND"
+    }
+  ]
+}
